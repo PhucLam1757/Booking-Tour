@@ -50,10 +50,10 @@ export default function SignUpComponent() {
             }else{
                 setSignUpNoti({ status: false, noti: '', type: '' })
     
-                const createCustomerRes = await UserAPI.createNewUser({user_name: customerData.name, user_email: customerData.email, user_phone: customerData.phone, user_address: customerData.address, user_password: customerData.password})
+                const createCustomerRes = await UserAPI.createNewUser({user_name: customerData.name, user_email: customerData.email, user_phone: customerData.phone, user_address: customerData.address, user_password: customerData.password, role: 1})
                 
                 if ( createCustomerRes.data && createCustomerRes.data.success ){
-                    window.sessionStorage.setItem("user_data", JSON.stringify({ctm_email: customerData.email, ctm_phone: customerData.phone, ctm_role: 'ctm'}));
+                    window.sessionStorage.setItem("user_data", JSON.stringify({ctm_email: customerData.email, ctm_role: 'ctm'}));
                     navigation('/')
                 }else{
                     setSignUpNoti({ status: true, noti: createCustomerRes.data.error.message, type: 'error' })

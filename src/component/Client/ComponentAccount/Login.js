@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useState} from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,18 +12,43 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import LoginBackground from '../../../asset/images/login-background.jpg';  
+import LoginBackground from '../../../asset/images/login-background.jpg'; 
+import Alert from '@mui/material/Alert';
+import UserAPI from '../../../API/UserAPI';
+import { useNavigate } from 'react-router-dom';
+
 const theme = createTheme();
 
 export default function LoginComponent() {
-    const handleSubmit = (event) => {
+    const [signUpNoti, setSignUpNoti] = useState({ status: false, noti: '', type: '' })
+    const navigation = useNavigate()
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
+        setSignUpNoti({ status: false, noti: '', type: '' })
+
         const data = new FormData(event.currentTarget);
-        // eslint-disable-next-line no-console
-        console.log({
+        const customerData = {
             email: data.get('email'),
             password: data.get('password'),
-        });
+        }
+
+        if ( !customerData.email.length || !customerData.password.length ){
+            setSignUpNoti({ status: true, noti: 'Field can not blank', type: 'error' })
+        }else{
+            const loginRes = await UserAPI.userLogin({email: customerData.email, password: customerData.password})
+            if ( loginRes.data && loginRes.data.success ){
+                if ( loginRes.data.payload.ctm_role === 'admin' ){
+                    navigation('/admin')
+                }else{
+                    navigation('/')
+                }
+                window.sessionStorage.setItem("user_data", JSON.stringify(loginRes.data.payload));
+                
+            }else{
+                setSignUpNoti({ status: true, noti: loginRes.data.error.message, type: 'error' })
+            }
+        }
     };
 
     return (
@@ -60,7 +85,7 @@ export default function LoginComponent() {
                         <Typography component="h1" variant="h5">
                             Sign in
                         </Typography>
-                        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1, fontSize: '2em' }}>
+                        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1, fontSize: '2em', width: '100%' }}>
                             <TextField
                                 margin="normal"
                                 required
@@ -82,10 +107,11 @@ export default function LoginComponent() {
                                 id="password"
                                 autoComplete="current-password"
                             />
-                            <FormControlLabel
-                                control={<Checkbox value="remember" color="primary" />}
-                                label="Remember me"
-                            />
+
+                            {signUpNoti.status &&
+                                <Alert severity={signUpNoti.type} sx={{ marginTop: '10px', width: '100%' }}>{signUpNoti.noti}</Alert>
+                            }
+
                             <Button
                                 type="submit"
                                 fullWidth

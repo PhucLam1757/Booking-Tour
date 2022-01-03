@@ -12,6 +12,12 @@ import ContactPage from "../../page/Client/Contact";
 import ServicePage from "../../page/Client/Service";
 import AdminLayout from "../../layout/AdminLayout";
 import AdminDashboard from "../../page/Admin/Dashboard";
+import AdminAccountRole from "../../page/Admin/AccountRole";
+import AdminAccount from '../../page/Admin/Account';
+import AdminContact from "../../page/Admin/Contact";
+import AdminBlog from "../../page/Admin/Blog";
+import AdminTourType from '../../page/Admin/TourType';
+import AdminCountry from '../../page/Admin/Country';
 
 export default function MainApp(props) {
     return (
@@ -68,6 +74,55 @@ export default function MainApp(props) {
                         </AdminLayout>
                     }
                 />
+
+                <Route exact path="/admin/blog"
+                    element={
+                        <AdminLayout {...props} >
+                            <AdminBlog />
+                        </AdminLayout>
+                    }
+                />
+
+                <Route exact path="/admin/contact"
+                    element={
+                        <AdminLayout {...props} >
+                            <AdminContact />
+                        </AdminLayout>
+                    }
+                />
+
+                <Route exact path="/admin/account-role"
+                    element={
+                        <AdminLayout {...props} >
+                            <AdminAccountRole />
+                        </AdminLayout>
+                    }
+                />
+
+                <Route exact path="/admin/account"
+                    element={
+                        <AdminLayout {...props} >
+                            <AdminAccount />
+                        </AdminLayout>
+                    }
+                />
+
+                <Route exact path="/admin/tour-type"
+                    element={
+                        <AdminLayout {...props} >
+                            <AdminTourType />
+                        </AdminLayout>
+                    }
+                />
+
+                <Route exact path="/admin/country"
+                    element={
+                        <AdminLayout {...props} >
+                            <AdminCountry />
+                        </AdminLayout>
+                    }
+                />
+
             </Routes>
         </Router>
     );

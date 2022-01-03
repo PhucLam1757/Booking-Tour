@@ -9,45 +9,68 @@ import PeopleIcon from '@mui/icons-material/People';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import LayersIcon from '@mui/icons-material/Layers';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import { useNavigate } from 'react-router-dom';
 
-export const MainListItems = () => (
-    <div>
-        <ListItem button>
-            <ListItemIcon>
-                <DashboardIcon />
-            </ListItemIcon>
-            <ListItemText primary="Dashboard" />
-        </ListItem>
-        <ListItem button>
-            <ListItemIcon>
-                <ShoppingCartIcon />
-            </ListItemIcon>
-            <ListItemText primary="Orders" />
-        </ListItem>
-        <ListItem button>
-            <ListItemIcon>
-                <PeopleIcon />
-            </ListItemIcon>
-            <ListItemText primary="Customers" />
-        </ListItem>
-        <ListItem button>
-            <ListItemIcon>
-                <BarChartIcon />
-            </ListItemIcon>
-            <ListItemText primary="Reports" />
-        </ListItem>
-        <ListItem button>
-            <ListItemIcon>
-                <LayersIcon />
-            </ListItemIcon>
-            <ListItemText primary="Integrations" />
-        </ListItem>
-    </div>
-);
+export const MainListItems = () => {
+    const navigate = useNavigate()
+
+    return (
+        <div>
+            <ListItem button onClick={()=>navigate('/admin')}>
+                <ListItemIcon>
+                    <DashboardIcon />
+                </ListItemIcon>
+                <ListItemText primary="Trang chủ" />
+            </ListItem>
+
+            <ListItem button onClick={()=>navigate('/admin/tour-type')}>
+                <ListItemIcon>
+                    <ShoppingCartIcon />
+                </ListItemIcon>
+                <ListItemText primary="Quản lí loại tour" />
+            </ListItem>
+
+            <ListItem button onClick={()=>navigate('/admin/country')}>
+                <ListItemIcon>
+                    <ShoppingCartIcon />
+                </ListItemIcon>
+                <ListItemText primary="Quản lí quốc gia" />
+            </ListItem>
+
+            <ListItem button onClick={()=>navigate('/admin/blog')}>
+                <ListItemIcon>
+                    <ShoppingCartIcon />
+                </ListItemIcon>
+                <ListItemText primary="Quản lí tin tức" />
+            </ListItem>
+
+            <ListItem button onClick={()=>navigate('/admin/contact')}>
+                <ListItemIcon>
+                    <ShoppingCartIcon />
+                </ListItemIcon>
+                <ListItemText primary="Quản lí liên hệ" />
+            </ListItem>
+
+            <ListItem button onClick={()=>navigate('/admin/account')}>
+                <ListItemIcon>
+                    <ShoppingCartIcon />
+                </ListItemIcon>
+                <ListItemText primary="Quản lí tài khoản" />
+            </ListItem>
+
+            <ListItem button onClick={()=>navigate('/admin/account-role')}>
+                <ListItemIcon>
+                    <ShoppingCartIcon />
+                </ListItemIcon>
+                <ListItemText primary="Quản lí phân quyền" />
+            </ListItem>
+        </div>
+    )
+}
 
 export const secondaryListItems = (
     <div>
-        <ListSubheader inset>Saved reports</ListSubheader>
+        {/* <ListSubheader inset>Saved reports</ListSubheader>
         <ListItem button>
             <ListItemIcon>
                 <AssignmentIcon />
@@ -65,6 +88,6 @@ export const secondaryListItems = (
                 <AssignmentIcon />
             </ListItemIcon>
             <ListItemText primary="Year-end sale" />
-        </ListItem>
+        </ListItem> */}
     </div>
 );

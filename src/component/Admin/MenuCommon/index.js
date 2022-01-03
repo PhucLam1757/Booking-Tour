@@ -106,7 +106,7 @@ function MenuContent(props) {
                             noWrap
                             sx={{ flexGrow: 1 }}
                         >
-                            Admin Dashboard
+                            TRANG QUẢN LÍ
                         </Typography>
                         <IconButton color="inherit">
                             <Badge badgeContent={4} color="secondary">

@@ -1,12 +1,12 @@
 import AxiosClient from "./AxiosClient"
 
 const PostAPI = {
-    getAll() {
-        const url = `/post`;
+    getAll(limit,offset) {
+        const url = `/post?limit=${limit}&offset=${offset}`;
         return AxiosClient.get(url);
     },
 
-    getPostWịthId(postId) {
+    getPostById(postId) {
         const url = `/post/${postId}`;
         return AxiosClient.get(url);
     },

@@ -5,69 +5,41 @@ import Slider2 from '../../../asset/images/slider2.jpg'
 export default function ComponentHomeSlider(props) {
     return (
         <div>
-            <aside id="fh5co-hero" className="js-fullheight">
-                <div className="flexslider js-fullheight">
-                    <ul className="slides">
-                        <li style={{ backgroundImage: `url(${Slider1})` }}>
-                            <div className="overlay-gradient" />
-                            <div className="container">
-                                <div className="col-md-12 col-md-offset-0 text-center slider-text">
-                                    <div className="slider-text-inner js-fullheight">
-                                        <div className="desc">
-                                            <p><span>Bora Tour</span></p>
-                                            <h2>Reserve Room for Family Vacation</h2>
-                                            <p>
-                                                <a href="#" className="btn btn-primary btn-lg">Book Now</a>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
+            <div className="fh5co-parallax" style={{ backgroundImage: `url(${Slider1})` }} data-stellar-background-ratio="0.5">
+                <div className="overlay" />
+                <div className="container">
+                    <div className="row">
+                        <div className="col-md-12 col-md-offset-0 col-sm-12 col-sm-offset-0 col-xs-12 col-xs-offset-0 text-center fh5co-table">
+                            <div className="fh5co-intro fh5co-table-cell">
+                                <h1 className="text-center" style={{fontWeight: '800'}}>DU LỊCH CÙNG AATOURIST</h1>
+                                <p style={{fontWeight: '600'}}>TOUR PHÚ QUỐC ƯU ĐÃI CỰC KHỦNG<a href="http://freehtml5.co">Xem ngay</a>
+                                </p>
                             </div>
-                        </li>
-                        <li style={{ backgroundImage: `url(${Slider2})` }}>
-                            <div className="overlay-gradient" />
-                            <div className="container">
-                                <div className="col-md-12 col-md-offset-0 text-center slider-text">
-                                    <div className="slider-text-inner js-fullheight">
-                                        <div className="desc">
-                                            <p><span>Deluxe Tour</span></p>
-                                            <h2>Make Your Vacation Comfortable</h2>
-                                            <p>
-                                                <a href="#" className="btn btn-primary btn-lg">Book Now</a>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li style={{ backgroundImage: 'url(images/slider3.jpg)' }}>
-                            <div className="overlay-gradient" />
-                            <div className="container">
-                                <div className="col-md-12 col-md-offset-0 text-center slider-text">
-                                    <div className="slider-text-inner js-fullheight">
-                                        <div className="desc">
-                                            <p><span>Luxe Tour</span></p>
-                                            <h2>A Best Place To Enjoy Your Life</h2>
-                                            <p>
-                                                <a href="#" className="btn btn-primary btn-lg">Book Now</a>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
+                        </div>
+                    </div>
                 </div>
-            </aside>
+            </div>
             <div className="wrap">
                 <div className="container">
                     <div className="row">
                         <div id="availability">
                             <form action="#">
-                                <div className="a-col">
-                                    <section>
-                                        <select className="cs-select cs-skin-border">
-                                            <option value disabled selected>Select Hotel</option>
+                                <div className="a-col alternate">
+                                    <section style={{height: '100%', marginTop: '4px'}}>
+                                        <label style={{color: 'white'}}>Địa điểm đi</label>
+                                        <select className="input-field" style={{height: '65%'}}>
+                                            <option value disabled selected>Select Tourest</option>
+                                            <option value="email">Luxe Hotel</option>
+                                            <option value="twitter">Deluxe Hotel</option>
+                                            <option value="linkedin">Five Star Hotel</option>
+                                        </select>
+                                    </section>
+                                </div>
+                                <div className="a-col alternate">
+                                    <section style={{height: '100%', marginTop: '4px'}}>
+                                        <label style={{color: 'white'}}>Địa điểm đến</label>
+                                        <select className="input-field" style={{height: '65%'}}>
+                                            <option value disabled selected>Select Tourest</option>
                                             <option value="email">Luxe Hotel</option>
                                             <option value="twitter">Deluxe Hotel</option>
                                             <option value="linkedin">Five Star Hotel</option>
@@ -76,20 +48,20 @@ export default function ComponentHomeSlider(props) {
                                 </div>
                                 <div className="a-col alternate">
                                     <div className="input-field">
-                                        <label htmlFor="date-start">Check In</label>
-                                        <input type="text" className="form-control" id="date-start" />
+                                        <label htmlFor="date-start">Ngày đi</label>
+                                        <input type="text" className="form-control" id="date-start" type="date" />
                                     </div>
                                 </div>
                                 <div className="a-col alternate">
                                     <div className="input-field">
-                                        <label htmlFor="date-end">Check Out</label>
-                                        <input type="text" className="form-control" id="date-end" />
+                                        <label htmlFor="date-end">Ngày về</label>
+                                        <input type="text" className="form-control" id="date-end" type="date" />
                                     </div>
                                 </div>
                                 <div className="a-col action">
                                     <a href="#">
-                                        <span>Check</span>
-                                        Availability
+                                        <span>Kiểm tra</span>
+                                        Tour phù hợp
                                     </a>
                                 </div>
                             </form>

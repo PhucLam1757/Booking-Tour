@@ -1,6 +1,27 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import TourCategoryAPI from '../../../API/TourCategoryAPI'
+import { useNavigate } from 'react-router-dom'
 
 export default function WebHeader(props) {
+    const [allCategory, setAllCategory] = useState([])
+    const navigate = useNavigate()
+
+    const getAllCategory = async () => {
+        try {
+            const category = await TourCategoryAPI.getAll()
+
+            if (category.data && category.data.success) {
+                setAllCategory(category.data.payload)
+            }
+        } catch (error) {
+            console.log('get category error: ', error)
+        }
+    }
+
+    useEffect(() => {
+        getAllCategory()
+    }, [])
+
     return (
         <header id="fh5co-header-section">
             <div className="container">
@@ -11,22 +32,20 @@ export default function WebHeader(props) {
                         <ul className="sf-menu" id="fh5co-primary-menu">
                             <li><a href="/">Home</a></li>
                             <li>
-                                <a href="hotel.html" className="fh5co-sub-ddown">Tour</a>
+                                <a className="fh5co-sub-ddown" onClick={() => {navigate('/tour')}} style={{cursor: 'pointer'}}>Tour</a>
                                 <ul className="fh5co-sub-menu">
-                                    <li><a href="#">Trong nước</a></li>
-                                    <li><a href="#">Ngoài nước</a></li>
-                                    {/* <li>
-                                        <a href="#" className="fh5co-sub-ddown">King Hotel</a>
-                                        <ul className="fh5co-sub-menu">
-                                            <li><a href="http://freehtml5.co/preview/?item=build-free-html5-bootstrap-template" target="_blank">Build</a></li>
-                                            <li><a href="http://freehtml5.co/preview/?item=work-free-html5-template-bootstrap" target="_blank">Work</a></li>
-                                            <li><a href="http://freehtml5.co/preview/?item=light-free-html5-template-bootstrap" target="_blank">Light</a></li>
-                                            <li><a href="http://freehtml5.co/preview/?item=relic-free-html5-template-using-bootstrap" target="_blank">Relic</a></li>
-                                            <li><a href="http://freehtml5.co/preview/?item=display-free-html5-template-using-bootstrap" target="_blank">Display</a></li>
-                                            <li><a href="http://freehtml5.co/preview/?item=sprint-free-html5-template-bootstrap" target="_blank">Sprint</a></li>
-                                        </ul>
-                                    </li>
-                                    <li><a href="#">Five Star Hotel</a></li> */}
+                                    {allCategory.map((categoryItem, categoryIndex) => {
+                                        return (
+                                            <li key={`categoruMenu-${categoryIndex}`}
+                                                style={{ cursor: 'pointer' }}
+                                                onClick={() => {
+                                                    navigate('/tour')
+                                                }}
+                                            >
+                                                <a>{categoryItem.name}</a>
+                                            </li>
+                                        )
+                                    })}
                                 </ul>
                             </li>
                             <li><a href="/service">Services</a></li>

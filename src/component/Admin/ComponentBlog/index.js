@@ -97,12 +97,12 @@ const columns = [
     { id: 'id', label: 'Id', minWidth: 100 },
     { id: 'blog_image', label: 'Hình ảnh', minWidth: 170 },
     { id: 'blog_title', label: 'Tiêu đề', minWidth: 170 },
-    {
-        id: 'blog_desc',
-        label: 'Chi tiết',
-        minWidth: 150,
-        maxWidth: 150,
-    },
+    // {
+    //     id: 'blog_desc',
+    //     label: 'Chi tiết',
+    //     minWidth: 150,
+    //     maxWidth: 150,
+    // },
     {
         id: 'updated_at',
         label: 'Ngày đăng',

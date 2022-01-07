@@ -23,6 +23,14 @@ import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import PropTypes from 'prop-types';
 import CountryAPI from '../../../API/CountryAPI';
+import PlaceAPI from '../../../API/PlaceAPI';
+import TourAPI from '../../../API/TourAPI';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Box from '@mui/material/Box';
+import { useNavigate } from 'react-router-dom';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -93,7 +101,13 @@ const RedditTextField = styled((props) => (
 
 const columns = [
     { id: 'id', label: 'Id', minWidth: 100 },
-    { id: 'name', label: 'Tên quốc gia', minWidth: 250 },
+    { id: 'tour_name', label: 'Tên tour', minWidth: 100 },
+    { id: 'category_name', label: 'Loại tour', minWidth: 100 },
+    { id: 'place_go', label: 'Điểm đi', minWidth: 100 },
+    { id: 'place_destinate', label: 'Điểm đi', minWidth: 100 },
+    { id: 'departure_day', label: 'Ngày khỏi hành', minWidth: 100 },
+    { id: 'return_day', label: 'Ngày về', minWidth: 100 },
+    { id: 'tour_status', label: 'Trạng thái', minWidth: 100 },
     {
         id: 'action',
         label: 'Action',
@@ -102,111 +116,57 @@ const columns = [
     },
 ];
 
-export default function ComponentAdminCountry(props) {
+export default function ComponentAdminTour(props) {
     const [page, setPage] = useState(0);
+    const [allPlace, setAllPlace] = useState([])
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [tableRowData, setTableRowData] = useState([]);
-    const [openCountryModal, setOpenCountryModal] = useState({ status: false, type: '' });
-    const [newCountryData, setNewCountryData] = useState({ name: ''})
-    const [addCountryNoti, setAddCountryNoti] = useState({ status: false, noti: '', type: '' }) /*display noti in modal when add and update*/
     const [openNotiSnackBar, setOpenNotiSnackBar] = useState({ status: false, noti: '', type: '' })
 
-    const getAllCountryData = async () => {
+    const navigate = useNavigate()
+
+    const getAllTour = async () => {
+        try{
+            const allTour = await TourAPI.getAll()
+
+            if ( allTour.data && allTour.data.success ){
+                setTableRowData(allTour.data.payload)
+            }
+        }catch(error){
+            console.log('get all tour error: ', error)
+        }
+    }
+
+    const getAllPlaceData = async () => {
         try {
-            const getCountryRes = await CountryAPI.getAll()
-
-            if (getCountryRes.data && getCountryRes.data.success) {
-
-                setTableRowData(getCountryRes.data.payload)
+            const getPlaceRes = await PlaceAPI.getAll()
+            if (getPlaceRes.data && getPlaceRes.data.success) {
+                setAllPlace(getPlaceRes.data.payload)
             }
         } catch (error) {
-            console.log('Get Contact Error: ', error)
+            console.log('Get Place Error: ', error)
         }
     }
 
     useEffect(() => {
-        getAllCountryData()
+        getAllTour()
+        getAllPlaceData()
     }, [])
 
-    const addNewCountry = async () => {
+    const deletePlace = async (columnId) => {
         try {
-            setAddCountryNoti({ status: false, noti: '', type: '' })
+            const deleteTour = await TourAPI.deleteTour(columnId)
 
-            if (!newCountryData.name.length) {
-                setAddCountryNoti({ status: true, noti: 'Các trường không được để trống', type: 'error' })
-            }else {
-                const addNewCategoryRes = await CountryAPI.addNew({ name: newCountryData.name})
-                
-                if (addNewCategoryRes.data && addNewCategoryRes.data.success) {
-                    setAddCountryNoti({ status: true, noti: 'Thêm thông tin quốc gia thành công', type: 'success' })
-                    
-                    setTableRowData(addNewCategoryRes.data.payload)
-
-                    setTimeout(() => {
-                        setOpenCountryModal({ status: false, type: '' })
-                        setAddCountryNoti({ status: false, noti: '', type: '' })
-                        setNewCountryData({ name: '' })
-                    }, 1000)
-                }else{
-                    setAddCountryNoti({ status: true, noti: addNewCategoryRes.data.error.message, type: 'error' })
-                }
-            }
-        } catch (error) {
-            setAddCountryNoti({ status: true, noti: error.message, type: 'error' })
-        }
-    }
-
-    const deleteCountry = async (columnId) => {
-        try {
-            const deleteCategoryRes = await CountryAPI.deleteCountry(columnId)
-
-            if (deleteCategoryRes.data && deleteCategoryRes.data.success ) {
-                const rowData = [...tableRowData].filter((item) => item.country_id !== columnId)
+            if (deleteTour.data && deleteTour.data.success) {
+                const rowData = [...tableRowData].filter((item) => item.tour_id !== columnId)
                 setTableRowData(rowData)
 
-                setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin quốc giá thành công', type: 'success' })
+                setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin tour thành công', type: 'success' })
             } else {
-                setOpenNotiSnackBar({ status: true, noti: deleteCategoryRes.data.error.message, type: 'error' })
+                setOpenNotiSnackBar({ status: true, noti: deleteTour.data.error.message, type: 'error' })
             }
         } catch (error) {
             setOpenNotiSnackBar({ status: true, noti: error.message, type: 'error' })
-        }
-    }
-
-    const updateCountryData = async (columnId) => {
-        try {
-            setAddCountryNoti({ status: false, noti: '', type: '' })
-
-            if (!newCountryData.name.length) {
-                setAddCountryNoti({ status: true, noti: 'Các trường không được để trống', type: 'error' })
-            }else {
-                const updateCategoryRes = await CountryAPI.updateCountry({ id: newCountryData.place_id, name: newCountryData.name})
-
-                if (updateCategoryRes.data && updateCategoryRes.data.success) {
-                    setAddCountryNoti({ status: true, noti: 'Cập nhật thông tin thành công', type: 'success' })
-
-                    const rowData = [...tableRowData].map((item) => {
-                        if (item.country_id === newCountryData.id) {
-                            return {
-                                ...item,
-                                name: newCountryData.name,
-                            }
-                        } else {
-                            return item
-                        }
-                    })
-
-                    setTableRowData(rowData)
-
-                    setTimeout(() => {
-                        setOpenCountryModal({ status: false, type: '' })
-                        setAddCountryNoti({ status: false, noti: '', type: '' })
-                        setNewCountryData({ name: '' })
-                    }, 1000)
-                }
-            }
-        } catch (error) {
-            setAddCountryNoti({ status: true, noti: error, type: 'error' })
         }
     }
 
@@ -221,54 +181,11 @@ export default function ComponentAdminCountry(props) {
 
     return (
         <div>
-            {openCountryModal.status &&
-                <div>
-                    <BootstrapDialog
-                        onClose={() => setOpenCountryModal({ status: false, type: '' })}
-                        aria-labelledby="customized-dialog-title"
-                        open={openCountryModal.status}
-                    >
-                        <BootstrapDialogTitle id="customized-dialog-title" onClose={() => setOpenCountryModal({ status: false, type: '' })}>
-                            {openCountryModal.type === 'add' ? 'Quốc gia mới' : 'Cập nhật thông tin quốc gia'}
-                        </BootstrapDialogTitle>
-                        <DialogContent dividers>
-                            <RedditTextField
-                                label="Tên quốc gia"
-                                defaultValue=""
-                                id="country-name"
-                                variant="filled"
-                                style={{ marginTop: 11 }}
-                                value={newCountryData.name}
-                                onChange={(event) => setNewCountryData({ ...newCountryData, name: event.target.value })}
-                            />
-
-                            {addCountryNoti.status &&
-                                <Alert severity={addCountryNoti.type} sx={{ marginTop: '10px' }}>{addCountryNoti.noti}</Alert>
-                            }
-
-                        </DialogContent>
-                        <DialogActions>
-                            <Button autoFocus onClick={() => {
-                                if (openCountryModal.type === 'add') {
-                                    addNewCountry()
-                                } else if (openCountryModal.type === 'update') {
-                                    updateCountryData()
-                                }
-                            }}>
-                                {openCountryModal.type === 'add' ? 'Thêm quốc gia' : 'Cập nhật'}
-                            </Button>
-                        </DialogActions>
-                    </BootstrapDialog>
-                </div>
-            }
             <Stack flexDirection={'row'} justifyContent={'space-between'}>
                 <Typography variant="h5" component="h2">
-                    Quản lí quốc gia
+                    Quản lí tour
                 </Typography>
-                <Button variant="contained" onClick={() => {
-                    setOpenCountryModal({ status: true, type: 'add' })
-                    setNewCountryData({name: ''})
-                }}>
+                <Button variant="contained" onClick={() => navigate('/admin/tour/addtour')}>
                     Thêm mới
                 </Button>
             </Stack>
@@ -304,11 +221,8 @@ export default function ComponentAdminCountry(props) {
                                                         {column.id === 'id' ? (page) * 10 + (index + 1) : (
                                                             column.id === 'action' ?
                                                                 <ButtonGroup variant="contained" aria-label="outlined primary button group">
-                                                                    <Button onClick={() => {
-                                                                        setOpenCountryModal({ status: true, type: 'update' })
-                                                                        setNewCountryData({ id: row.country_id, name: row.name})
-                                                                    }}>Cập nhật</Button>
-                                                                    <Button color='error' onClick={() => deleteCountry(row.country_id)}>Xoá</Button>
+                                                                    <Button color='error' onClick={() => deletePlace(row.tour_id)}>Xoá</Button>
+                                                                    <Button onClick={() => navigate(`/admin/tour/${row.tour_id}`)}>Chi tiết</Button>
                                                                 </ButtonGroup> : value)}
                                                     </TableCell>
                                                 );

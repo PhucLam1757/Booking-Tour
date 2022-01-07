@@ -10,6 +10,7 @@ import LoginPage from "../../page/Login";
 import Blog from "../../page/Client/Blog";
 import ContactPage from "../../page/Client/Contact";
 import ServicePage from "../../page/Client/Service";
+import BlogDetail from "../../page/Client/BlogDetail";
 import AdminLayout from "../../layout/AdminLayout";
 import AdminDashboard from "../../page/Admin/Dashboard";
 import AdminAccountRole from "../../page/Admin/AccountRole";
@@ -18,6 +19,12 @@ import AdminContact from "../../page/Admin/Contact";
 import AdminBlog from "../../page/Admin/Blog";
 import AdminTourType from '../../page/Admin/TourType';
 import AdminCountry from '../../page/Admin/Country';
+import AdminPlace from "../../page/Admin/Place";
+import AdminTour from "../../page/Admin/Tour";
+import AdminAddTour from '../../page/Admin/AddTour';
+import AdminTourDetail from '../../page/Admin/TourDetail';
+import Tour from "../../page/Client/Tour";
+import TourDetail from "../../page/Client/TourDetail";
 
 export default function MainApp(props) {
     return (
@@ -39,6 +46,14 @@ export default function MainApp(props) {
                     }
                 />
 
+                <Route exact path="/blog/:blogId"
+                    element={
+                        <ClientLayout {...props} >
+                            <BlogDetail />
+                        </ClientLayout>
+                    }
+                />
+
                 <Route exact path="/contact"
                     element={
                         <ClientLayout {...props} >
@@ -51,6 +66,22 @@ export default function MainApp(props) {
                     element={
                         <ClientLayout {...props} >
                             <ServicePage />
+                        </ClientLayout>
+                    }
+                />
+
+                <Route exact path="/tour"
+                    element={
+                        <ClientLayout {...props} >
+                            <Tour />
+                        </ClientLayout>
+                    }
+                />
+
+                <Route exact path="/tour/:tourId"
+                    element={
+                        <ClientLayout {...props} >
+                            <TourDetail />
                         </ClientLayout>
                     }
                 />
@@ -123,6 +154,37 @@ export default function MainApp(props) {
                     }
                 />
 
+                <Route exact path="/admin/place"
+                    element={
+                        <AdminLayout {...props} >
+                            <AdminPlace />
+                        </AdminLayout>
+                    }
+                />
+
+                <Route exact path="/admin/tour"
+                    element={
+                        <AdminLayout {...props} >
+                            <AdminTour />
+                        </AdminLayout>
+                    }
+                />
+
+                <Route exact path="/admin/tour/addtour"
+                    element={
+                        <AdminLayout {...props} >
+                            <AdminAddTour />
+                        </AdminLayout>
+                    }
+                />
+
+                <Route exact path="/admin/tour/:id"
+                    element={
+                        <AdminLayout {...props} >
+                            <AdminTourDetail />
+                        </AdminLayout>
+                    }
+                />
             </Routes>
         </Router>
     );

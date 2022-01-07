@@ -3,7 +3,7 @@ import RestaurentPost from '../../../asset/images/restaurant-post.jpeg'
 
 export default function ComponentHomeService(props) {
     return (
-        <div id="hotel-facilities">
+        <div id="hotel-facilities" style={{minHeight: '1000px'}}>
             <div className="container">
                 <div className="row">
                     <div className="col-md-12">

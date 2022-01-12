@@ -114,12 +114,18 @@ const columns = [
 const allRole = [
     { label: 'Trang người dùng', value: 'clent-home' },
     { label: 'Trang chủ Admin', value: 'admin-dashboard' },
-    { label: 'Quản lí tin tức', value: 'admin-blog' },
-    { label: 'Quản lí liên hệ', value: 'admin-contact' },
-    { label: 'Quản lí phân quyền', value: 'admin-role' },
-    { label: 'Quản lí tài khoản', value: 'admin-account' },
+    { label: 'Quản lí đặt tour', value: 'admin-booking' },
+    { label: 'Quản lí tour', value: 'admin-tour' },
     { label: 'Quản lí loại tour', value: 'admin-tourcategory' },
-    { label: 'Quản lí quốc gia', value: 'admin-country' },
+    { label: 'Quản lí địa điểm', value: 'admin-place' },
+    { label: 'Quản lí quốc gia', value: 'admin-contry' },
+    { label: 'Quản lí tin tức', value: 'admin-blog' },
+    { label: 'Quản lí cẩm nang', value: 'admin-handbook' },
+    { label: 'Quản lí dịch vụ', value: 'admin-service' },
+    { label: 'Quản lí liên hệ', value: 'admin-contact' },
+    { label: 'Quản lí tài khoản', value: 'admin-account' },
+    { label: 'Quản lí phân quyền', value: 'admin-accountRole' },
+    { label: 'Quản lí thẻ', value: 'admin-bank' },
 ]
 
 export default function ComponentAdminAccountRole(props) {
@@ -364,7 +370,12 @@ export default function ComponentAdminAccountRole(props) {
                                                                     <ul>
                                                                         {row.role_function.split(',').map((roleItem, roleIndex) => {
                                                                             const getValueFromLabel = allRole.find((item) => item.value===roleItem)
-                                                                            return <li>{getValueFromLabel.label}</li>
+                                                                            if ( getValueFromLabel ){
+                                                                                return <li>{getValueFromLabel.label}</li>
+                                                                            }else{
+                                                                                return <li></li>
+                                                                            }
+                                                                            
                                                                         })}
                                                                     </ul>:
                                                                     value))}

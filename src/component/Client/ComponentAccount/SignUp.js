@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -17,18 +17,41 @@ import LoginBackground from '../../../asset/images/login-background.jpg';
 import Paper from '@mui/material/Paper';
 import { useNavigate } from "react-router-dom";
 import UserAPI from '../../../API/UserAPI';
+import RoleAPI from '../../../API/RoleAPI';
 
 const theme = createTheme();
 
 export default function SignUpComponent() {
     let navigation = useNavigate();
     const [signUpNoti, setSignUpNoti] = useState({ status: false, noti: '', type: '' })
+    const [userRole, setUserRole] = useState(0)
+    const [customerData, setCustomerData] = useState({})
+    const [verifyForm, setVerifyForm] = useState(false)
+    const [verifyCode, setVerifyCode] = useState(0)
 
-    const handleSubmit = async (event) => {
+    const getUserRole = async () => {
+        try {
+            const roleRes = await RoleAPI.getAll('user')
+
+            if (roleRes.data && roleRes.data.success) {
+                const rolePayload = roleRes.data.payload
+                if (rolePayload.length) {
+                    setUserRole(rolePayload[0].role_id)
+                }
+            }
+        } catch (error) {
+            console.log('get user role error: ', error)
+        }
+    }
+
+    useEffect(() => {
+        getUserRole()
+    }, [])
+
+    console.log('verifyCode >>>> : ', verifyCode)
+    const handleSubmitSendCode = async (event) => {
         try {
             event.preventDefault();
-            setSignUpNoti({ status: false, noti: '', type: '' })
-    
             const data = new FormData(event.currentTarget);
             const customerData = {
                 name: data.get('name'),
@@ -39,33 +62,69 @@ export default function SignUpComponent() {
                 confirmPassword: data.get('confirmPassword')
             }
 
+            setSignUpNoti({ status: false, noti: '', type: '' })
             if (!customerData.name.length || !customerData.email.length || !customerData.phone.length || !customerData.address.length || !customerData.password.length || !customerData.confirmPassword.length) {
-                setSignUpNoti({ status: true, noti: 'Field can not blank', type: 'error' })
-            }else if (!String(customerData.email).toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
-                setSignUpNoti({ status: true, noti: 'Email is wrong format', type: 'error' })
+                setSignUpNoti({ status: true, noti: 'Không thể thiếu thông tin', type: 'error' })
+            } else if (!String(customerData.email).toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
+                setSignUpNoti({ status: true, noti: 'Email sai định dạng', type: 'error' })
             } else if (!customerData.phone.match(/\d/g).length === 10) {
-                setSignUpNoti({ status: true, noti: 'Phone number is wrong format', type: 'error' })
-            }else if ( customerData.password !== customerData.confirmPassword){
-                setSignUpNoti({ status: true, noti: 'Confirm password is wrong', type: 'error' })
-            }else{
+                setSignUpNoti({ status: true, noti: 'Số điện thoại sai định dạng', type: 'error' })
+            } else if (customerData.password !== customerData.confirmPassword) {
+                setSignUpNoti({ status: true, noti: 'Nhập lại mật khẩu không chính xác', type: 'error' })
+            } else {
                 setSignUpNoti({ status: false, noti: '', type: '' })
-    
-                const createCustomerRes = await UserAPI.createNewUser({user_name: customerData.name, user_email: customerData.email, user_phone: customerData.phone, user_address: customerData.address, user_password: customerData.password, role: 1})
-                
-                if ( createCustomerRes.data && createCustomerRes.data.success ){
-                    window.sessionStorage.setItem("user_data", JSON.stringify({ctm_email: customerData.email, ctm_role: 'ctm'}));
-                    navigation('/')
+                setCustomerData(customerData)
+
+                const verifyEmail = await UserAPI.verifyEmail(customerData.email)
+
+                if (verifyEmail.data && verifyEmail.data.success) {
+                    setVerifyCode(verifyEmail.data.payload)
+
+                    setSignUpNoti({ status: true, noti: 'Đã gửi email xác thực tài khoản', type: 'success' })
+
+                    setTimeout(() => {
+                        setSignUpNoti({ status: false, noti: '', type: '' })
+                        setVerifyForm(true)
+                    }, 2000)
                 }else{
-                    setSignUpNoti({ status: true, noti: createCustomerRes.data.error.message, type: 'error' })
+                    setSignUpNoti({ status: true, noti: verifyEmail.data.error.message, type: 'error' })
                 }
             }
 
-        }catch(error){
-            setSignUpNoti({ status: true, noti: 'Can not create account', type: 'error' })
-            console.log('error: ', error)
+        } catch (error) {
+            setSignUpNoti({ status: true, noti: error.message, type: 'error' })
         }
-        
+
     };
+
+    const handleSubmitSignup = async (event) => {
+        try {
+            event.preventDefault();
+            const data = new FormData(event.currentTarget);
+
+            const code = data.get('verifycode')
+
+            setSignUpNoti({ status: false, noti: '', type: '' })
+
+            if (Number(code) === Number(verifyCode)) {
+                const createCustomerRes = await UserAPI.createNewUser({ user_name: customerData.name, user_email: customerData.email, user_phone: customerData.phone, user_address: customerData.address, user_password: customerData.password, role: userRole })
+                console.log('createCustomerRes: ', createCustomerRes)
+                if (createCustomerRes.data && createCustomerRes.data.success) {
+                    window.sessionStorage.setItem("user_data", JSON.stringify({ ctm_email: customerData.email, ctm_role: 'user', ctm_id: createCustomerRes.data.payload}));
+                    navigation('/')
+
+                } else {
+                    setSignUpNoti({ status: true, noti: createCustomerRes.data.error.message, type: 'error' })
+                }
+
+            } else {
+                setSignUpNoti({ status: true, noti: 'Mã xác thực không chính xác', type: 'error' })
+            }
+
+        } catch (error) {
+            setSignUpNoti({ status: true, noti: error.message, type: 'error' })
+        }
+    }
 
     return (
         <ThemeProvider theme={theme}>
@@ -101,99 +160,126 @@ export default function SignUpComponent() {
                         <Typography component="h1" variant="h5">
                             Sign up
                         </Typography>
-                        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        autoComplete="given-name"
-                                        name="name"
-                                        required
-                                        fullWidth
-                                        id="name"
-                                        label="Name"
-                                        autoFocus
-                                    />
+                        {!verifyForm ?
+                            <Box component="form" noValidate onSubmit={handleSubmitSendCode} sx={{ mt: 1, fontSize: '2em', width: '100%' }}>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            autoComplete="given-name"
+                                            name="name"
+                                            required
+                                            fullWidth
+                                            id="name"
+                                            label="Họ và tên"
+                                            autoFocus
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            required
+                                            fullWidth
+                                            id="email"
+                                            label="Email"
+                                            name="email"
+                                            autoComplete="email"
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            required
+                                            fullWidth
+                                            id="phone"
+                                            label="Số điện thoại"
+                                            name="phone"
+                                            autoComplete="phone"
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            required
+                                            fullWidth
+                                            id="address"
+                                            label="Địa chỉ"
+                                            name="address"
+                                            autoComplete="address"
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            required
+                                            fullWidth
+                                            name="password"
+                                            label="Mật khẩu"
+                                            type="password"
+                                            id="password"
+                                            autoComplete="new-password"
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            required
+                                            fullWidth
+                                            name="confirmPassword"
+                                            label="Nhập lại mật khẩu"
+                                            type="password"
+                                            id="confirmPassword"
+                                            autoComplete="new-password"
+                                        />
+                                    </Grid>
                                 </Grid>
 
-                                <Grid item xs={12}>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        id="email"
-                                        label="Email"
-                                        name="email"
-                                        autoComplete="email"
-                                    />
+                                {signUpNoti.status &&
+                                    <Alert severity={signUpNoti.type} sx={{ marginTop: '10px' }}>{signUpNoti.noti}</Alert>
+                                }
+
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    sx={{ mt: 3, mb: 2 }}
+                                >
+                                    Đăng kí
+                                </Button>
+
+                                <Grid container justifyContent="flex-end">
+                                    <Grid item>
+                                        <Link href="/login" variant="body2">
+                                            Bạn đã có mật khẩu? Đăng nhập
+                                        </Link>
+                                    </Grid>
                                 </Grid>
+                            </Box> :
+                            <Box component="form" noValidate onSubmit={handleSubmitSignup} sx={{ mt: 1, fontSize: '2em', width: '100%' }}>
+                                <TextField
+                                    autoComplete="given-name"
+                                    name="verifycode"
+                                    required
+                                    fullWidth
+                                    id="verifycode"
+                                    label="Mã xác thực"
+                                    autoFocus
+                                />
 
-                                <Grid item xs={12}>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        id="phone"
-                                        label="Phone Number"
-                                        name="phone"
-                                        autoComplete="phone"
-                                    />
-                                </Grid>
 
-                                <Grid item xs={12}>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        id="address"
-                                        label="Address"
-                                        name="address"
-                                        autoComplete="address"
-                                    />
-                                </Grid>
+                                {signUpNoti.status &&
+                                    <Alert severity={signUpNoti.type} sx={{ marginTop: '10px' }}>{signUpNoti.noti}</Alert>
+                                }
 
-                                <Grid item xs={12}>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        name="password"
-                                        label="Password"
-                                        type="password"
-                                        id="password"
-                                        autoComplete="new-password"
-                                    />
-                                </Grid>
-
-                                <Grid item xs={12}>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        name="confirmPassword"
-                                        label="Confirm Password"
-                                        type="password"
-                                        id="confirmPassword"
-                                        autoComplete="new-password"
-                                    />
-                                </Grid>
-                            </Grid>
-
-                            {signUpNoti.status &&
-                                <Alert severity={signUpNoti.type} sx={{ marginTop: '10px' }}>{signUpNoti.noti}</Alert>
-                            }
-
-                            <Button
-                                type="submit"
-                                fullWidth
-                                variant="contained"
-                                sx={{ mt: 3, mb: 2 }}
-                            >
-                                Sign Up
-                            </Button>
-
-                            <Grid container justifyContent="flex-end">
-                                <Grid item>
-                                    <Link href="/login" variant="body2">
-                                        Already have an account? Sign in
-                                    </Link>
-                                </Grid>
-                            </Grid>
-                        </Box>
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    sx={{ mt: 3, mb: 2 }}
+                                >
+                                    Xác thực
+                                </Button>
+                            </Box>
+                        }
                     </Box>
                 </Grid>
             </Grid>

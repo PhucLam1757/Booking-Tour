@@ -7,21 +7,26 @@ function preventDefault(event) {
     event.preventDefault();
 }
 
-export default function Deposits() {
+export default function Deposits(props) {
+    const [turnover, setTurnover] = React.useState(0)
+
+    React.useEffect(() => {
+        const allBooking = [...props.listBooking]
+        let price = 0
+        allBooking.forEach((bookingItem) => {
+            price += Number(bookingItem.total_price)
+        })
+
+        setTurnover(price)
+
+    }, [props.listBooking])
+
     return (
         <React.Fragment>
-            <Title>Recent Deposits</Title>
+            <Title>Tổng doanh thu</Title>
             <Typography component="p" variant="h4">
-                $3,024.00
+                {turnover} VNNĐ
             </Typography>
-            <Typography color="text.secondary" sx={{ flex: 1 }}>
-                on 15 March, 2019
-            </Typography>
-            <div>
-                <Link color="primary" href="#" onClick={preventDefault}>
-                    View balance
-                </Link>
-            </div>
         </React.Fragment>
     );
 }

@@ -15,8 +15,8 @@ export default function ComponentContactHeader(props) {
                     <div className="row">
                         <div className="col-md-12 col-md-offset-0 col-sm-12 col-sm-offset-0 col-xs-12 col-xs-offset-0 text-center fh5co-table">
                             <div className="fh5co-intro fh5co-table-cell">
-                                <h1 className="text-center">Contact Us</h1>
-                                <p>Made with love by the fine folks at</p>
+                                <h1 className="text-center">HÃY LIÊN HỆ VỚI CHÚNG TÔI</h1>
+                                <p>CHÚNG TÔI SẼ GIẢI ĐÁP MỌI THẮC MẮC CỦA BẠN</p>
                             </div>
                         </div>
                     </div>

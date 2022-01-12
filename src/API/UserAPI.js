@@ -12,6 +12,11 @@ const UserAPI = {
         return AxiosClient.post(url, {email, password})
     },
 
+    verifyEmail(email) {
+        const url = `/user/verify`;
+        return AxiosClient.post(url, {email})
+    },
+
     getAll() {
         const url = `/user`;
         return AxiosClient.get(url)
@@ -25,6 +30,17 @@ const UserAPI = {
     deleteAccount(userId) {
         const url = `/user/${userId}`;
         return AxiosClient.delete(url)
-    }
+    },
+
+    getUserInfo(userId) {
+        const url = `/user/${userId}`;
+        return AxiosClient.get(url)
+    },
+
+    updateUserInfo({id, email, name, address, phone_number}) {
+        const url = `/user/${id}`;
+        return AxiosClient.post(url, {email, name, address, phone_number} )
+    },
+
 };
 export default UserAPI;

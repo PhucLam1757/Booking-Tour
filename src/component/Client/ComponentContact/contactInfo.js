@@ -1,46 +1,45 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import ContactImage from '../../../asset/images/contact-tour.jpeg'
+import ContactAPI from '../../../API/ContactAPI';
 
 export default function ComponentContactInfo(props) {
+    const [allContact, setAllContact] = useState([])
+
+    const getAllContact = async () => {
+        try {
+            const contactRes = await ContactAPI.getAll()
+
+            if (contactRes.data && contactRes.data.success) {
+                setAllContact(contactRes.data.payload)
+            }
+        } catch (error) {
+
+        }
+    }
+
+    useEffect(() => {
+        getAllContact()
+    }, [])
+
     return (
         <div id="fh5co-contact-section">
             <div className="row">
                 <div className="col-md-6">
-                    <div id="map" className="fh5co-map" />
+                    <img src={ContactImage} style={{ width: '100%' }} />
                 </div>
                 <div className="col-md-6">
                     <div className="col-md-12">
-                        <h3>Our Address</h3>
-                        <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-                        <ul className="contact-info">
-                            <li><i className="ti-map" />198 West 21th Street, Suite 721 New York NY 10016</li>
-                            <li><i className="ti-mobile" />+ 1235 2355 98</li>
-                            <li><i className="ti-envelope" /><a href="#">info@yoursite.com</a></li>
-                            <li><i className="ti-home" /><a href="#">www.yoursite.com</a></li>
-                        </ul>
-                    </div>
-                    <div className="col-md-12">
-                        <div className="row">
-                            <div className="col-md-6">
-                                <div className="form-group">
-                                    <input type="text" className="form-control" placeholder="Name" />
-                                </div>
-                            </div>
-                            <div className="col-md-6">
-                                <div className="form-group">
-                                    <input type="text" className="form-control" placeholder="Email" />
-                                </div>
-                            </div>
-                            <div className="col-md-12">
-                                <div className="form-group">
-                                    <textarea name className="form-control" id cols={30} rows={7} placeholder="Message" defaultValue={""} />
-                                </div>
-                            </div>
-                            <div className="col-md-12">
-                                <div className="form-group">
-                                    <input type="submit" defaultValue="Send Message" className="btn btn-primary" />
-                                </div>
-                            </div>
-                        </div>
+                        <h3>THÔNG TIN LIÊN HỆ CỦA CHÚNG TÔI</h3>
+                        <p>Chúng tôi luôn cố gắng đem lại cho bạn trải nghiệm dịch vụ tốt nhất</p>
+                        {allContact.map((contactItem, contactIndex) => {
+                            return (
+                                <ul className="contact-info" key={`list-contact-${contactIndex}`} style={{marginTop: '20px'}}>
+                                    <li><i className="ti-map" />{contactItem.contact_address}</li>
+                                    <li><i className="ti-mobile" />{contactItem.contact_phone}</li>
+                                    <li><i className="ti-envelope" />{contactItem.contact_email}</li>
+                                </ul>
+                            )
+                        })}
                     </div>
                 </div>
             </div>

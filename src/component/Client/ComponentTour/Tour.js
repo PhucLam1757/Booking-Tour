@@ -1,13 +1,23 @@
 import React, { useState, useEffect } from 'react'
 import TourCategoryAPI from '../../../API/TourCategoryAPI'
 import TourAPI from '../../../API/TourAPI'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import TouBanner from '../../../asset/images/TourBanner.jpeg';
 import '../../../asset/sass/tour-page.scss';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import IconButton from '@mui/material/IconButton';
+import FavouriteAPI from '../../../API/FavouriteAPI';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+
+function useQuery() {
+    const { search } = useLocation();
+
+    return React.useMemo(() => new URLSearchParams(search), [search]);
+}
 
 export default function ComponentTour(props) {
     const [allCategory, setAllCategory] = useState([])
@@ -18,9 +28,12 @@ export default function ComponentTour(props) {
     const [valueDateReturn, setValueDateReturn] = useState('')
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPage, setTotalPage] = useState(0)
-
+    const [favouriteList, setFavouriteList] = useState([])
 
     const navigate = useNavigate()
+    let categoryQuery = useQuery().get("category");
+    let searchQuery = useQuery().get("search");
+    const customerDataSession = JSON.parse(window.sessionStorage.getItem('user_data'))
 
     const getAllCategory = async () => {
         try {
@@ -37,7 +50,6 @@ export default function ComponentTour(props) {
     const getTourData = async (page, search, category, dateGo, dateReturn) => {
         try {
             const tour = await TourAPI.getTourByFilter({ page: page, limit: 2, search, category, dateGo, dateReturn })
-            console.log('tour >>>>>> ', tour)
             if (tour.data && tour.data.success) {
                 setTourData(tour.data.payload.tour)
                 const allItem = tour.data.payload.totalItem
@@ -50,30 +62,78 @@ export default function ComponentTour(props) {
         }
     }
 
+    const getFavourite = async () => {
+        try {
+            if (customerDataSession) {
+                const favouriteRes = await FavouriteAPI.getId(customerDataSession.ctm_id)
+
+                if (favouriteRes.data && favouriteRes.data.success) {
+                    setFavouriteList(favouriteRes.data.payload)
+                }
+            }
+
+        } catch (error) {
+            console.log('get favourite error: ', error)
+        }
+    }
+
+    const removeFavourite = async (tour_id) => {
+        try{
+            if (customerDataSession) {
+                const removeRes = await FavouriteAPI.deleteFavourite({user_id: customerDataSession.ctm_id, tour_id: tour_id})
+                
+                if ( removeRes.data && removeRes.data.success){
+                    setFavouriteList(removeRes.data.payload)
+                }
+            }     
+        }catch(error){
+            console.log('remove favourite error: ', error)
+        }
+    }
+
+    const addFavourite = async (tour_id) => {
+        try{
+            if (customerDataSession) {
+                const addRes = await FavouriteAPI.addNew({user_id: customerDataSession.ctm_id, tour_id: tour_id})
+                
+                if ( addRes.data && addRes.data.success){
+                    setFavouriteList(addRes.data.payload)
+                }
+            }
+        }catch(error){
+            console.log('add favourite error: ', error)
+        }
+    }
+
+    useEffect(() => {
+        getFavourite()
+    }, [])
+
     useEffect(() => {
         getAllCategory()
-        getTourData(1, '', 0, '', '')
+        getTourData(1, searchQuery ? searchQuery : '', categoryQuery ? categoryQuery : 0, valueDateGo, valueDateReturn)
+        setValueCategory(categoryQuery ? categoryQuery : 0)
+        setValueSearch(searchQuery ? searchQuery : '')
     }, [])
 
     return (
         <div className='view-tour-page-item'>
             <div className="wrap">
                 <div className="container">
-                    <div className="row">
+                    <div className="row" style={{ marginLeft: 0, marginRight: 0 }}>
                         <div id="availability">
                             <form action="#" style={{ justifyContent: 'center' }} onSubmit={(event) => event.preventDefault()}>
                                 <div className="a-col alternate">
                                     <section style={{ height: '100%', marginTop: '4px' }}>
                                         <label style={{ color: 'white' }}>Tìm kiếm Tour</label>
                                         <input className="form-control"
-                                            id="date-end"
-                                            type="text"
                                             placeholder='Nhập vào Tour muốn tìm kiếm'
                                             value={valueSearch}
                                             onChange={(event) => {
                                                 setValueSearch(event.target.value)
                                             }}
                                         />
+
                                     </section>
                                 </div>
                                 <div className="a-col alternate">
@@ -139,12 +199,12 @@ export default function ComponentTour(props) {
             </div>
             <div style={{ marginTop: '100px' }}></div>
 
-            <div className='row' style={{ paddingLeft: '80px', paddingRight: '80px', boxSizing: 'border-box' }}>
+            <div className='row' style={{ paddingLeft: '40px', paddingRight: '40px', boxSizing: 'border-box', marginLeft: 0, marginRight: 0 }}>
                 {tourData.map((tourItem, tourIndex) => {
                     return (
                         <div className='col-12' style={{ marginTop: '20px' }} key={`list-tour-${tourIndex}`}>
                             <div style={{ width: '100%', minheight: '100px', boxShadow: '0 3px 10px rgb(0 0 0 / 20%)', padding: '20px' }}>
-                                <div className='row'>
+                                <div className='row' style={{ marginLeft: 0, marginRight: 0 }}>
                                     <div className='col-sm-12 col-md-4'>
                                         <img src={TouBanner} style={{ width: '100%', height: 'auto' }} />
                                     </div>
@@ -157,9 +217,19 @@ export default function ComponentTour(props) {
                                     </div>
                                     <div className='col-2'>
                                         <button class="view-tour-detail-button"
-                                            onClick={()=>navigate(`/tour/${tourItem.tour_id}`)}
+                                            onClick={() => navigate(`/tour/${tourItem.tour_id}`)}
                                             role="button"
+                                            style={{ whiteSpace: 'nowrap' }}
                                         >Xem chi tiết</button>
+
+                                        {favouriteList.indexOf(tourItem.tour_id) >= 0 ?
+                                            <IconButton onClick={() => removeFavourite(tourItem.tour_id)} color="error">
+                                                <FavoriteIcon color="error"/>
+                                            </IconButton> :
+                                            <IconButton onClick={() => addFavourite(tourItem.tour_id)}>
+                                                <FavoriteBorderIcon color="error"/>
+                                            </IconButton>
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -168,7 +238,7 @@ export default function ComponentTour(props) {
                 })}
             </div>
 
-            <div className="row" style={{ justifyContent: 'center', marginTop: '100px' }}>
+            <div className="row" style={{ justifyContent: 'center', marginTop: '100px', marginLeft: 0, marginRight: 0 }}>
                 <Stack spacing={2} flexDirection={'row'} justifyContent={'center'}>
                     <Pagination count={totalPage} color="secondary" defaultPage={1}
                         page={currentPage}

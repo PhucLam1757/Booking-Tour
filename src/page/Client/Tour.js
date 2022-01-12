@@ -5,8 +5,8 @@ import ComponentTour from "../../component/Client/ComponentTour/Tour";
 export default function Tour(props){
     return (
         <div>
-            <ComponentTourHeader />
-            <ComponentTour />
+            <ComponentTourHeader {...props}/>
+            <ComponentTour {...props}/>
         </div>
     )
 }

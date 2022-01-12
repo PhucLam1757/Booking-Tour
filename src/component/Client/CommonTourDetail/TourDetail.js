@@ -4,13 +4,17 @@ import 'react-tabs/style/react-tabs.css';
 import TouBanner from '../../../asset/images/TourBanner.jpeg';
 import { useNavigate } from "react-router-dom";
 import TourAPI from "../../../API/TourAPI";
-import CustomerReview from './Review'
+import CustomerReview from './Review';
+import { useParams } from "react-router-dom";
 
 export default function ComponentTourDetail(props) {
     const [tourDetail, setTourDetail] = useState({})
     const [relatedTour, setRelatedTour] = useState([])
-
+    const userData = JSON.parse(window.sessionStorage.getItem('user_data'))
     const navigate = useNavigate()
+
+    const params = useParams()
+
     const getRelatedTour = async () => {
         try {
             const TourRes = await TourAPI.getTourByFilter({ search: '', category: tourDetail.category_id ? tourDetail.category_id : 0, dateGo: '', dateReturn: '', page: 1, limit: 3 })
@@ -30,20 +34,20 @@ export default function ComponentTourDetail(props) {
 
     return (
         <div>
-            <div className="row" style={{ paddingLeft: '50px', paddingRight: '30px', boxSizing: 'border-box', marginBottom: '50px' }}>
+            <div className="row" style={{ paddingLeft: '50px', paddingRight: '30px', boxSizing: 'border-box', marginBottom: '50px', marginLeft: 0, marginRight: 0 }}>
                 <div className="col-sm-12 col-md-8">
                     <div style={{ marginTop: '30px' }}>
-                        <div className="d-flex justify-content-start flex-wrap">
-                            <div style={{ width: '50%', color: 'black', fontSize: '1.1em' }}>Thời gian đi: <b>{`${new Date(tourDetail.departure_day).getDate()} - ${new Date(tourDetail.departure_day).getMonth() + 1} - ${new Date(tourDetail.departure_day).getFullYear() } `}</b></div>
-                            <div style={{ width: '40%', marginLeft: '10px', color: 'black', fontSize: '1.1em' }}>Thời gian về: <b>{`${new Date(tourDetail.return_day).getDate()} - ${new Date(tourDetail.return_day).getMonth() + 1} - ${new Date(tourDetail.return_day).getFullYear() } `}</b></div>
+                        <div className="row" style={{marginRight: 0, marginLeft: 0, marginBottom: '10px'}}>
+                            <div style={{width: '100%', color: 'black', fontSize: '0.9em' }} className="col-sm-12 col-md-6">Thời gian đi: <b>{`${new Date(tourDetail.departure_day).getDate()} - ${new Date(tourDetail.departure_day).getMonth() + 1} - ${new Date(tourDetail.departure_day).getFullYear()} `}</b></div>
+                            <div style={{width: '100%',color: 'black', fontSize: '0.9em' }} className="col-sm-12 col-md-6">Thời gian về: <b>{`${new Date(tourDetail.return_day).getDate()} - ${new Date(tourDetail.return_day).getMonth() + 1} - ${new Date(tourDetail.return_day).getFullYear()} `}</b></div>
                         </div>
-                        <div className="d-flex justify-content-start flex-wrap">
-                            <div style={{ width: '50%', color: 'black', fontSize: '1.1em' }}>Tổng thời gian: <b>{tourDetail.go_time ? tourDetail.go_time : ''}</b></div>
-                            <div style={{ width: '40%', marginLeft: '10px', color: 'black', fontSize: '1.1em' }}>Phương tiện di chuyển: <b>{tourDetail.transport ? tourDetail.transport : ''}</b></div>
+                        <div className="row" style={{marginRight: 0, marginLeft: 0, marginBottom: '10px'}}>
+                            <div style={{width: '100%',color: 'black', fontSize: '0.9em' }} className="col-sm-12 col-md-6">Tổng thời gian: <b>{tourDetail.go_time ? tourDetail.go_time : ''}</b></div>
+                            <div style={{width: '100%',color: 'black', fontSize: '0.9em' }} className="col-sm-12 col-md-6">Phương tiện di chuyển: <b>{tourDetail.transport ? tourDetail.transport : ''}</b></div>
                         </div>
-                        <div className="d-flex justify-content-start flex-wrap">
-                            <div style={{ width: '50%', color: 'black', fontSize: '1.1em' }}>Địa điểm đi: <b>{tourDetail.place_destinate ? tourDetail.place_destinate : ''}</b></div>
-                            <div style={{ width: '40%', marginLeft: '10px', color: 'black', fontSize: '1.1em' }}>Địa điểm về: <b>{tourDetail.place_go ? tourDetail.place_go : ''}</b></div>
+                        <div className="row" style={{marginRight: 0, marginLeft: 0, marginBottom: '10px'}}>
+                            <div style={{width: '100%',color: 'black', fontSize: '0.9em' }} className="col-sm-12 col-md-6">Địa điểm đi: <b>{tourDetail.place_destinate ? tourDetail.place_destinate : ''}</b></div>
+                            <div style={{width: '100%',color: 'black', fontSize: '0.9em' }} className="col-sm-12 col-md-6">Địa điểm về: <b>{tourDetail.place_go ? tourDetail.place_go : ''}</b></div>
                         </div>
                     </div>
 
@@ -100,9 +104,20 @@ export default function ComponentTourDetail(props) {
 
                 <div className="col-sm-12 col-md-4">
                     <div style={{ marginTop: '30px' }}>
-                        <div class="card" style={{ width: '100%' }}>
+                        <div class="card" style={{ width: '100%', background: '#FF5721', padding: '20px', boxSizing: 'border-box' }}>
                             <div class="card-body">
-                                <h4 class="card-title" style={{color: '#FF5721', fontSize: '1.6em', fontWeight: 700}}>Vì sao nên mua tour online?</h4>
+                                <h4 class="card-title" style={{ color: 'white', fontSize: '1.6em', fontWeight: 700 }}>ĐẶT TOUR NGAY</h4>
+                                <h3 style={{color: 'chartreuse'}}><span style={{fontWeight: 500}}>GIÁ CHỈ TỪ: </span><span style={{fontSize: '1.3em', fontWeight: 600}}>{tourDetail.child_price} VNĐ</span></h3>
+                                <button style={{backgroundColor: 'white', border: '1px solid white'}} onClick={()=>navigate(`/tour/${params.tourId}/booking`)}>
+                                    ĐẶT TOUR NGAY
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div style={{ marginTop: '30px' }}>
+                        <div class="card" style={{ width: '100%', border: '1px solid #FF5721', padding: '20px' }}>
+                            <div class="card-body">
+                                <h4 class="card-title" style={{ color: '#FF5721', fontSize: '1.6em', fontWeight: 700 }}>Vì sao nên mua tour online?</h4>
                                 <ul>
                                     <li>An toàn - Bảo mật</li>
                                     <li>Tiện lợi, tiết kiệm thời gian</li>
@@ -115,9 +130,9 @@ export default function ComponentTourDetail(props) {
                     </div>
 
                     <div style={{ marginTop: '30px' }}>
-                        <div class="card" style={{ width: '100%' }}>
+                        <div class="card" style={{ width: '100%', border: '1px solid #FF5721', padding: '20px' }}>
                             <div class="card-body">
-                                <h4 class="card-title" style={{color: '#FF5721', fontSize: '1.6em', fontWeight: 700}}>Thương hiệu uy tín</h4>
+                                <h4 class="card-title" style={{ color: '#FF5721', fontSize: '1.6em', fontWeight: 700 }}>Thương hiệu uy tín</h4>
                                 <ul>
                                     <li>Thành lập từ năm 1975</li>
                                     <li>Thương hiệu lữ hành hàng đầu</li>
@@ -129,10 +144,10 @@ export default function ComponentTourDetail(props) {
                 </div>
             </div>
             <div>
-                <h5 style={{ textAlign: 'center',color: '#FF5721', fontSize: '3em', fontWeight: 700}}>Tour liên quan</h5>
+                <h5 style={{ textAlign: 'center', color: '#FF5721', fontSize: '3em', fontWeight: 700 }}>Tour liên quan</h5>
                 <div id="fh5co-hotel-section" style={{ padding: 0 }}>
                     <div class="container">
-                        <div class="row">
+                        <div class="row" style={{ marginLeft: 0, marginRight: 0 }}>
                             {relatedTour.map((relatedTitem, relatedIndex) => {
                                 return (
                                     <div class="col-md-4">

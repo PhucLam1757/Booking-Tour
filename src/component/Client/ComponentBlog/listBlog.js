@@ -50,7 +50,7 @@ export default function ConponentListBlog(props) {
                                     <div className="blog-grid" style={{ backgroundImage: `url(${blogItem.blog_image})` }}>
                                         <div className="date text-center">
                                             <span>{new Date(blogItem.updated_at).getDate()}</span>
-                                            <small>{monthNames[new Date(blogItem.updated_at).getDay()].substr(0, 3)}</small>
+                                            <small>{monthNames[new Date(blogItem.updated_at).getMonth()].substr(0, 3)}</small>
                                         </div>
                                     </div>
                                     <div className="desc">

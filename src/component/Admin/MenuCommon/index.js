@@ -108,13 +108,14 @@ function MenuContent(props) {
                         >
                             TRANG QUẢN LÍ
                         </Typography>
-                        <IconButton color="inherit">
+                        {/* <IconButton color="inherit">
                             <Badge badgeContent={4} color="secondary">
                                 <NotificationsIcon />
                             </Badge>
-                        </IconButton>
+                        </IconButton> */}
                         <IconButton color="inherit">
                             <LogoutIcon onClick={() => {
+                                window.sessionStorage.removeItem('user_data')
                                 navigate('/')
                             }} />
                         </IconButton>

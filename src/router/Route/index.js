@@ -5,26 +5,38 @@ import {
 
 import ClientLayout from '../../layout/ClientLayout'
 import HomePage from '../../page/Client/HomePage'
-import SignUpPage from "../../page/SignUp";
-import LoginPage from "../../page/Login";
+import LoginPrivateRoute from "../PrivateRoute/LoginRouter";
+import SignUpPrivateRoute from "../PrivateRoute/SignUpRouter";
 import Blog from "../../page/Client/Blog";
 import ContactPage from "../../page/Client/Contact";
 import ServicePage from "../../page/Client/Service";
 import BlogDetail from "../../page/Client/BlogDetail";
 import AdminLayout from "../../layout/AdminLayout";
-import AdminDashboard from "../../page/Admin/Dashboard";
-import AdminAccountRole from "../../page/Admin/AccountRole";
-import AdminAccount from '../../page/Admin/Account';
-import AdminContact from "../../page/Admin/Contact";
-import AdminBlog from "../../page/Admin/Blog";
-import AdminTourType from '../../page/Admin/TourType';
-import AdminCountry from '../../page/Admin/Country';
-import AdminPlace from "../../page/Admin/Place";
-import AdminTour from "../../page/Admin/Tour";
-import AdminAddTour from '../../page/Admin/AddTour';
-import AdminTourDetail from '../../page/Admin/TourDetail';
 import Tour from "../../page/Client/Tour";
 import TourDetail from "../../page/Client/TourDetail";
+import ServiceDetail from "../../page/Client/ServiceDetail";
+import ClientAccountPrivateRoute from '../PrivateRoute/ClientAccount';
+import ClientBookingPrivateRoute from '../PrivateRoute/ClientBooking';
+import AdminDashboardPrivateRoute from '../PrivateRoute/AdminDashboardRouter';
+import AdminAccountRolePrivateRoute from '../PrivateRoute/AdminAccountRole';
+import AdminAccountPrivateRoute from '../PrivateRoute/AdminAccount';
+import AdminContactPrivateRoute from '../PrivateRoute/AdminContact';
+import AdminBlogPrivateRoute from '../PrivateRoute/AdminBlog';
+import AdminTourTypePrivateRoute from '../PrivateRoute/AdminTourType';
+import AdminCountryPrivateRoute from '../PrivateRoute/AdminCountry';
+import AdminPlacePrivateRoute from '../PrivateRoute/AdminPlace';
+import AdminTourPrivateRoute from '../PrivateRoute/AdminTour';
+import AdminAddTourPrivateRoute from '../PrivateRoute/AdminAddTour';
+import AdminTourDetailPrivateRoute from '../PrivateRoute/AdminTourDetail';
+import AdminListServicePrivateRoute from '../PrivateRoute/AdminListService';
+import AdminServiceDetailPrivateRoute from '../PrivateRoute/AdminServiceDetail';
+import AdminServiceAddPrivateRoute from '../PrivateRoute/AdminServiceAdd'
+import AdminHandbookDetailPrivateRoute from "../PrivateRoute/AdminHandBookDetail";
+import AdminListHandbookPrivateRoute from '../PrivateRoute/AdminListHandbook';
+import AdminHandbookAddPrivateRoute from '../PrivateRoute/AdminHandbookAddnew'
+import AdminBankingPrivateRoute from '../PrivateRoute/AdminBanking'
+import AdminListBookingPrivateRoute from '../PrivateRoute/AdminListBooking'
+import AdminBookingDetailPrivateRoute from '../PrivateRoute/AdminBookingDetail'
 
 export default function MainApp(props) {
     return (
@@ -70,10 +82,18 @@ export default function MainApp(props) {
                     }
                 />
 
+                <Route exact path="/service/:serviceId"
+                    element={
+                        <ClientLayout {...props} >
+                            <ServiceDetail />
+                        </ClientLayout>
+                    }
+                />
+
                 <Route exact path="/tour"
                     element={
                         <ClientLayout {...props} >
-                            <Tour />
+                            <Tour {...props} />
                         </ClientLayout>
                     }
                 />
@@ -86,22 +106,40 @@ export default function MainApp(props) {
                     }
                 />
 
+                <Route exact path="/tour/:tourId/booking"
+                    element={
+                        <ClientLayout {...props} >
+                            <ClientBookingPrivateRoute />
+                        </ClientLayout>
+                    }
+                />
+
                 <Route exact path="/login"
                     element={
-                        <LoginPage {...props} />
+                        <LoginPrivateRoute {...props} />
                     }
                 />
 
                 <Route exact path="/signup"
                     element={
-                        <SignUpPage {...props} />
+                        <SignUpPrivateRoute {...props} />
                     }
                 />
+
+                <Route exact path="/account"
+                    element={
+                        <ClientLayout {...props} >
+                            <ClientAccountPrivateRoute {...props} />
+                        </ClientLayout>
+                    }
+                />
+
+                {/*---------------------------------------------*/}
 
                 <Route exact path="/admin"
                     element={
                         <AdminLayout {...props} >
-                            <AdminDashboard />
+                            <AdminDashboardPrivateRoute />
                         </AdminLayout>
                     }
                 />
@@ -109,7 +147,55 @@ export default function MainApp(props) {
                 <Route exact path="/admin/blog"
                     element={
                         <AdminLayout {...props} >
-                            <AdminBlog />
+                            <AdminBlogPrivateRoute />
+                        </AdminLayout>
+                    }
+                />
+
+                <Route exact path="/admin/service"
+                    element={
+                        <AdminLayout {...props} >
+                            <AdminListServicePrivateRoute />
+                        </AdminLayout>
+                    }
+                />
+
+                <Route exact path="/admin/service/:serviceId"
+                    element={
+                        <AdminLayout {...props} >
+                            <AdminServiceDetailPrivateRoute />
+                        </AdminLayout>
+                    }
+                />
+
+                <Route exact path="/admin/service/addnew"
+                    element={
+                        <AdminLayout {...props} >
+                            <AdminServiceAddPrivateRoute />
+                        </AdminLayout>
+                    }
+                />
+
+                <Route exact path="/admin/handbook"
+                    element={
+                        <AdminLayout {...props} >
+                            <AdminListHandbookPrivateRoute />
+                        </AdminLayout>
+                    }
+                />
+
+                <Route exact path="/admin/handbook/:handbookId"
+                    element={
+                        <AdminLayout {...props} >
+                            <AdminHandbookDetailPrivateRoute />
+                        </AdminLayout>
+                    }
+                />
+
+                <Route exact path="/admin/handbook/addnew"
+                    element={
+                        <AdminLayout {...props} >
+                            <AdminHandbookAddPrivateRoute />
                         </AdminLayout>
                     }
                 />
@@ -117,7 +203,7 @@ export default function MainApp(props) {
                 <Route exact path="/admin/contact"
                     element={
                         <AdminLayout {...props} >
-                            <AdminContact />
+                            <AdminContactPrivateRoute />
                         </AdminLayout>
                     }
                 />
@@ -125,7 +211,7 @@ export default function MainApp(props) {
                 <Route exact path="/admin/account-role"
                     element={
                         <AdminLayout {...props} >
-                            <AdminAccountRole />
+                            <AdminAccountRolePrivateRoute />
                         </AdminLayout>
                     }
                 />
@@ -133,7 +219,7 @@ export default function MainApp(props) {
                 <Route exact path="/admin/account"
                     element={
                         <AdminLayout {...props} >
-                            <AdminAccount />
+                            <AdminAccountPrivateRoute />
                         </AdminLayout>
                     }
                 />
@@ -141,7 +227,7 @@ export default function MainApp(props) {
                 <Route exact path="/admin/tour-type"
                     element={
                         <AdminLayout {...props} >
-                            <AdminTourType />
+                            <AdminTourTypePrivateRoute />
                         </AdminLayout>
                     }
                 />
@@ -149,7 +235,7 @@ export default function MainApp(props) {
                 <Route exact path="/admin/country"
                     element={
                         <AdminLayout {...props} >
-                            <AdminCountry />
+                            <AdminCountryPrivateRoute />
                         </AdminLayout>
                     }
                 />
@@ -157,7 +243,7 @@ export default function MainApp(props) {
                 <Route exact path="/admin/place"
                     element={
                         <AdminLayout {...props} >
-                            <AdminPlace />
+                            <AdminPlacePrivateRoute />
                         </AdminLayout>
                     }
                 />
@@ -165,7 +251,7 @@ export default function MainApp(props) {
                 <Route exact path="/admin/tour"
                     element={
                         <AdminLayout {...props} >
-                            <AdminTour />
+                            <AdminTourPrivateRoute />
                         </AdminLayout>
                     }
                 />
@@ -173,7 +259,7 @@ export default function MainApp(props) {
                 <Route exact path="/admin/tour/addtour"
                     element={
                         <AdminLayout {...props} >
-                            <AdminAddTour />
+                            <AdminAddTourPrivateRoute />
                         </AdminLayout>
                     }
                 />
@@ -181,10 +267,35 @@ export default function MainApp(props) {
                 <Route exact path="/admin/tour/:id"
                     element={
                         <AdminLayout {...props} >
-                            <AdminTourDetail />
+                            <AdminTourDetailPrivateRoute />
                         </AdminLayout>
                     }
                 />
+
+                <Route exact path="/admin/banking"
+                    element={
+                        <AdminLayout {...props} >
+                            <AdminBankingPrivateRoute />
+                        </AdminLayout>
+                    }
+                />
+
+                <Route exact path="/admin/booking"
+                    element={
+                        <AdminLayout {...props} >
+                            <AdminListBookingPrivateRoute />
+                        </AdminLayout>
+                    }
+                />
+
+                <Route exact path="/admin/booking/:bookingId"
+                    element={
+                        <AdminLayout {...props} >
+                            <AdminBookingDetailPrivateRoute />
+                        </AdminLayout>
+                    }
+                />
+
             </Routes>
         </Router>
     );

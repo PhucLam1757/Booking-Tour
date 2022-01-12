@@ -38,13 +38,13 @@ export default function LoginComponent() {
         }else{
             const loginRes = await UserAPI.userLogin({email: customerData.email, password: customerData.password})
             if ( loginRes.data && loginRes.data.success ){
-                if ( loginRes.data.payload.ctm_role === 'admin' ){
-                    navigation('/admin')
-                }else{
+                if ( loginRes.data.payload.ctm_role === 'user' ){
+                    window.sessionStorage.setItem("user_data", JSON.stringify(loginRes.data.payload));
                     navigation('/')
-                }
-                window.sessionStorage.setItem("user_data", JSON.stringify(loginRes.data.payload));
-                
+                }else{
+                    window.sessionStorage.setItem("user_data", JSON.stringify(loginRes.data.payload));
+                    navigation('/admin')
+                }                
             }else{
                 setSignUpNoti({ status: true, noti: loginRes.data.error.message, type: 'error' })
             }

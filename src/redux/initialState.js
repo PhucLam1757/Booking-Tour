@@ -1,5 +1,5 @@
 const searchValue = ''
-const searchCategory = -1
+const searchCategory = 0
 
 export const INITIAL_STATE = {
     searchValue,

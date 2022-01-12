@@ -29,6 +29,11 @@ const TourAPI = {
     getTourByFilter({search, category, dateGo, dateReturn, page, limit}) {
         const url = `/tour/filter/data?search=${search}&category=${category}&dateGo=${dateGo}&dateReturn=${dateReturn}&page=${page}&limit=${limit}`
         return AxiosClient.get(url);
+    },
+
+    getTourIdByCategory(categoryId){
+        const url = `/tour/get-category/${categoryId}`
+        return AxiosClient.get(url);
     }
 
 };

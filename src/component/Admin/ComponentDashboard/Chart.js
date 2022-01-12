@@ -20,15 +20,43 @@ const data = [
     createData('24:00', undefined),
 ];
 
-export default function Chart() {
+export default function Chart(props) {
+    const [chartData, setChartData] = React.useState()
     const theme = useTheme();
+
+    React.useEffect(() => {
+        const allBooking = [...props.listBooking]
+        const data = []
+
+        const getDate = []
+
+        allBooking.forEach((bookingItem) => {
+            if (getDate.indexOf(new Date(bookingItem.create_date).toISOString().split('T')[0]) < 0) {
+                getDate.push(new Date(bookingItem.create_date).toISOString().split('T')[0])
+            }
+        })
+
+        getDate.forEach((dateItem) => {
+            let price = 0
+            allBooking.forEach((bookingItem) => {
+                if (new Date(bookingItem.create_date).toISOString().split('T')[0].toString() === dateItem.toString()) {
+                    price += Number(bookingItem.total_price)
+                }
+            })
+            data.push(
+                createData(new Date(dateItem).toISOString().split('T')[0], price)
+            )
+        })
+        setChartData(data)
+
+    }, [props.listBooking])
 
     return (
         <React.Fragment>
-            <Title>Today</Title>
+            <Title>Doanh thu</Title>
             <ResponsiveContainer>
                 <LineChart
-                    data={data}
+                    data={chartData}
                     margin={{
                         top: 16,
                         right: 16,
@@ -54,7 +82,7 @@ export default function Chart() {
                                 ...theme.typography.body1,
                             }}
                         >
-                            Sales ($)
+                          
                         </Label>
                     </YAxis>
                     <Line

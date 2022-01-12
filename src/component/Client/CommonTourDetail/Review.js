@@ -15,12 +15,13 @@ export default function ComponentTourDetailReview(props) {
     const [createReviewNoti, setCreateReviewNoti] = useState({ status: false, noti: '', type: '' })
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPage, setTotalPage] = useState(0)
+    const userData = JSON.parse(window.sessionStorage.getItem('user_data'))
 
     const params = useParams()
 
     const createNewReview = async () => {
         try {
-            const createReviewRes = await ReviewAPI.createCustomerReview({ user_id: 7, review: addReviewData, tour_id: params.tourId })
+            const createReviewRes = await ReviewAPI.createCustomerReview({ user_id: Number(userData.ctm_id), review: addReviewData, tour_id: params.tourId })
 
             if (createReviewRes.data && createReviewRes.data.success) {
                 setCreateReviewNoti({ status: true, noti: 'Gửi review thành công', type: 'success' })
@@ -65,7 +66,7 @@ export default function ComponentTourDetailReview(props) {
     return (
         <div style={{ marginBottom: '30px' }}>
             <h6 style={{ textAlign: 'center', fontSize: '1.5em', color: '#FF5721', fontWeight: 600 }}>Đánh giá khách hàng</h6>
-            <div className="row" style={{ paddingLeft: '20px', paddingRight: '20px', boxSizing: 'border-box' }}>
+            <div className="row" style={{ paddingLeft: '20px', paddingRight: '20px', boxSizing: 'border-box', marginLeft: 0, marginRight: 0 }}>
                 <div className="col-sm-2 col-md-3" ></div>
                 <div className="col-sm-8 col-md-6">
                     <FormControl fullWidth>
@@ -85,7 +86,7 @@ export default function ComponentTourDetailReview(props) {
 
                         <Stack sx={{ marginTop: '10px' }} justifyContent={'end'} flexDirection={'row'}>
                             <Box>
-                                <Button variant="contained" onClick={() => createNewReview()}>Gửi đánh giá</Button>
+                                <Button variant="contained" onClick={() => createNewReview()} sx={{color: 'white !important'}}>Gửi đánh giá</Button>
                             </Box>
                         </Stack>
                     </FormControl>
@@ -97,7 +98,7 @@ export default function ComponentTourDetailReview(props) {
 
             {reviewData.map((reviewItem, reviewIndex) => {
                 return (
-                    <div className="row" style={{ paddingLeft: '20px', paddingRight: '20px', boxSizing: 'border-box', marginTop: '50px' }}>
+                    <div className="row" style={{ paddingLeft: '20px', paddingRight: '20px', boxSizing: 'border-box', marginTop: '50px',marginLeft: 0, marginRight: 0 }}>
                         <div className="col-sm-2 col-md-1" ></div>
                         <div className="col-sm-8 col-md-6">
                             <Stack justifyContent={'start'} flexDirection={'row'} alignItems={'center'} sx={{ marginBottom: '10px' }}>
@@ -122,10 +123,10 @@ export default function ComponentTourDetailReview(props) {
                 )
             })}
 
-            <div className="row" style={{marginTop: '50px'}}>
+            <div className="row" style={{marginTop: '50px', marginLeft: 0, marginRight: 0}}>
                 <div className="col-sm-2 col-md-1"></div>
                 <div className="col-sm-8 col-md-6">
-                    <div className="row" style={{ justifyContent: 'center' }}>
+                    <div className="row" style={{ justifyContent: 'center', marginLeft: 0, marginRight: 0 }}>
                         <Stack spacing={2} flexDirection={'row'} justifyContent={'center'}>
                             <Pagination count={totalPage} color="secondary" defaultPage={1}
                                 page={currentPage}

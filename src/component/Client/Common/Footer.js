@@ -1,6 +1,7 @@
 import React from "react";
 
 export default function WebFooter(props) {
+
     return (
         <footer id="footer" className="fh5co-bg-color">
             <div className="container">

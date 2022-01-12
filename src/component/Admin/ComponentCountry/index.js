@@ -176,11 +176,10 @@ export default function ComponentAdminCountry(props) {
     const updateCountryData = async (columnId) => {
         try {
             setAddCountryNoti({ status: false, noti: '', type: '' })
-
             if (!newCountryData.name.length) {
                 setAddCountryNoti({ status: true, noti: 'Các trường không được để trống', type: 'error' })
             }else {
-                const updateCategoryRes = await CountryAPI.updateCountry({ id: newCountryData.place_id, name: newCountryData.name})
+                const updateCategoryRes = await CountryAPI.updateCountry({ id: newCountryData.id, name: newCountryData.name})
 
                 if (updateCategoryRes.data && updateCategoryRes.data.success) {
                     setAddCountryNoti({ status: true, noti: 'Cập nhật thông tin thành công', type: 'success' })

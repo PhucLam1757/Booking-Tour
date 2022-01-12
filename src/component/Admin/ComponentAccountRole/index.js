@@ -163,14 +163,14 @@ export default function ComponentAdminAccountRole(props) {
     }, [])
 
     const addNewRole = async () => {
-        try{
+        try {
             setAddRoleNoti({ status: false, noti: '', type: '' })
             if (!newRoleData.name.length || !newRoleData.role_function.length) {
                 setAddRoleNoti({ status: true, noti: 'Các trường không được để trống', type: 'error' })
-            }else{
-                const addRes = await RoleAPI.createNewRole({name: newRoleData.name, role_function: newRoleData.role_function })
+            } else {
+                const addRes = await RoleAPI.createNewRole({ name: newRoleData.name, role_function: newRoleData.role_function })
 
-                if ( addRes.data && addRes.data.success ){
+                if (addRes.data && addRes.data.success) {
                     setAddRoleNoti({ status: true, noti: 'Thêm quyền thành công', type: 'success' })
                     setAllRoleData(addRes.data.payload)
 
@@ -180,17 +180,17 @@ export default function ComponentAdminAccountRole(props) {
                         setNewRoleData({ name: '', role_function: '' })
                     }, 1000)
 
-                }else{
+                } else {
                     setAddRoleNoti({ status: true, noti: addRes.data.error.message, type: 'error' })
                 }
             }
-        }catch(error){
+        } catch (error) {
             setAddRoleNoti({ status: true, noti: error.message, type: 'error' })
         }
     }
 
     const deleteRole = async (roleId) => {
-        try{
+        try {
             const deleteRoleRes = await RoleAPI.deleteRole(roleId)
 
             if (deleteRoleRes.data && deleteRoleRes.data.success) {
@@ -200,30 +200,30 @@ export default function ComponentAdminAccountRole(props) {
                 setOpenNotiSnackBar({ status: true, noti: 'Xoá phân quyền thất bại', type: 'error' })
             }
 
-        }catch(error){
+        } catch (error) {
             setOpenNotiSnackBar({ status: true, noti: error.message, type: 'error' })
         }
     }
 
     const updateRole = async () => {
-        try{
+        try {
             setAddRoleNoti({ status: false, noti: '', type: '' })
             if (!newRoleData.name.length || !newRoleData.role_function.length) {
                 setAddRoleNoti({ status: true, noti: 'Các trường không được để trống', type: 'error' })
-            }else{
-                const addRes = await RoleAPI.updateRole({id: newRoleData.role_id, name: newRoleData.name, role_function: newRoleData.role_function })
+            } else {
+                const addRes = await RoleAPI.updateRole({ id: newRoleData.role_id, name: newRoleData.name, role_function: newRoleData.role_function })
 
-                if ( addRes.data && addRes.data.success ){
+                if (addRes.data && addRes.data.success) {
                     setAddRoleNoti({ status: true, noti: 'Sửa quyền thành công', type: 'success' })
-                    
+
                     const rowData = [...allRoleData].map((item) => {
-                        if ( Number(item.role_id) === Number(newRoleData.role_id) ){
+                        if (Number(item.role_id) === Number(newRoleData.role_id)) {
                             return {
                                 ...item,
-                                role_name: newRoleData.name, 
+                                role_name: newRoleData.name,
                                 role_function: newRoleData.role_function
                             }
-                        }else {
+                        } else {
                             return item
                         }
                     })
@@ -235,11 +235,11 @@ export default function ComponentAdminAccountRole(props) {
                         setNewRoleData({ name: '', role_function: '' })
                     }, 1000)
 
-                }else{
+                } else {
                     setAddRoleNoti({ status: true, noti: addRes.data.error.message, type: 'error' })
                 }
             }
-        }catch(error){
+        } catch (error) {
             setAddRoleNoti({ status: true, noti: error.message, type: 'error' })
         }
     }
@@ -267,7 +267,7 @@ export default function ComponentAdminAccountRole(props) {
                                 onChange={(event) => setNewRoleData({ ...newRoleData, name: event.target.value })}
                             />
 
-                            <Box sx={{marginTop: '20px'}}>
+                            <Box sx={{ marginTop: '20px' }}>
                                 <Typography variant="p" component="p">
                                     Quyền:
                                 </Typography>
@@ -275,21 +275,21 @@ export default function ComponentAdminAccountRole(props) {
                                     {allRole.map((roleItem, roleIndex) => {
                                         return (
                                             <FormControlLabel key={`add-role-modal-${roleIndex}`}
-                                                control={<Checkbox checked={newRoleData.role_function.split(',').includes(roleItem.value)} 
-                                                            onChange={(event) => {
-                                                                let roleCheck = newRoleData.role_function.split(',')
-                                                                if ( roleCheck.indexOf(roleItem.value) >= 0){
-                                                                    roleCheck = roleCheck.filter((item) => item !== roleItem.value)
-                                                                }else{
-                                                                    roleCheck.push(roleItem.value)
-                                                                }
+                                                control={<Checkbox checked={newRoleData.role_function.split(',').includes(roleItem.value)}
+                                                    onChange={(event) => {
+                                                        let roleCheck = newRoleData.role_function.split(',')
+                                                        if (roleCheck.indexOf(roleItem.value) >= 0) {
+                                                            roleCheck = roleCheck.filter((item) => item !== roleItem.value)
+                                                        } else {
+                                                            roleCheck.push(roleItem.value)
+                                                        }
 
-                                                                roleCheck = roleCheck.filter((item) => item.length)
-                                                                setNewRoleData({...newRoleData, role_function: roleCheck.toString()})
-                                                                
-                                                            }}/>
-                                                        } 
-                                                label={roleItem.label} 
+                                                        roleCheck = roleCheck.filter((item) => item.length)
+                                                        setNewRoleData({ ...newRoleData, role_function: roleCheck.toString() })
+
+                                                    }} />
+                                                }
+                                                label={roleItem.label}
                                             />
                                         )
                                     })}
@@ -322,7 +322,7 @@ export default function ComponentAdminAccountRole(props) {
                 </Typography>
                 <Button variant="contained" onClick={() => {
                     setOpenRoleModal({ status: true, type: 'add' })
-                    setNewRoleData({ name: '', role_function: ''})
+                    setNewRoleData({ name: '', role_function: '' })
                 }}>
                     Thêm mới
                 </Button>
@@ -360,25 +360,27 @@ export default function ComponentAdminAccountRole(props) {
                                                             column.id === 'action' ?
                                                                 <ButtonGroup variant="contained" aria-label="outlined primary button group">
                                                                     <Button onClick={() => {
-                                                                        setNewRoleData({role_id: row.role_id, name: row.role_name, role_function: row.role_function})
+                                                                        setNewRoleData({ role_id: row.role_id, name: row.role_name, role_function: row.role_function })
                                                                         setOpenRoleModal({ status: true, type: 'update' })
-                                                                    }}>Cập nhật</Button>
-                                                                    <Button color='error' onClick={()=>deleteRole(row.role_id)} disabled={row.role_name=== 'user' || row.role_name=== 'admin' ? true : false}>Xoá</Button>
-                                                                </ButtonGroup> : 
+                                                                    }}
+                                                                        disabled={row.role_name === 'user' || row.role_name === 'admin' ? true : false}
+                                                                    >Cập nhật</Button>
+                                                                    <Button color='error' onClick={() => deleteRole(row.role_id)} disabled={row.role_name === 'user' || row.role_name === 'admin' ? true : false}>Xoá</Button>
+                                                                </ButtonGroup> :
                                                                 (
                                                                     column.id === 'role_function' ?
-                                                                    <ul>
-                                                                        {row.role_function.split(',').map((roleItem, roleIndex) => {
-                                                                            const getValueFromLabel = allRole.find((item) => item.value===roleItem)
-                                                                            if ( getValueFromLabel ){
-                                                                                return <li>{getValueFromLabel.label}</li>
-                                                                            }else{
-                                                                                return <li></li>
-                                                                            }
-                                                                            
-                                                                        })}
-                                                                    </ul>:
-                                                                    value))}
+                                                                        <ul>
+                                                                            {row.role_function.split(',').map((roleItem, roleIndex) => {
+                                                                                const getValueFromLabel = allRole.find((item) => item.value === roleItem)
+                                                                                if (getValueFromLabel) {
+                                                                                    return <li>{getValueFromLabel.label}</li>
+                                                                                } else {
+                                                                                    return <li></li>
+                                                                                }
+
+                                                                            })}
+                                                                        </ul> :
+                                                                        value))}
                                                     </TableCell>
                                                 );
                                             })}

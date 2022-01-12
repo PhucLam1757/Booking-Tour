@@ -37,6 +37,8 @@ import AdminHandbookAddPrivateRoute from '../PrivateRoute/AdminHandbookAddnew'
 import AdminBankingPrivateRoute from '../PrivateRoute/AdminBanking'
 import AdminListBookingPrivateRoute from '../PrivateRoute/AdminListBooking'
 import AdminBookingDetailPrivateRoute from '../PrivateRoute/AdminBookingDetail'
+import BookingPage from "../../page/Client/Booking";
+import AccountPage from '../../page/Client/Profile';
 
 export default function MainApp(props) {
     return (
@@ -109,7 +111,7 @@ export default function MainApp(props) {
                 <Route exact path="/tour/:tourId/booking"
                     element={
                         <ClientLayout {...props} >
-                            <ClientBookingPrivateRoute />
+                            <BookingPage />
                         </ClientLayout>
                     }
                 />
@@ -129,7 +131,7 @@ export default function MainApp(props) {
                 <Route exact path="/account"
                     element={
                         <ClientLayout {...props} >
-                            <ClientAccountPrivateRoute {...props} />
+                            <AccountPage {...props} />
                         </ClientLayout>
                     }
                 />

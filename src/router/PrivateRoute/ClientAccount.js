@@ -6,7 +6,7 @@ const ClientAccountPrivateRoute = (props) => {
     let customerData = JSON.parse(sessionStorage.getItem('user_data'))
     return (
         customerData && customerData.ctm_rl === 'user' ?
-            <AccountPage to="/" />
+            <AccountPage />
             :
             <Navigate to="/login" />
     )

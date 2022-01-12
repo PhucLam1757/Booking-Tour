@@ -112,7 +112,7 @@ const columns = [
 ];
 
 const allRole = [
-    // { label: 'Trang người dùng', value: 'clent-home' },
+    { label: 'Trang người dùng', value: 'clent-home' },
     { label: 'Trang chủ Admin', value: 'admin-dashboard' },
     { label: 'Quản lí đặt tour', value: 'admin-booking' },
     { label: 'Quản lí tour', value: 'admin-tour' },

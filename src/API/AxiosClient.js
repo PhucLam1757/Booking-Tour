@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const AxiosClient = axios.create({
-    baseURL: 'http://localhost:5005/api',
+    baseURL: 'https://booking-tourr.herokuapp.com/api',
     headers: {
         'Content-Type': 'application/json',
     },

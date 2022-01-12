@@ -112,7 +112,7 @@ const columns = [
 ];
 
 const allRole = [
-    { label: 'Trang người dùng', value: 'clent-home' },
+    // { label: 'Trang người dùng', value: 'clent-home' },
     { label: 'Trang chủ Admin', value: 'admin-dashboard' },
     { label: 'Quản lí đặt tour', value: 'admin-booking' },
     { label: 'Quản lí tour', value: 'admin-tour' },
@@ -363,7 +363,7 @@ export default function ComponentAdminAccountRole(props) {
                                                                         setNewRoleData({role_id: row.role_id, name: row.role_name, role_function: row.role_function})
                                                                         setOpenRoleModal({ status: true, type: 'update' })
                                                                     }}>Cập nhật</Button>
-                                                                    <Button color='error' onClick={()=>deleteRole(row.role_id)}>Xoá</Button>
+                                                                    <Button color='error' onClick={()=>deleteRole(row.role_id)} disabled={row.role_name=== 'user' || row.role_name=== 'admin' ? true : false}>Xoá</Button>
                                                                 </ButtonGroup> : 
                                                                 (
                                                                     column.id === 'role_function' ?

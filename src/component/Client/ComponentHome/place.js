@@ -16,24 +16,6 @@ export default function ComponentHomePlace(props) {
                 const tourPayload = tourRes.data.payload.tour
                 setAllTour(tourPayload)
             }
-            //             adult_price: 1000000
-            // category_id: 2
-            // category_name: "Trong nước"
-            // child_price: 2000000
-            // departure_day: "2022-01-05T17:00:00.000Z"
-            // go_time: "8 ngày 7 đêm"
-            // place_destinate: "Kyoto"
-            // place_destination_id: 4
-            // place_go: "Kyoto"
-            // place_go_id: 4
-            // return_day: "2022-01-12T17:00:00.000Z"
-            // tour_desc: "kakaakaaaaaaaa"
-            // tour_id: 2
-            // tour_img: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAA
-            // tour_name: "Du lịch hội an ngày hè"
-            // tour_policy: "hhshshshshshshshshshshsh"
-            // tour_status: "Chưa khởi hành"
-            // transport: "Máy bay"
         } catch (error) {
             console.log('get tour error: ', error)
         }
@@ -61,7 +43,7 @@ export default function ComponentHomePlace(props) {
                         </div>
                         <div className="desc">
                             <h3>{allTour.length && allTour[0].tour_name}</h3>
-                            <p>{allTour.length && allTour[0].tour_desc}</p>
+                            <p style={{maxHeight: '100px', textOverflow: 'ellipsis', overflow: 'hidden' }}>{allTour.length && allTour[0].tour_desc}</p>
 
                             {allTour.length &&
                                 <p><a className="btn btn-primary btn-luxe-primary" onClick={() => navigate(`/tour/${allTour[0].tour_id}`)}>ĐẶT NGAY<i className="ti-angle-right" /></a></p>
@@ -77,7 +59,7 @@ export default function ComponentHomePlace(props) {
                             </div>
                             <div className="desc">
                                 <h3>{allTour.length > 1 && allTour[1].tour_name}</h3>
-                                <p>{allTour.length > 1 && allTour[1].tour_desc}</p>
+                                <p style={{maxHeight: '100px', textOverflow: 'ellipsis', overflow: 'hidden' }}>{allTour.length > 1 && allTour[1].tour_desc}</p>
                                 <p><a className="btn btn-primary btn-luxe-primary" onClick={() => navigate(`/tour/${allTour[1].tour_id}`)}>Đặt ngay<i className="ti-angle-right" /></a></p>
                             </div>
                         </div>
@@ -89,7 +71,7 @@ export default function ComponentHomePlace(props) {
                             </div>
                             <div className="desc">
                                 <h3>{allTour.length > 2 && allTour[2].tour_name}</h3>
-                                <p>{allTour.length > 2 && allTour[2].tour_desc}</p>
+                                <p style={{maxHeight: '100px', textOverflow: 'ellipsis', overflow: 'hidden' }}>{allTour.length > 2 && allTour[2].tour_desc}</p>
                                 <p><a className="btn btn-primary btn-luxe-primary">Đặt ngay<i className="ti-angle-right" /></a></p>
                             </div>
                         </div>

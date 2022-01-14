@@ -5,10 +5,10 @@ import AdminListBooking from "../../page/Admin/ListBooking";
 const AdminListBookingPrivateRoute = (props) => {
     let customerData = JSON.parse(sessionStorage.getItem('user_data'))
     return (
-            customerData && customerData.ctm_rl === 'user' ?
+            customerData && customerData.ctm_role === 'user' ?
                 <Navigate to="/" />
             : (
-                customerData && customerData.ctm_rl !== 'user' ?
+                customerData && customerData.ctm_role !== 'user' ?
                 <AdminListBooking {...props} />:
                 <Navigate to="/login" />
             )

@@ -5,9 +5,10 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import ReviewAPI from "../../../API/ReviewAPI";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Alert from '@mui/material/Alert';
 import Pagination from '@mui/material/Pagination';
+import BookingAPI from "../../../API/Booking";
 
 export default function ComponentTourDetailReview(props) {
     const [addReviewData, setAddReviewData] = useState('')
@@ -15,29 +16,53 @@ export default function ComponentTourDetailReview(props) {
     const [createReviewNoti, setCreateReviewNoti] = useState({ status: false, noti: '', type: '' })
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPage, setTotalPage] = useState(0)
+    const [userCanReview, setUserCanReview] = useState(false)
+    const navigate = useNavigate()
+
     const userData = JSON.parse(window.sessionStorage.getItem('user_data'))
 
     const params = useParams()
 
     const createNewReview = async () => {
         try {
-            const createReviewRes = await ReviewAPI.createCustomerReview({ user_id: Number(userData.ctm_id), review: addReviewData, tour_id: params.tourId })
-
-            if (createReviewRes.data && createReviewRes.data.success) {
-                setCreateReviewNoti({ status: true, noti: 'Gửi review thành công', type: 'success' })
-                getAllReview(currentPage)
-            } else {
-
-                setCreateReviewNoti({ status: true, noti: 'Gửi review thất bại', type: 'error' })
+            if(userData){
+                if (userCanReview) {
+                    const createReviewRes = await ReviewAPI.createCustomerReview({ user_id: Number(userData.ctm_id), review: addReviewData, tour_id: params.tourId })
+    
+                    if (createReviewRes.data && createReviewRes.data.success) {
+                        setCreateReviewNoti({ status: true, noti: 'Gửi review thành công', type: 'success' })
+                        getAllReview(currentPage)
+                    } else {
+                        setCreateReviewNoti({ status: true, noti: 'Gửi review thất bại', type: 'error' })
+                    }
+    
+                    setTimeout(() => {
+                        setAddReviewData('')
+                        setCreateReviewNoti({ status: false, noti: '', type: '' })
+                    }, 2000)
+    
+                } else {
+                    setCreateReviewNoti({ status: true, noti: 'Bạn chỉ có thể review khi đã đặt tour', type: 'error' })
+                }
+            }else{
+                navigate('/login')
             }
-
-            setTimeout(() => {
-                setAddReviewData('')
-                setCreateReviewNoti({ status: false, noti: '', type: '' })
-            }, 2000)
-
         } catch (error) {
             console.log('create review error: ', error)
+        }
+    }
+
+    const checkUserCanReview = async () => {
+        try {
+            if (userData) {
+                const checkRes = await BookingAPI.checkUserCanReview({ user_id: userData.ctm_id, tour_id: params.tourId })
+                if (checkRes.data && checkRes.data.success) {
+                    setUserCanReview(true)
+                }
+            }
+
+        } catch (error) {
+            console.log('check user review error: ', error)
         }
     }
 
@@ -61,6 +86,7 @@ export default function ComponentTourDetailReview(props) {
 
     useEffect(() => {
         getAllReview(1)
+        checkUserCanReview()
     }, [])
 
     return (
@@ -86,7 +112,7 @@ export default function ComponentTourDetailReview(props) {
 
                         <Stack sx={{ marginTop: '10px' }} justifyContent={'end'} flexDirection={'row'}>
                             <Box>
-                                <Button variant="contained" onClick={() => createNewReview()} sx={{color: 'white !important'}}>Gửi đánh giá</Button>
+                                <Button variant="contained" onClick={() => createNewReview()} sx={{ color: 'white !important' }}>Gửi đánh giá</Button>
                             </Box>
                         </Stack>
                     </FormControl>
@@ -98,7 +124,7 @@ export default function ComponentTourDetailReview(props) {
 
             {reviewData.map((reviewItem, reviewIndex) => {
                 return (
-                    <div className="row" style={{ paddingLeft: '20px', paddingRight: '20px', boxSizing: 'border-box', marginTop: '50px',marginLeft: 0, marginRight: 0 }}>
+                    <div className="row" style={{ paddingLeft: '20px', paddingRight: '20px', boxSizing: 'border-box', marginTop: '50px', marginLeft: 0, marginRight: 0 }}>
                         <div className="col-sm-2 col-md-1" ></div>
                         <div className="col-sm-8 col-md-6">
                             <Stack justifyContent={'start'} flexDirection={'row'} alignItems={'center'} sx={{ marginBottom: '10px' }}>
@@ -123,7 +149,7 @@ export default function ComponentTourDetailReview(props) {
                 )
             })}
 
-            <div className="row" style={{marginTop: '50px', marginLeft: 0, marginRight: 0}}>
+            <div className="row" style={{ marginTop: '50px', marginLeft: 0, marginRight: 0 }}>
                 <div className="col-sm-2 col-md-1"></div>
                 <div className="col-sm-8 col-md-6">
                     <div className="row" style={{ justifyContent: 'center', marginLeft: 0, marginRight: 0 }}>

@@ -5,10 +5,10 @@ import AdminContact from "../../page/Admin/Contact";
 const AdminContactPrivateRoute = (props) => {
     let customerData = JSON.parse(sessionStorage.getItem('user_data'))
     return (
-            customerData && customerData.ctm_rl === 'user' ?
+            customerData && customerData.ctm_role === 'user' ?
                 <Navigate to="/" />
             : (
-                customerData && customerData.ctm_rl !== 'user' ?
+                customerData && customerData.ctm_role !== 'user' ?
                 <AdminContact {...props} />:
                 <Navigate to="/login" />
             )

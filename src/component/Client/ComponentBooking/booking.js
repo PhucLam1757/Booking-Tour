@@ -17,7 +17,24 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import BookingAPI from '../../../API/Booking';
 import Alert from '@mui/material/Alert';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import PropTypes from 'prop-types';
 import BankAPI from '../../../API/BankAPI';
+import { loadStripe } from '@stripe/stripe-js';
+import {
+    CardElement,
+    Elements,
+    useStripe,
+    useElements,
+    PaymentElement
+} from '@stripe/react-stripe-js';
+import axios from 'axios';
 
 
 const RedditTextField = styled((props) => (
@@ -49,6 +66,8 @@ const RedditTextField = styled((props) => (
 
 }));
 
+
+
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
     padding: theme.spacing(1),
@@ -58,6 +77,18 @@ const Item = styled(Paper)(({ theme }) => ({
     boxSizing: 'border-box',
     paddingRight: '20px',
     paddingLeft: '20px'
+}));
+
+const Item2 = styled(Paper)(({ theme }) => ({
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+    width: '100%',
+    boxSizing: 'border-box',
+    paddingRight: '20px',
+    paddingLeft: '20px',
+    height: '200px'
 }));
 
 const useStyles = makeStyles((theme) => ({
@@ -129,6 +160,7 @@ export default function Booking(props) {
         try {
             setBookingNoti({ status: false, noti: '', type: '' })
             const { name, address, email, phone_number } = userInfo
+
             if (!name.length || !address.length || !email.length || !phone_number.length || !paymentMethod.length || (Number(totalChild) <= 0 && Number(totalAdult) <= 0)) {
                 setBookingNoti({ status: true, noti: 'Không được bỏ trống các trường', type: 'error' })
             } else {
@@ -394,14 +426,17 @@ export default function Booking(props) {
                                     }}
                                 />
                                 <FormControlLabel value="Banking"
-                                    control={<Radio disabled />}
+                                    control={<Radio />}
                                     label="Thanh toán banking"
+                                    onChange={(event) => {
+                                        setPaymentMethod(event.target.value)
+                                    }}
                                 />
                             </RadioGroup>
                         </FormControl>
                         {paymentMethod === 'Chuyển khoản' ?
-                            <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                                <Box sx={{ width: '60%'}}>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <Box sx={{ width: '60%' }}>
                                     <p style={{ marginBottom: '0 !important', fontSize: '1.5em', color: '#008FEA' }}>Quý khách hàng chuyển khoản vui lòng chuyển qua ngân hàng sau:</p>
                                     {bankCardInfo.map((bankItem, bankIndex) => {
                                         return (
@@ -416,6 +451,28 @@ export default function Booking(props) {
                                 </Box>
                             </Box> : ''
                         }
+
+                        {paymentMethod === 'Banking' &&
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <Box sx={{ width: '30%' }}>
+                                    <Item2>
+                                        <Elements stripe={stripePromise}>
+                                            <CheckoutForm userInfo={userInfo} totalChild={totalChild}
+                                                totalAdult={totalAdult}
+                                                totalPrice={totalPrice}
+                                                paymentMethod={paymentMethod}
+                                                tourId={params.tourId}
+                                                userId={userData.ctm_id}
+                                                setBookingNoti={(data) => {
+                                                    setBookingNoti({...data})
+                                                }}
+                                            />
+                                        </Elements>
+                                    </Item2>
+                                </Box>
+                            </Box>
+                        }
+
                         {bookingNoti.status &&
                             <Grid item xs={12}>
                                 <Stack spacing={2} justifyContent="space-around" flexDirection={'row'}>
@@ -423,12 +480,13 @@ export default function Booking(props) {
                                 </Stack>
                             </Grid>
                         }
-
-                        <Stack flexDirection={'row'} justifyContent={'center'} sx={{ marginBottom: '50px', marginTop: '30px' }}>
-                            <Box>
-                                <Button variant="contained" sx={{ color: 'white !important' }} onClick={() => bookingTour()}>THANH TOÁN</Button>
-                            </Box>
-                        </Stack>
+                        {paymentMethod !== 'Banking' &&
+                            <Stack flexDirection={'row'} justifyContent={'center'} sx={{ marginBottom: '50px', marginTop: '30px' }}>
+                                <Box>
+                                    <Button variant="contained" sx={{ color: 'white !important' }} onClick={() => bookingTour()}>THANH TOÁN</Button>
+                                </Box>
+                            </Stack>
+                        }
                     </Item>
 
                 </Grid>
@@ -436,3 +494,66 @@ export default function Booking(props) {
         </div>
     )
 }
+
+const CheckoutForm = (props) => {
+    const { userInfo, totalChild, totalAdult, totalPrice, tourId, userId } = props
+
+    const stripe = useStripe();
+    const elements = useElements();
+
+    const handleSubmit = async (event) => {
+        props.setBookingNoti({status: false, noti: '', type: ''})
+        const { name, address, email, phone_number } = userInfo
+        event.preventDefault();
+
+        if (!stripe || !elements) {
+            return;
+        }
+
+        if (!name.length || !address.length || !email.length || !phone_number.length || (Number(totalChild) <= 0 && Number(totalAdult) <= 0)) {
+            props.setBookingNoti({ status: true, noti: 'Không được bỏ trống các trường', type: 'error' })
+            return;
+        }
+
+        const { error, paymentMethod } = await stripe.createPaymentMethod({
+            type: 'card',
+            card: elements.getElement(CardElement),
+            billing_details: {
+                email: userInfo.email,
+                phone: userInfo.phone,
+                name: userInfo.name,
+            }
+        });
+
+        if (!error) {
+            const { id } = paymentMethod;
+
+            try {
+                const { data } = await BookingAPI.chargeBanking({ id, amount: totalPrice, userInfo, totalChild, totalAdult, tourId, userId })
+
+                if ( data.success ){
+                    props.setBookingNoti({ status: true, noti: 'Chúc mừng bạn đã đăng kí thành công', type: 'success' })
+
+                    setTimeout(() => {
+                        props.setBookingNoti({ status: false, noti: '', type: ''})
+                    }, 2000)
+                }
+
+            } catch (error) {
+                console.log('errorrrrrr >>>>> ', error)
+            }
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <CardElement id="card-element" />
+            <Button type="submit" sx={{ color: 'white !important', marginTop: '80px !important' }} disabled={!stripe || !elements} variant="contained">
+                Thanh toán
+            </Button>
+        </form>
+
+    );
+};
+
+const stripePromise = loadStripe('pk_test_51KHAdUKzeo9d90anKj4ocFehY0bDFuNR5REW9UZKQ3vKWpfXJgbr2P0odm9HugkcoVmfmF383bTkmZRQZvpp8wlv00PAvM4dYm');

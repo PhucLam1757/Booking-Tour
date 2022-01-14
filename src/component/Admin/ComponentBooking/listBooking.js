@@ -127,6 +127,27 @@ export default function ComponentBookingTour(props) {
         setPage(0);
     };
 
+    const displayStatus = (status) => {
+        if (status === 'no_payment') {
+            return (
+                <Alert badgeContent={4} color="warning" icon={false}>Chưa thanh toán</Alert>
+            )
+        } else if (status === 'comfirm_payment') {
+            return (
+                <Alert badgeContent={4} color="primary" icon={false}>Đang chờ xác nhận</Alert>
+            )
+        } else if (status === 'paymented') {
+            return (
+                <Alert badgeContent={4} color="success" icon={false}>Đã thanh toán</Alert>
+            )
+
+        } else if (status === 'complete') {
+            return (
+                <Alert badgeContent={4} color="error" icon={false}>Đã hoàn thành</Alert>
+            )
+        }
+    }
+
     return (
         <div>
             <Stack flexDirection={'row'} justifyContent={'space-between'}>
@@ -238,7 +259,12 @@ export default function ComponentBookingTour(props) {
                                                                 <ButtonGroup variant="contained" aria-label="outlined primary button group">
                                                                     <Button color='error' onClick={() => deleteBooking(row.booking_id)}>Xoá</Button>
                                                                     <Button onClick={() => navigate(`/admin/booking/${row.booking_id}`)}>Chi tiết</Button>
-                                                                </ButtonGroup> : value)}
+                                                                </ButtonGroup> : 
+                                                                (
+                                                                    column.id === 'status' ?
+                                                                    displayStatus(row.status):
+                                                                    value
+                                                                ))}
                                                     </TableCell>
                                                 );
                                             })}

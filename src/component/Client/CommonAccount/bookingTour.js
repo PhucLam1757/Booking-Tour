@@ -29,7 +29,6 @@ export default function ListAccoutTour(props) {
     const getFavouriteTour = async () => {
         try {
             const favouriteRes = await FavouriteAPI.getAllData(userDataSession.ctm_id)
-
             if (favouriteRes.data && favouriteRes.data.success) {
                 setListFavourite(favouriteRes.data.payload)
             }
@@ -73,10 +72,6 @@ export default function ListAccoutTour(props) {
         } else if (status === 'complete') {
             return (
                 <Alert badgeContent={4} color="error" icon={false}>Đã hoàn thành</Alert>
-            )
-        } else {
-            return (
-                <div></div>
             )
         }
     }

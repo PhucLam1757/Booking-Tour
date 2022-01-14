@@ -5,7 +5,7 @@ import AccountPage from '../../page/Client/Profile';
 const ClientAccountPrivateRoute = (props) => {
     let customerData = JSON.parse(sessionStorage.getItem('user_data'))
     return (
-        customerData && customerData.ctm_rl === 'user' ?
+        customerData && customerData.ctm_role === 'user' ?
             <AccountPage />
             :
             <Navigate to="/login" />

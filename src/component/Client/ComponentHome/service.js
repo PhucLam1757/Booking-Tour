@@ -56,7 +56,7 @@ export default function ComponentHomeService(props) {
                                                 <div className="col-md-6">
                                                     <span className="super-heading-sm">Dịch vụ công ty</span>
                                                     <h3 className="heading">{serviceItem.service_name}</h3>
-                                                    <p>{serviceItem.service_desc}</p>
+                                                    <p style={{maxHeight: '100px', textOverflow: 'ellipsis', overflow: 'hidden' }} >{serviceItem.service_desc}</p>
                                                 </div>
                                             </div>
                                         </div>

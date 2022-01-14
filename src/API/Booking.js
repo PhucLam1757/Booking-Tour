@@ -39,6 +39,16 @@ const BookingAPI = {
     getBookingByFilterDate({fromDate, toDate}) {
         const url = `/booking/filter/date`;
         return AxiosClient.post(url, {fromDate, toDate});
+    },
+
+    chargeBanking({id, amount, userInfo, totalChild, totalAdult, paymentMethod, tourId, userId}) {
+        const url = `/booking/charge-banking`;
+        return AxiosClient.post(url, {id, amount, userInfo, totalChild, totalAdult, paymentMethod, tourId, userId});
+    },
+
+    checkUserCanReview({user_id, tour_id}) {
+        const url = `/booking/user-can-review`
+        return AxiosClient.post(url, {user_id, tour_id});
     }
 };
 export default BookingAPI;

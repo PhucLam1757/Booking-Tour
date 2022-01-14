@@ -37,17 +37,17 @@ export default function ComponentTourDetail(props) {
             <div className="row" style={{ paddingLeft: '50px', paddingRight: '30px', boxSizing: 'border-box', marginBottom: '50px', marginLeft: 0, marginRight: 0 }}>
                 <div className="col-sm-12 col-md-8">
                     <div style={{ marginTop: '30px' }}>
-                        <div className="row" style={{marginRight: 0, marginLeft: 0, marginBottom: '10px'}}>
-                            <div style={{width: '100%', color: 'black', fontSize: '0.9em' }} className="col-sm-12 col-md-6">Thời gian đi: <b>{`${new Date(tourDetail.departure_day).getDate()} - ${new Date(tourDetail.departure_day).getMonth() + 1} - ${new Date(tourDetail.departure_day).getFullYear()} `}</b></div>
-                            <div style={{width: '100%',color: 'black', fontSize: '0.9em' }} className="col-sm-12 col-md-6">Thời gian về: <b>{`${new Date(tourDetail.return_day).getDate()} - ${new Date(tourDetail.return_day).getMonth() + 1} - ${new Date(tourDetail.return_day).getFullYear()} `}</b></div>
+                        <div className="row" style={{ marginRight: 0, marginLeft: 0, marginBottom: '10px' }}>
+                            <div style={{ width: '100%', color: 'black', fontSize: '0.9em' }} className="col-sm-12 col-md-6">Thời gian đi: <b>{`${new Date(tourDetail.departure_day).getDate()} - ${new Date(tourDetail.departure_day).getMonth() + 1} - ${new Date(tourDetail.departure_day).getFullYear()} `}</b></div>
+                            <div style={{ width: '100%', color: 'black', fontSize: '0.9em' }} className="col-sm-12 col-md-6">Thời gian về: <b>{`${new Date(tourDetail.return_day).getDate()} - ${new Date(tourDetail.return_day).getMonth() + 1} - ${new Date(tourDetail.return_day).getFullYear()} `}</b></div>
                         </div>
-                        <div className="row" style={{marginRight: 0, marginLeft: 0, marginBottom: '10px'}}>
-                            <div style={{width: '100%',color: 'black', fontSize: '0.9em' }} className="col-sm-12 col-md-6">Tổng thời gian: <b>{tourDetail.go_time ? tourDetail.go_time : ''}</b></div>
-                            <div style={{width: '100%',color: 'black', fontSize: '0.9em' }} className="col-sm-12 col-md-6">Phương tiện di chuyển: <b>{tourDetail.transport ? tourDetail.transport : ''}</b></div>
+                        <div className="row" style={{ marginRight: 0, marginLeft: 0, marginBottom: '10px' }}>
+                            <div style={{ width: '100%', color: 'black', fontSize: '0.9em' }} className="col-sm-12 col-md-6">Tổng thời gian: <b>{tourDetail.go_time ? tourDetail.go_time : ''}</b></div>
+                            <div style={{ width: '100%', color: 'black', fontSize: '0.9em' }} className="col-sm-12 col-md-6">Phương tiện di chuyển: <b>{tourDetail.transport ? tourDetail.transport : ''}</b></div>
                         </div>
-                        <div className="row" style={{marginRight: 0, marginLeft: 0, marginBottom: '10px'}}>
-                            <div style={{width: '100%',color: 'black', fontSize: '0.9em' }} className="col-sm-12 col-md-6">Địa điểm đi: <b>{tourDetail.place_destinate ? tourDetail.place_destinate : ''}</b></div>
-                            <div style={{width: '100%',color: 'black', fontSize: '0.9em' }} className="col-sm-12 col-md-6">Địa điểm về: <b>{tourDetail.place_go ? tourDetail.place_go : ''}</b></div>
+                        <div className="row" style={{ marginRight: 0, marginLeft: 0, marginBottom: '10px' }}>
+                            <div style={{ width: '100%', color: 'black', fontSize: '0.9em' }} className="col-sm-12 col-md-6">Địa điểm đi: <b>{tourDetail.place_destinate ? tourDetail.place_destinate : ''}</b></div>
+                            <div style={{ width: '100%', color: 'black', fontSize: '0.9em' }} className="col-sm-12 col-md-6">Địa điểm về: <b>{tourDetail.place_go ? tourDetail.place_go : ''}</b></div>
                         </div>
                     </div>
 
@@ -107,8 +107,17 @@ export default function ComponentTourDetail(props) {
                         <div class="card" style={{ width: '100%', background: '#FF5721', padding: '20px', boxSizing: 'border-box' }}>
                             <div class="card-body">
                                 <h4 class="card-title" style={{ color: 'white', fontSize: '1.6em', fontWeight: 700 }}>ĐẶT TOUR NGAY</h4>
-                                <h3 style={{color: 'chartreuse'}}><span style={{fontWeight: 500}}>GIÁ CHỈ TỪ: </span><span style={{fontSize: '1.3em', fontWeight: 600}}>{tourDetail.child_price} VNĐ</span></h3>
-                                <button style={{backgroundColor: 'white', border: '1px solid white'}} onClick={()=>navigate(`/tour/${params.tourId}/booking`)}>
+                                <h3 style={{ color: 'chartreuse' }}><span style={{ fontWeight: 500 }}>GIÁ CHỈ TỪ: </span><span style={{ fontSize: '1.3em', fontWeight: 600 }}>{tourDetail.child_price} VNĐ</span></h3>
+                                <button style={{ backgroundColor: 'white', border: '1px solid white' }}
+                                    onClick={() => {
+                                        if (userData){
+                                            navigate(`/tour/${params.tourId}/booking`)
+                                        }else{
+                                            navigate(`/login`)
+                                        }
+                                        
+                                    }}
+                                >
                                     ĐẶT TOUR NGAY
                                 </button>
                             </div>

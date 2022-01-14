@@ -147,6 +147,10 @@ export default function ComponentAdminPlace(props) {
         getAllCountryData()
     }, [])
 
+    useEffect(() => {
+        setAllCountry(props.listCountry)
+    }, [props.listCountry])
+
     const addNewCountry = async () => {
         try {
             setAddPlaceNoti({ status: false, noti: '', type: '' })

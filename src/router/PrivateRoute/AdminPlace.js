@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
-import AdminPlace from "../../page/Admin/Place";
+import ListPlaceAndCountry from "../../page/Admin/Place";
 
 const AdminPlacePrivateRoute = (props) => {
     let customerData = JSON.parse(sessionStorage.getItem('user_data'))
@@ -9,7 +9,7 @@ const AdminPlacePrivateRoute = (props) => {
                 <Navigate to="/" />
             : (
                 customerData && customerData.ctm_role !== 'user' ?
-                <AdminPlace {...props} />:
+                <ListPlaceAndCountry {...props} />:
                 <Navigate to="/login" />
             )
     )

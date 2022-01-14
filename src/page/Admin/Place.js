@@ -1,8 +1,8 @@
 import React from "react";
-import ComponentAdminPlace from "../../component/Admin/ComponentPlace";
+import ListPlaceAndCountry from "../../component/Admin/ComponentPlace/ListPlaceAndCountry";
 
 export default function AdminPlace(props){
     return (
-        <ComponentAdminPlace />
+        <ListPlaceAndCountry />
     )
 }

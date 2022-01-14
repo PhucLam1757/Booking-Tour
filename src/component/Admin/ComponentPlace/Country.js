@@ -22,7 +22,7 @@ import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import PropTypes from 'prop-types';
-import TourCategoryAPI from '../../../API/TourCategoryAPI';
+import CountryAPI from '../../../API/CountryAPI';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -93,7 +93,7 @@ const RedditTextField = styled((props) => (
 
 const columns = [
     { id: 'id', label: 'Id', minWidth: 100 },
-    { id: 'name', label: 'Loại tour', minWidth: 250 },
+    { id: 'name', label: 'Tên quốc gia', minWidth: 250 },
     {
         id: 'action',
         label: 'Action',
@@ -102,22 +102,23 @@ const columns = [
     },
 ];
 
-export default function ComponentTourType(props) {
+export default function ComponentAdminCountry(props) {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [tableRowData, setTableRowData] = useState([]);
-    const [openCategoryModal, setOpenCategoryModal] = useState({ status: false, type: '' });
-    const [newCategoryData, setNewCategoryData] = useState({ name: ''})
-    const [addCategoryNoti, setAddCategoryNoti] = useState({ status: false, noti: '', type: '' }) /*display noti in modal when add and update*/
+    const [openCountryModal, setOpenCountryModal] = useState({ status: false, type: '' });
+    const [newCountryData, setNewCountryData] = useState({ name: ''})
+    const [addCountryNoti, setAddCountryNoti] = useState({ status: false, noti: '', type: '' }) /*display noti in modal when add and update*/
     const [openNotiSnackBar, setOpenNotiSnackBar] = useState({ status: false, noti: '', type: '' })
 
-    const getAllCategoryData = async () => {
+    const getAllCountryData = async () => {
         try {
-            const getContactRes = await TourCategoryAPI.getAll()
+            const getCountryRes = await CountryAPI.getAll()
 
-            if (getContactRes.data && getContactRes.data.success) {
+            if (getCountryRes.data && getCountryRes.data.success) {
 
-                setTableRowData(getContactRes.data.payload)
+                setTableRowData(getCountryRes.data.payload)
+                props.setCountry(getCountryRes.data.payload)
             }
         } catch (error) {
             console.log('Get Contact Error: ', error)
@@ -125,46 +126,48 @@ export default function ComponentTourType(props) {
     }
 
     useEffect(() => {
-        getAllCategoryData()
+        getAllCountryData()
     }, [])
 
-    const addNewCategory = async () => {
+    const addNewCountry = async () => {
         try {
-            setAddCategoryNoti({ status: false, noti: '', type: '' })
+            setAddCountryNoti({ status: false, noti: '', type: '' })
 
-            if (!newCategoryData.name.length) {
-                setAddCategoryNoti({ status: true, noti: 'Các trường không được để trống', type: 'error' })
+            if (!newCountryData.name.length) {
+                setAddCountryNoti({ status: true, noti: 'Các trường không được để trống', type: 'error' })
             }else {
-                const addNewCategoryRes = await TourCategoryAPI.addNew({ name: newCategoryData.name})
+                const addNewCategoryRes = await CountryAPI.addNew({ name: newCountryData.name})
                 
                 if (addNewCategoryRes.data && addNewCategoryRes.data.success) {
-                    setAddCategoryNoti({ status: true, noti: 'Thêm thông tin loại tour thành công', type: 'success' })
+                    setAddCountryNoti({ status: true, noti: 'Thêm thông tin quốc gia thành công', type: 'success' })
                     
                     setTableRowData(addNewCategoryRes.data.payload)
+                    props.setCountry(addNewCategoryRes.data.payload)
 
                     setTimeout(() => {
-                        setOpenCategoryModal({ status: false, type: '' })
-                        setAddCategoryNoti({ status: false, noti: '', type: '' })
-                        setNewCategoryData({ name: '' })
+                        setOpenCountryModal({ status: false, type: '' })
+                        setAddCountryNoti({ status: false, noti: '', type: '' })
+                        setNewCountryData({ name: '' })
                     }, 1000)
                 }else{
-                    setAddCategoryNoti({ status: true, noti: addNewCategoryRes.data.error.message, type: 'error' })
+                    setAddCountryNoti({ status: true, noti: addNewCategoryRes.data.error.message, type: 'error' })
                 }
             }
         } catch (error) {
-            setAddCategoryNoti({ status: true, noti: error.message, type: 'error' })
+            setAddCountryNoti({ status: true, noti: error.message, type: 'error' })
         }
     }
 
-    const deleteCategory = async (columnId) => {
+    const deleteCountry = async (columnId) => {
         try {
-            const deleteCategoryRes = await TourCategoryAPI.deleteCategory(columnId)
+            const deleteCategoryRes = await CountryAPI.deleteCountry(columnId)
 
             if (deleteCategoryRes.data && deleteCategoryRes.data.success ) {
-                const rowData = [...tableRowData].filter((item) => item.category_id !== columnId)
+                const rowData = [...tableRowData].filter((item) => item.country_id !== columnId)
                 setTableRowData(rowData)
+                props.setCountry(rowData)
 
-                setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin liên hệ thành công', type: 'success' })
+                setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin quốc giá thành công', type: 'success' })
             } else {
                 setOpenNotiSnackBar({ status: true, noti: deleteCategoryRes.data.error.message, type: 'error' })
             }
@@ -173,23 +176,22 @@ export default function ComponentTourType(props) {
         }
     }
 
-    const updateCategoryData = async (columnId) => {
+    const updateCountryData = async (columnId) => {
         try {
-            setAddCategoryNoti({ status: false, noti: '', type: '' })
-
-            if (!newCategoryData.name.length) {
-                setAddCategoryNoti({ status: true, noti: 'Các trường không được để trống', type: 'error' })
+            setAddCountryNoti({ status: false, noti: '', type: '' })
+            if (!newCountryData.name.length) {
+                setAddCountryNoti({ status: true, noti: 'Các trường không được để trống', type: 'error' })
             }else {
-                const updateCategoryRes = await TourCategoryAPI.updateCategory({ id: newCategoryData.id, name: newCategoryData.name})
+                const updateCategoryRes = await CountryAPI.updateCountry({ id: newCountryData.id, name: newCountryData.name})
 
                 if (updateCategoryRes.data && updateCategoryRes.data.success) {
-                    setAddCategoryNoti({ status: true, noti: 'Cập nhật thông tin thành công', type: 'success' })
+                    setAddCountryNoti({ status: true, noti: 'Cập nhật thông tin thành công', type: 'success' })
 
                     const rowData = [...tableRowData].map((item) => {
-                        if (item.category_id === newCategoryData.id) {
+                        if (item.country_id === newCountryData.id) {
                             return {
                                 ...item,
-                                name: newCategoryData.name,
+                                name: newCountryData.name,
                             }
                         } else {
                             return item
@@ -197,16 +199,17 @@ export default function ComponentTourType(props) {
                     })
 
                     setTableRowData(rowData)
+                    props.setCountry(rowData)
 
                     setTimeout(() => {
-                        setOpenCategoryModal({ status: false, type: '' })
-                        setAddCategoryNoti({ status: false, noti: '', type: '' })
-                        setNewCategoryData({ name: '' })
+                        setOpenCountryModal({ status: false, type: '' })
+                        setAddCountryNoti({ status: false, noti: '', type: '' })
+                        setNewCountryData({ name: '' })
                     }, 1000)
                 }
             }
         } catch (error) {
-            setAddCategoryNoti({ status: true, noti: error, type: 'error' })
+            setAddCountryNoti({ status: true, noti: error, type: 'error' })
         }
     }
 
@@ -221,41 +224,41 @@ export default function ComponentTourType(props) {
 
     return (
         <div>
-            {openCategoryModal.status &&
+            {openCountryModal.status &&
                 <div>
                     <BootstrapDialog
-                        onClose={() => setOpenCategoryModal({ status: false, type: '' })}
+                        onClose={() => setOpenCountryModal({ status: false, type: '' })}
                         aria-labelledby="customized-dialog-title"
-                        open={openCategoryModal.status}
+                        open={openCountryModal.status}
                     >
-                        <BootstrapDialogTitle id="customized-dialog-title" onClose={() => setOpenCategoryModal({ status: false, type: '' })}>
-                            {openCategoryModal.type === 'add' ? 'Loại Tour Mới' : 'Cập nhật thông tin loại tour'}
+                        <BootstrapDialogTitle id="customized-dialog-title" onClose={() => setOpenCountryModal({ status: false, type: '' })}>
+                            {openCountryModal.type === 'add' ? 'Quốc gia mới' : 'Cập nhật thông tin quốc gia'}
                         </BootstrapDialogTitle>
                         <DialogContent dividers>
                             <RedditTextField
-                                label="Tên loại tour"
+                                label="Tên quốc gia"
                                 defaultValue=""
-                                id="tourcategory-name"
+                                id="country-name"
                                 variant="filled"
                                 style={{ marginTop: 11 }}
-                                value={newCategoryData.name}
-                                onChange={(event) => setNewCategoryData({ ...newCategoryData, name: event.target.value })}
+                                value={newCountryData.name}
+                                onChange={(event) => setNewCountryData({ ...newCountryData, name: event.target.value })}
                             />
 
-                            {addCategoryNoti.status &&
-                                <Alert severity={addCategoryNoti.type} sx={{ marginTop: '10px' }}>{addCategoryNoti.noti}</Alert>
+                            {addCountryNoti.status &&
+                                <Alert severity={addCountryNoti.type} sx={{ marginTop: '10px' }}>{addCountryNoti.noti}</Alert>
                             }
 
                         </DialogContent>
                         <DialogActions>
                             <Button autoFocus onClick={() => {
-                                if (openCategoryModal.type === 'add') {
-                                    addNewCategory()
-                                } else if (openCategoryModal.type === 'update') {
-                                    updateCategoryData()
+                                if (openCountryModal.type === 'add') {
+                                    addNewCountry()
+                                } else if (openCountryModal.type === 'update') {
+                                    updateCountryData()
                                 }
                             }}>
-                                {openCategoryModal.type === 'add' ? 'Thêm loại tour' : 'Cập nhật'}
+                                {openCountryModal.type === 'add' ? 'Thêm quốc gia' : 'Cập nhật'}
                             </Button>
                         </DialogActions>
                     </BootstrapDialog>
@@ -263,11 +266,11 @@ export default function ComponentTourType(props) {
             }
             <Stack flexDirection={'row'} justifyContent={'space-between'}>
                 <Typography variant="h5" component="h2">
-                    Quản lí loại tour
+                    Quản lí quốc gia
                 </Typography>
                 <Button variant="contained" onClick={() => {
-                    setOpenCategoryModal({ status: true, type: 'add' })
-                    setNewCategoryData({name: ''})
+                    setOpenCountryModal({ status: true, type: 'add' })
+                    setNewCountryData({name: ''})
                 }}>
                     Thêm mới
                 </Button>
@@ -305,10 +308,10 @@ export default function ComponentTourType(props) {
                                                             column.id === 'action' ?
                                                                 <ButtonGroup variant="contained" aria-label="outlined primary button group">
                                                                     <Button onClick={() => {
-                                                                        setOpenCategoryModal({ status: true, type: 'update' })
-                                                                        setNewCategoryData({ id: row.category_id, name: row.name})
+                                                                        setOpenCountryModal({ status: true, type: 'update' })
+                                                                        setNewCountryData({ id: row.country_id, name: row.name})
                                                                     }}>Cập nhật</Button>
-                                                                    <Button color='error' onClick={() => deleteCategory(row.category_id)}>Xoá</Button>
+                                                                    <Button color='error' onClick={() => deleteCountry(row.country_id)}>Xoá</Button>
                                                                 </ButtonGroup> : value)}
                                                     </TableCell>
                                                 );

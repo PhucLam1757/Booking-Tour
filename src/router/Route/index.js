@@ -22,8 +22,6 @@ import AdminAccountRolePrivateRoute from '../PrivateRoute/AdminAccountRole';
 import AdminAccountPrivateRoute from '../PrivateRoute/AdminAccount';
 import AdminContactPrivateRoute from '../PrivateRoute/AdminContact';
 import AdminBlogPrivateRoute from '../PrivateRoute/AdminBlog';
-import AdminTourTypePrivateRoute from '../PrivateRoute/AdminTourType';
-import AdminCountryPrivateRoute from '../PrivateRoute/AdminCountry';
 import AdminPlacePrivateRoute from '../PrivateRoute/AdminPlace';
 import AdminTourPrivateRoute from '../PrivateRoute/AdminTour';
 import AdminAddTourPrivateRoute from '../PrivateRoute/AdminAddTour';
@@ -222,22 +220,6 @@ export default function MainApp(props) {
                     element={
                         <AdminLayout {...props} >
                             <AdminAccountPrivateRoute />
-                        </AdminLayout>
-                    }
-                />
-
-                <Route exact path="/admin/tour-type"
-                    element={
-                        <AdminLayout {...props} >
-                            <AdminTourTypePrivateRoute />
-                        </AdminLayout>
-                    }
-                />
-
-                <Route exact path="/admin/country"
-                    element={
-                        <AdminLayout {...props} >
-                            <AdminCountryPrivateRoute />
                         </AdminLayout>
                     }
                 />

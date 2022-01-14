@@ -74,31 +74,12 @@ export const MainListItems = () => {
                 </ListItem> : ''
             }
 
-            {roleFunction.indexOf('admin-tourcategory') >= 0 ?
-                <ListItem button onClick={() => navigate('/admin/tour-type')}>
-                    <ListItemIcon>
-                        <TourIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Quản lí loại tour" />
-                </ListItem> : ''
-            }
-
             {roleFunction.indexOf('admin-place') >= 0 ?
                 <ListItem button onClick={() => navigate('/admin/place')}>
                     <ListItemIcon>
                         <PlaceIcon />
                     </ListItemIcon>
                     <ListItemText primary="Quản lí địa điểm" />
-                </ListItem> : ''
-            }
-
-            {roleFunction.indexOf('admin-contry') >= 0 ?
-
-                <ListItem button onClick={() => navigate('/admin/country')}>
-                    <ListItemIcon>
-                        <LanguageIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Quản lí quốc gia" />
                 </ListItem> : ''
             }
 

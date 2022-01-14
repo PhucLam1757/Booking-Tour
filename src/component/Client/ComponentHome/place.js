@@ -72,7 +72,7 @@ export default function ComponentHomePlace(props) {
                             <div className="desc">
                                 <h3>{allTour.length > 2 && allTour[2].tour_name}</h3>
                                 <p style={{maxHeight: '100px', textOverflow: 'ellipsis', overflow: 'hidden' }}>{allTour.length > 2 && allTour[2].tour_desc}</p>
-                                <p><a className="btn btn-primary btn-luxe-primary">Đặt ngay<i className="ti-angle-right" /></a></p>
+                                <p><a className="btn btn-primary btn-luxe-primary" onClick={() => navigate(`/tour/${allTour[2].tour_id}`)} >Đặt ngay<i className="ti-angle-right" /></a></p>
                             </div>
                         </div>
                     </div>

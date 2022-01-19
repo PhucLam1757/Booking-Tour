@@ -103,6 +103,7 @@ export default function ComponentTourDetail(props) {
                     tour_policy: detailPayload.tour_policy,
                     tour_transport: detailPayload.transport,
                     tour_type: Number(detailPayload.category_id),
+                    tour_status: detailPayload.tour_status
                 }
                 setTourData(detail)
             }
@@ -131,53 +132,43 @@ export default function ComponentTourDetail(props) {
                 if (!/^-?\d+$/.test(tourData.adult_price) || !/^-?\d+$/.test(tourData.child_price)) {
                     setAddTourNoti({ status: true, noti: 'Giá vé sai định dạng', type: 'error' })
                 }
-                const currentDateGetTime = new Date().getTime();
-                const dataGo = new Date(tourData.date_go).getTime();
-                const dateReturn = new Date(tourData.date_return).getTime();
-                const subCurrentDateAndDateGo = dataGo - currentDateGetTime
-                const subDateGoAndDateReturn = dateReturn - dataGo
+                const date1 = new Date(tourData.date_go);
+                const date2 = new Date(tourData.date_return);
+                const diffTime = Math.abs(date2 - date1);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-                if (subCurrentDateAndDateGo <= 0) {
-                    setAddTourNoti({ status: true, noti: 'Ngày đi không thể nhỏ hơn ngày hiện tại', type: 'error' })
-                } else if (subDateGoAndDateReturn < 0) {
-                    setAddTourNoti({ status: true, noti: 'Ngày về không thể nhỏ hơn ngày đi', type: 'error' })
-                } else {
-                    const date1 = new Date(tourData.date_go);
-                    const date2 = new Date(tourData.date_return);
-                    const diffTime = Math.abs(date2 - date1);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                setTourData({ ...tourData, total_date: `${diffDays <= 0 ? diffDays + 1 : diffDays} ngày ${diffDays <= 0 ? '' : diffDays - 1 > 0 ? (diffDays - 1) + ' đêm' : '1 đêm'}` })
 
-                    setTourData({ ...tourData, total_date: `${diffDays <= 0 ? diffDays + 1 : diffDays} ngày ${diffDays <= 0 ? '' : diffDays - 1 > 0 ? (diffDays - 1) + ' đêm' : '1 đêm'}` })
-
-                    const tourAllData = {
-                        adult_price: tourData.adult_price,
-                        tour_name: tourData.tour_name,
-                        child_price: tourData.child_price,
-                        date_go: tourData.date_go,
-                        date_return: tourData.date_return,
-                        place_from: tourData.place_from,
-                        place_to: tourData.place_to,
-                        total_date: `${diffDays <= 0 ? diffDays + 1 : diffDays} ngày ${diffDays <= 0 ? '' : diffDays - 1 > 0 ? (diffDays - 1) + ' đêm' : '1 đêm'}`,
-                        tour_desc: tourData.tour_desc,
-                        tour_image: tourData.tour_image,
-                        tour_policy: tourData.tour_policy,
-                        tour_transport: tourData.tour_transport,
-                        tour_type: tourData.tour_type,
-                    }
-
-                    const updateTourRes = await TourAPI.updateTour(tourAllData, params.id)
-                    console.log('updateTourRes: ', updateTourRes)
-                    if (updateTourRes.data && updateTourRes.data.success) {
-                        setAddTourNoti({ status: true, noti: 'Cập nhật thông tin tour thành công', type: 'success' })
-
-                        setTimeout(() => {
-                            setAddTourNoti({ status: false, noti: '', type: '' })
-                        }, 3000)
-
-                    } else {
-                        setAddTourNoti({ status: true, noti: 'Không thể cập nhật thông tin tour', type: 'error' })
-                    }
+                const tourAllData = {
+                    adult_price: tourData.adult_price,
+                    tour_name: tourData.tour_name,
+                    child_price: tourData.child_price,
+                    date_go: tourData.date_go,
+                    date_return: tourData.date_return,
+                    place_from: tourData.place_from,
+                    place_to: tourData.place_to,
+                    total_date: `${diffDays <= 0 ? diffDays + 1 : diffDays} ngày ${diffDays <= 0 ? '' : diffDays - 1 > 0 ? (diffDays - 1) + ' đêm' : '1 đêm'}`,
+                    tour_desc: tourData.tour_desc,
+                    tour_image: tourData.tour_image,
+                    tour_policy: tourData.tour_policy,
+                    tour_transport: tourData.tour_transport,
+                    tour_type: tourData.tour_type,
+                    tour_status: tourData.tour_status
                 }
+
+                const updateTourRes = await TourAPI.updateTour(tourAllData, params.id)
+                console.log('updateTourRes: ', updateTourRes)
+                if (updateTourRes.data && updateTourRes.data.success) {
+                    setAddTourNoti({ status: true, noti: 'Cập nhật thông tin tour thành công', type: 'success' })
+
+                    setTimeout(() => {
+                        setAddTourNoti({ status: false, noti: '', type: '' })
+                    }, 3000)
+
+                } else {
+                    setAddTourNoti({ status: true, noti: 'Không thể cập nhật thông tin tour', type: 'error' })
+                }
+                // }
 
 
             }
@@ -219,7 +210,7 @@ export default function ComponentTourDetail(props) {
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
-                            value={tourData.tour_type ?  tourData.tour_type: 0}
+                            value={tourData.tour_type ? tourData.tour_type : 0}
                             onChange={(event) => {
                                 setTourData({ ...tourData, tour_type: event.target.value })
                             }}
@@ -296,7 +287,7 @@ export default function ComponentTourDetail(props) {
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
-                            value={tourData.tour_transport ? tourData.tour_transport : 0 }
+                            value={tourData.tour_transport ? tourData.tour_transport : 0}
                             onChange={(event) => {
                                 setTourData({ ...tourData, tour_transport: event.target.value })
                             }}
@@ -448,6 +439,27 @@ export default function ComponentTourDetail(props) {
                         </Box>
                     </Grid>
                 </Grid>
+
+                <Box sx={{ margin: '10px 0' }}>
+                    <Typography variant="p" component="p" sx={{ margin: '10px 0' }}>
+                        Trạng thái:
+                    </Typography>
+                    <FormControl fullWidth>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={tourData.tour_status ? tourData.tour_status : ''}
+                            defaultValue={tourData.tour_status ? tourData.tour_status : ''}
+                            label="Status"
+                            onChange={(event) => {
+                                setTourData({ ...tourData, tour_status: event.target.value })
+                            }}
+                        >
+                            <MenuItem value={'Chưa khởi hành'}>Chưa khởi hành</MenuItem>
+                            <MenuItem value={'Đã hoàn thành'}>Đã hoàn thành</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Box>
 
             </Grid>
 

@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom'
 export default function ComponentHomePlace(props) {
     const [allTour, setAllTour] = useState([])
     const navigate = useNavigate()
+    var nf = new Intl.NumberFormat();
 
     const getAllTour = async () => {
         try {
@@ -30,7 +31,7 @@ export default function ComponentHomePlace(props) {
                 <div className="row">
                     <div className="col-md-12">
                         <div className="section-title text-center">
-                            <h2>TOUR MỚI NHẤT</h2>
+                            <h2><b>TOUR MỚI NHẤT</b></h2>
                         </div>
                     </div>
                 </div>
@@ -38,7 +39,7 @@ export default function ComponentHomePlace(props) {
                     <div className="feature-full-1col">
                         <div className="image" style={{ backgroundImage: `url(${allTour.length && allTour[0].tour_img})` }}>
                             <div className="descrip text-center">
-                                <p><small>Chỉ từ</small><span>{allTour.length && allTour[0].child_price}VNĐ/tour</span></p>
+                                <p><small>Chỉ từ</small><span>{allTour.length && nf.format(allTour[0].child_price)}VNĐ/tour</span></p>
                             </div>
                         </div>
                         <div className="desc">

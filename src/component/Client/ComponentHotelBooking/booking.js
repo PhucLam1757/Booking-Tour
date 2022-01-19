@@ -17,14 +17,10 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import BookingAPI from '../../../API/Booking';
 import Alert from '@mui/material/Alert';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
-import PropTypes from 'prop-types';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import HotelAPI from '../../../API/HotelAPI';
 import BankAPI from '../../../API/BankAPI';
 import { loadStripe } from '@stripe/stripe-js';
 import {
@@ -34,7 +30,7 @@ import {
     useElements,
     PaymentElement
 } from '@stripe/react-stripe-js';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 
 const RedditTextField = styled((props) => (
@@ -100,26 +96,27 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
-export default function Booking(props) {
-    const [tourDetail, setTourDetail] = useState([])
+export default function HotelBooking(props) {
+    const [hotelDetail, setHotelDetail] = useState([])
     const [userInfo, setUserInfo] = useState({})
     const [paymentMethod, setPaymentMethod] = useState('')
-    const [totalChild, setTotalChild] = useState(0)
-    const [totalAdult, setTotalAdult] = useState(0)
     const [totalPrice, setTotalPrice] = useState(0)
     const [bookingNoti, setBookingNoti] = useState({ status: false, noti: '', type: '' })
     const [bankCardInfo, setBankCardInfo] = useState([])
+    const [bookingInfo, setBookingInfo] = useState({ room_type: '', person: '', checkinDate: '', checkoutDate: '' })
 
     const params = useParams()
     const styles = useStyles()
+    var nf = new Intl.NumberFormat();
+    const navigate = useNavigate()
     const userData = JSON.parse(window.sessionStorage.getItem('user_data'))
 
-    const getTourDetail = async () => {
+    const getHotelDetail = async () => {
         try {
-            const tourRes = await TourAPI.getTourById(Number(params.tourId))
+            const hotelRes = await HotelAPI.getHotelById(Number(params.hotelId))
 
-            if (tourRes.data && tourRes.data.success) {
-                setTourDetail(tourRes.data.payload[0])
+            if (hotelRes.data && hotelRes.data.success) {
+                setHotelDetail(hotelRes.data.payload)
             }
         } catch (error) {
             console.log('get tour detail error: ', error)
@@ -150,46 +147,76 @@ export default function Booking(props) {
     }
 
     useEffect(() => {
-        getTourDetail()
+        getHotelDetail()
         getUserData()
         getBankInfo()
     }, [])
 
 
-    const bookingTour = async () => {
+    const bookingHotel = async () => {
         try {
             setBookingNoti({ status: false, noti: '', type: '' })
-            const { name, address, email, phone_number } = userInfo
-
-            if (!name.length || !address.length || !email.length || !phone_number.length || !paymentMethod.length || (Number(totalChild) <= 0 && Number(totalAdult) <= 0)) {
+            const { room_type, person, checkinDate, checkoutDate } = bookingInfo
+            if (!room_type.length || !person.toString().length || !checkinDate.toString().length || !checkoutDate.toString().length) {
                 setBookingNoti({ status: true, noti: 'Không được bỏ trống các trường', type: 'error' })
             } else {
-                const data = {
-                    name: userInfo.name,
-                    address: userInfo.address,
-                    email: userInfo.email,
-                    phone: userInfo.phone_number,
-                    user_id: userData.ctm_id,
-                    tour_id: params.tourId,
-                    total_price: totalPrice,
-                    payment_method: paymentMethod,
-                    total_child: totalChild,
-                    total_adult: totalAdult
-                }
-                const bookingRes = await BookingAPI.addNew(data)
+                const currentDateGetTime = new Date().getTime();
+                const checkInDateGetTime = new Date(checkinDate).getTime();
+                const checkOutDateGetTime = new Date(checkoutDate).getTime();
+                const subCurrentDateAndCheckInDate = checkInDateGetTime - currentDateGetTime
+                const subCheckInDateAndCheckOutDate = checkOutDateGetTime - checkInDateGetTime
 
-                if (bookingRes.data && bookingRes.data.success) {
-                    setBookingNoti({ status: true, noti: 'Chúc mừng bạn đã đăng kí thành công', type: 'success' })
-
+                if (subCurrentDateAndCheckInDate <= 0) {
+                    setBookingNoti({ status: true, noti: 'Ngày nhận phòng cần lớn hơn ngày hiện tại', type: 'error' })
+                } else if (subCheckInDateAndCheckOutDate <= 0) {
+                    setBookingNoti({ status: true, noti: 'Ngày trả phòng cần lớn hơn ngày nhận phòng', type: 'error' })
                 } else {
-                    setBookingNoti({ status: true, noti: 'Bạn đã thanh toán thất bại', type: 'error' })
+                    const roomTypeInfo = hotelDetail.room_detail.find((item) => item.hotel_type === room_type)
+
+                    if (roomTypeInfo) {
+                        if (person > roomTypeInfo.hotel_limit) {
+                            setBookingNoti({ status: true, noti: 'Số người không thể lớn hơn số người giới hạn của phòng', type: 'error' })
+                        } else if (roomTypeInfo.room_available >= roomTypeInfo.room_quality) {
+                            setBookingNoti({ status: true, noti: 'Không còn phòng trống', type: 'error' })
+                        } else {
+                            const date1 = new Date(checkinDate);
+                            const date2 = new Date(checkoutDate);
+                            const diffTime = Math.abs(date2 - date1);
+                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                            const price = roomTypeInfo.hotel_price * diffDays
+
+                            setTotalPrice(price)
+
+                            const booking = {
+                                hotel_id: params.hotelId,
+                                hotel_type: room_type,
+                                checkin_date: checkinDate,
+                                checkout_date: checkoutDate,
+                                person: person,
+                                total_price: price,
+                                user_id: userData.ctm_id,
+                                payment_method: paymentMethod,
+                            }
+
+                            const bookingRes = await HotelAPI.createUserBooking(booking)
+                            
+                            if ( bookingRes.data && bookingRes.data.success ){
+                                setBookingNoti({ status: true, noti: 'Chúc mừng bạn đã đặt phòng thành công', type: 'success' })
+
+                                setTimeout(() => {
+                                    navigate('/hotel')
+                                }, 2000)
+                            }else{
+                                setBookingNoti({ status: true, noti: 'Bạn đã đặt phòng thất bại', type: 'error' })
+                            }
+                        }
+                    }
                 }
             }
 
             setTimeout(() => {
                 setBookingNoti({ status: false, noti: '', type: '' })
             }, 2000)
-
         } catch (error) {
             setBookingNoti({ status: true, noti: 'Bạn đã thanh toán thất bại', type: 'error' })
         }
@@ -200,83 +227,66 @@ export default function Booking(props) {
             <Box sx={{ flexGrow: 1 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={4}>
-                        <img src={tourDetail.tour_img && tourDetail.tour_img} style={{ width: '100%', height: '100%' }} />
+                        <img src={hotelDetail.hotel_image && hotelDetail.hotel_image} style={{ width: '100%', height: '100%', maxHeight: '210px' }} />
                     </Grid>
                     <Grid item xs={12} sm={8}>
                         <Item>
                             <Typography variant="h1" component="h2">
-                                <b style={{ color: 'blue' }}>{tourDetail.tour_name && tourDetail.tour_name}</b>
+                                <b style={{ color: 'blue' }}>{hotelDetail.hotel_name && hotelDetail.hotel_name}</b>
                             </Typography>
                             <hr style={{ borderTop: '2px solid gray' }} />
                             <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
                                 <Grid item xs={6} sm={3} >
-                                    <Typography variant="p" component="p" sx={{ textAlign: 'left', color: 'black !important' }}>Ngày đi:</Typography>
+                                    <Typography variant="p" component="p" sx={{ textAlign: 'left', color: 'black !important' }}>Loại khách sạn:</Typography>
                                 </Grid>
                                 <Grid item xs={6} sm={8}>
-                                    <Typography variant="p" component="p" sx={{ textAlign: 'left', color: 'black !important' }}><b>{tourDetail.departure_day && new Date(tourDetail.departure_day).toISOString().split('T')[0]}</b></Typography>
+                                    <Typography variant="p" component="p" sx={{ textAlign: 'left', color: 'black !important' }}><b>{hotelDetail.cate_name && hotelDetail.cate_name}</b></Typography>
                                 </Grid>
                             </Grid>
 
                             <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
                                 <Grid item xs={6} sm={3}>
-                                    <Typography variant="p" component="p" sx={{ textAlign: 'left', color: 'black !important' }}>Ngày về:</Typography>
+                                    <Typography variant="p" component="p" sx={{ textAlign: 'left', color: 'black !important' }}>Địa chỉ:</Typography>
                                 </Grid>
                                 <Grid item xs={6} sm={8}>
-                                    <Typography variant="p" component="p" sx={{ textAlign: 'left', color: 'black !important' }}><b>{tourDetail.return_day && new Date(tourDetail.return_day).toISOString().split('T')[0]}</b></Typography>
-                                </Grid>
-                            </Grid>
-
-                            <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
-                                <Grid item xs={6} sm={3}>
-                                    <Typography variant="p" component="p" sx={{ textAlign: 'left', color: 'black !important' }}>Tổng thời gian</Typography>
-                                </Grid>
-                                <Grid item xs={6} sm={8}>
-                                    <Typography variant="p" component="p" sx={{ textAlign: 'left', color: 'black !important' }}><b>{tourDetail.go_time && tourDetail.go_time}</b></Typography>
-                                </Grid>
-                            </Grid>
-
-                            <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
-                                <Grid item xs={6} sm={3}>
-                                    <Typography variant="p" component="p" sx={{ textAlign: 'left', color: 'black !important' }}>Địa điểm đi: </Typography>
-                                </Grid>
-                                <Grid item xs={6} sm={8}>
-                                    <Typography variant="p" component="p" sx={{ textAlign: 'left', color: 'black !important' }}><b>{tourDetail.place_destinate && tourDetail.place_destinate}</b></Typography>
-                                </Grid>
-                            </Grid>
-
-                            <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
-                                <Grid item xs={6} sm={3}>
-                                    <Typography variant="p" component="p" sx={{ textAlign: 'left', color: 'black !important' }}>Địa điểm về: </Typography>
-                                </Grid>
-                                <Grid item xs={6} sm={8}>
-                                    <Typography variant="p" component="p" sx={{ textAlign: 'left', color: 'black !important' }}><b>{tourDetail.place_go && tourDetail.place_go}</b></Typography>
+                                    <Typography variant="p" component="p" sx={{ textAlign: 'left', color: 'black !important' }}><b>{hotelDetail.place_name && hotelDetail.place_name}</b></Typography>
                                 </Grid>
                             </Grid>
                         </Item>
                     </Grid>
                 </Grid>
 
-                <Grid container spacing={2}>
+                <Grid container spacing={2} sx={{ marginTop: '40px', marginBottom: '40px' }}>
                     <Item>
-                        <Typography variant="h1" component="h2">
-                            <b style={{ color: 'yellowgreen' }}>GIÁ VÉ CHI TIẾT</b>
+                        <Typography variant="h1" component="h2" >
+                            <b style={{ color: 'yellowgreen' }}>THÔNG TIN PHÒNG</b>
                         </Typography>
                         <table class="table table-bordered" >
                             <thead>
                                 <tr>
-                                    <th>Đối tượng</th>
-                                    <th>Giá vé (1 người/tour)</th>
+                                    <th>Loại phòng</th>
+                                    <th>Số giường</th>
+                                    <th>Số lượng người</th>
+                                    <th>Số lượng phòng</th>
+                                    <th>Phòng đã sử dụng</th>
+                                    <th>Giá tiền(VNĐ/đêm)</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Người lớn</td>
-                                    <td>{tourDetail.adult_price ? tourDetail.adult_price : ''} VNĐ</td>
-                                </tr>
-                                <tr>
-                                    <td>Trẻ em</td>
-                                    <td>{tourDetail.child_price ? tourDetail.child_price : ''} VNĐ</td>
-                                </tr>
+                                {hotelDetail.room_detail && hotelDetail.room_detail.length ?
+                                    hotelDetail.room_detail.map((roomItem, roomIndex) => {
+                                        return (
+                                            <tr key={`room-list-${roomIndex}`}>
+                                                <td>{roomItem.hotel_type && roomItem.hotel_type}</td>
+                                                <td>{roomItem.hotel_bed && roomItem.hotel_bed}</td>
+                                                <td>{roomItem.hotel_limit && roomItem.hotel_limit}</td>
+                                                <td>{roomItem.room_quality && roomItem.room_quality}</td>
+                                                <td>{roomItem.room_available && roomItem.room_available}</td>
+                                                <td>{roomItem.hotel_price && nf.format(roomItem.hotel_price)}</td>
+                                            </tr>
+                                        )
+                                    }) : <></>
+                                }
                             </tbody>
                         </table>
                     </Item>
@@ -348,59 +358,80 @@ export default function Booking(props) {
                             </Grid>
                         </Grid>
                         <Box sx={{ marginTop: '20px', marginBottom: '20px' }}>
-                            <Typography variant="h5" component="h5"><b>SỐ LƯỢNG KHÁCH</b></Typography>
+                            <Typography variant="h4" component="h4"><b>THÔNG TIN ĐẶT PHÒNG</b></Typography>
                         </Box>
                         <Grid container spacing={2} sx={{ justifyContent: 'center' }}>
-                            <Grid item xs={4} sm={4}>
+                            <Grid item xs={4} sm={3}>
+                                <FormControl fullWidth>
+                                    <InputLabel id="demo-simple-select-label">Loại phòng</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        label="Loại phòng"
+                                        value={bookingInfo.room_type}
+                                        style={{ border: '1px solid #E2E2E1', height: '85px' }}
+                                        onChange={(event) => {
+                                            setBookingInfo({ ...bookingInfo, room_type: event.target.value })
+                                        }}
+                                    >
+                                        {hotelDetail.room_detail ? hotelDetail.room_detail.map((roomItem, roomIndex) => {
+                                            return (
+                                                <MenuItem value={roomItem.hotel_type} key={`room-select-${roomIndex}`}>{roomItem.hotel_type}</MenuItem>
+                                            )
+                                        }) : <></>}
+
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+
+                            <Grid item xs={4} sm={3}>
                                 <RedditTextField
-                                    label="Số lượng trẻ em"
+                                    label="Số lượng người"
                                     defaultValue=""
                                     id="contact-address"
                                     variant="filled"
-                                    value={totalChild}
+                                    value={bookingInfo.person}
                                     onChange={(event) => {
-                                        if (/^-?\d+$/.test(event.target.value) || !event.target.value.length) {
-                                            setTotalChild(event.target.value)
-
-                                            if (/^-?\d+$/.test(event.target.value)) {
-                                                const price = totalPrice + (Number(event.target.value) * tourDetail.child_price)
-                                                setTotalPrice(price)
-                                            } else {
-                                                const price = tourDetail.adult_price * totalAdult
-                                                setTotalPrice(price)
-                                            }
-
+                                        if (!isNaN(event.target.value)) {
+                                            setBookingInfo({ ...bookingInfo, person: event.target.value })
                                         }
                                     }}
                                 />
                             </Grid>
-                            <Grid item xs={4} sm={4}>
+
+                            <Grid item xs={4} sm={3}>
                                 <RedditTextField
-                                    label="Số lượng người lớn"
+                                    label="Ngày nhận phòng"
                                     defaultValue=""
                                     id="contact-address"
                                     variant="filled"
-                                    value={totalAdult}
+                                    value={bookingInfo.checkinDate}
+                                    type="date"
+                                    sx={{ height: '85px', 'input': { height: '85px' } }}
                                     onChange={(event) => {
-                                        if (/^-?\d+$/.test(event.target.value) || !event.target.value.length) {
-                                            setTotalAdult(event.target.value)
+                                        setBookingInfo({ ...bookingInfo, checkinDate: event.target.value })
+                                    }}
+                                />
+                            </Grid>
 
-                                            if (/^-?\d+$/.test(event.target.value)) {
-                                                const price = totalPrice + (Number(event.target.value) * tourDetail.adult_price)
-                                                setTotalPrice(price)
-                                            } else {
-                                                const price = tourDetail.child_price * totalChild
-                                                setTotalPrice(price)
-                                            }
-
-                                        }
+                            <Grid item xs={4} sm={3}>
+                                <RedditTextField
+                                    label="Ngày trả phòng"
+                                    defaultValue=""
+                                    id="contact-address"
+                                    variant="filled"
+                                    value={bookingInfo.checkoutDate}
+                                    type="date"
+                                    sx={{ height: '85px', 'input': { height: '85px' } }}
+                                    onChange={(event) => {
+                                        setBookingInfo({ ...bookingInfo, checkoutDate: event.target.value })
                                     }}
                                 />
                             </Grid>
                         </Grid>
                         <Grid container spacing={2} sx={{ justifyContent: 'end' }}>
                             <Grid item xs={12}>
-                                <Typography variant="h5" component="h5" style={{ textAlign: 'end', fontSize: '1.5em', marginTop: '20px', fontWeight: 700 }}>Tổng giá trị: <span style={{ color: 'red' }}>{totalPrice} VNĐ</span></Typography>
+                                <Typography variant="h5" component="h5" style={{ textAlign: 'end', fontSize: '1.5em', marginTop: '20px', fontWeight: 700 }}>Tổng giá trị: <span style={{ color: 'red' }}>{nf.format(totalPrice)} VNĐ</span></Typography>
                             </Grid>
                         </Grid>
 
@@ -461,14 +492,19 @@ export default function Booking(props) {
                                 <Box sx={{ width: '30%' }}>
                                     <Item2>
                                         <Elements stripe={stripePromise}>
-                                            <CheckoutForm userInfo={userInfo} totalChild={totalChild}
-                                                totalAdult={totalAdult}
+                                            <CheckoutForm userInfo={userInfo} 
+                                                hotelDetail={hotelDetail}
                                                 totalPrice={totalPrice}
                                                 paymentMethod={paymentMethod}
-                                                tourId={params.tourId}
+                                                hotelId={params.hotelId}
                                                 userId={userData.ctm_id}
+                                                bookingInfo={bookingInfo}
                                                 setBookingNoti={(data) => {
                                                     setBookingNoti({ ...data })
+                                                }}
+
+                                                setTotalPrice={(price) => {
+                                                    setTotalPrice(price)
                                                 }}
                                             />
                                         </Elements>
@@ -487,7 +523,7 @@ export default function Booking(props) {
                         {paymentMethod !== 'Banking' &&
                             <Stack flexDirection={'row'} justifyContent={'center'} sx={{ marginBottom: '50px', marginTop: '30px' }}>
                                 <Box>
-                                    <Button variant="contained" sx={{ color: 'white !important' }} onClick={() => bookingTour()}>THANH TOÁN</Button>
+                                    <Button variant="contained" sx={{ color: 'white !important' }} onClick={() => bookingHotel()}>THANH TOÁN</Button>
                                 </Box>
                             </Stack>
                         }
@@ -500,10 +536,11 @@ export default function Booking(props) {
 }
 
 const CheckoutForm = (props) => {
-    const { userInfo, totalChild, totalAdult, totalPrice, tourId, userId } = props
+    const { userInfo, hotelDetail, totalPrice, hotelId, userId, bookingInfo } = props
 
     const stripe = useStripe();
     const elements = useElements();
+    const navigate = useNavigate()
 
     const handleSubmit = async (event) => {
         props.setBookingNoti({ status: false, noti: '', type: '' })
@@ -514,9 +551,50 @@ const CheckoutForm = (props) => {
             return;
         }
 
-        if (!name.length || !address.length || !email.length || !phone_number.length || (Number(totalChild) <= 0 && Number(totalAdult) <= 0)) {
+        if (!name.length || !address.length || !email.length || !phone_number.length) {
             props.setBookingNoti({ status: true, noti: 'Không được bỏ trống các trường', type: 'error' })
             return;
+        } 
+        const { room_type, person, checkinDate, checkoutDate } = bookingInfo
+
+        if (!room_type.length || !person.toString().length || !checkinDate.toString().length || !checkoutDate.toString().length) {
+            props.setBookingNoti({ status: true, noti: 'Không được bỏ trống các trường', type: 'error' })
+            return;
+        } else {
+            const currentDateGetTime = new Date().getTime();
+            const checkInDateGetTime = new Date(checkinDate).getTime();
+            const checkOutDateGetTime = new Date(checkoutDate).getTime();
+            const subCurrentDateAndCheckInDate = checkInDateGetTime - currentDateGetTime
+            const subCheckInDateAndCheckOutDate = checkOutDateGetTime - checkInDateGetTime
+
+            if (subCurrentDateAndCheckInDate <= 0) {
+                props.setBookingNoti({ status: true, noti: 'Ngày nhận phòng cần lớn hơn ngày hiện tại', type: 'error' })
+                return;
+            } else if (subCheckInDateAndCheckOutDate <= 0) {
+                props.setBookingNoti({ status: true, noti: 'Ngày trả phòng cần lớn hơn ngày nhận phòng', type: 'error' })
+                return;
+
+            } else {
+                const roomTypeInfo = hotelDetail.room_detail.find((item) => item.hotel_type === room_type)
+
+                if (roomTypeInfo) {
+                    if (person > roomTypeInfo.hotel_limit) {
+                        props.setBookingNoti({ status: true, noti: 'Số người không thể lớn hơn số người giới hạn của phòng', type: 'error' })
+                        return;
+                    } else if (roomTypeInfo.room_available >= roomTypeInfo.room_quality) {
+                        props.setBookingNoti({ status: true, noti: 'Không còn phòng trống', type: 'error' })
+                        return;
+                    } else {
+                        const date1 = new Date(checkinDate);
+                        const date2 = new Date(checkoutDate);
+                        const diffTime = Math.abs(date2 - date1);
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        const price = roomTypeInfo.hotel_price * diffDays
+
+                        props.setTotalPrice(price)
+                    }
+                }
+            }
         }
 
         const { error, paymentMethod } = await stripe.createPaymentMethod({
@@ -531,15 +609,26 @@ const CheckoutForm = (props) => {
 
         if (!error) {
             const { id } = paymentMethod;
+            const bookingData = {
+                hotel_id: hotelId,
+                hotel_type: bookingInfo.room_type,
+                checkin_date: bookingInfo.checkinDate,
+                checkout_date: bookingInfo.checkoutDate,
+                person: bookingInfo.person,
+                total_price: totalPrice,
+                user_id: userId,
+            }
 
             try {
-                const { data } = await BookingAPI.chargeBanking({ id, amount: totalPrice, userInfo, totalChild, totalAdult, tourId, userId })
+                const { data } = await HotelAPI.chargeBankingHotel({ id, bookingData })
+                console.log('banking data: ', data)
 
                 if (data.success) {
                     props.setBookingNoti({ status: true, noti: 'Chúc mừng bạn đã đăng kí thành công', type: 'success' })
 
                     setTimeout(() => {
                         props.setBookingNoti({ status: false, noti: '', type: '' })
+                        navigate('/hotel')
                     }, 2000)
                 }
 

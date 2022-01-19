@@ -25,6 +25,7 @@ import Stack from '@mui/material/Stack';
 import Link from '@mui/material/Link'; 
 import { makeStyles } from '@mui/styles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import TravelIcon from '../../../asset/images/travel-icon.png'
 
 const useStyles = makeStyles((theme) => ({
     loginText: {
@@ -121,7 +122,7 @@ export default function WebHeader(props) {
             </Box>
             <Divider />
             <List>
-                {[{key: 'TRANG CHỦ', link: '/'}, {key:'TOUR', link: '/tour'}, {key: 'DỊCH VỤ', link: '/service'}, {key: 'TIN TỨC', link: '/blog'}, {key: 'LIÊN HỆ', link: '/contact'}].map((text, index) => (
+                {[{key: 'TRANG CHỦ', link: '/'}, {key:'TOUR', link: '/tour'}, {key:'KHÁCH SẠN', link: '/hotel'} , {key: 'DỊCH VỤ', link: '/service'}, {key: 'TIN TỨC', link: '/blog'}, {key: 'LIÊN HỆ', link: '/contact'}].map((text, index) => (
                     <ListItem button key={text.key} onClick={()=>navigate(`${text.link}`)}>
                         <ListItemIcon>
                             {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
@@ -129,17 +130,6 @@ export default function WebHeader(props) {
                         <ListItemText primary={text.key} />
                     </ListItem>
                 ))}
-            </List>
-            <Divider />
-            <List>
-                {/* {['All mail', 'Trash', 'Spam'].map((text, index) => (
-                    <ListItem button key={text}>
-                        <ListItemIcon>
-                            {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                        </ListItemIcon>
-                        <ListItemText primary={text} />
-                    </ListItem>
-                ))} */}
             </List>
         </Box>
     );
@@ -192,9 +182,13 @@ export default function WebHeader(props) {
                                 </Box>
 
                             }
+                            <a href='/' style={userData ? {} : {display: 'flex', justifyContent: 'center', flexDirection: 'column'}}>
+                                <img src={TravelIcon} style={{width: '200px', height: '50px'}}/>
+                            </a>
+
                             <Box>
                                 <React.Fragment key={'right'}>
-                                    <Button onClick={toggleDrawer('right', true)} sx={userData ? {} : {marginTop: '20px !important'}}>
+                                    <Button onClick={toggleDrawer('right', true)} sx={userData ? {} : {marginTop: '15px !important'}}>
                                         <MenuIcon />
                                     </Button>
                                     <SwipeableDrawer

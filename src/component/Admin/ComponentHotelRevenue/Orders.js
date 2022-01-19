@@ -21,7 +21,7 @@ export default function Orders(props) {
 
     return (
         <React.Fragment>
-            <Title>Đặt tour</Title>
+            <Title>Đặt khách sạn</Title>
             <Table size="small">
                 <TableHead>
                     <TableRow>
@@ -30,7 +30,7 @@ export default function Orders(props) {
                         <TableCell>Điện thoại</TableCell>
                         <TableCell>Email</TableCell>
                         <TableCell>Địa chỉ</TableCell>
-                        <TableCell>Tổng số tiền(VNĐ)</TableCell>
+                        <TableCell>Tổng số tiền</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -38,10 +38,10 @@ export default function Orders(props) {
                         <TableRow key={row.id}>
                             <TableCell>{index+1}</TableCell>
                             <TableCell>{row.name}</TableCell>
-                            <TableCell>{row.phone}</TableCell>
+                            <TableCell>{row.phone_number}</TableCell>
                             <TableCell>{row.email}</TableCell>
                             <TableCell>{row.address}</TableCell>
-                            <TableCell>{nf.format(row.total_price)}</TableCell>
+                            <TableCell>{nf.format(row.total_price)} VNĐ</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>

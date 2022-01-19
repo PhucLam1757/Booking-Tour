@@ -112,13 +112,16 @@ const columns = [
 ];
 
 const allRole = [
-    { label: 'Trang người dùng', value: 'clent-home' },
-    { label: 'Trang chủ Admin', value: 'admin-dashboard' },
+    // { label: 'Trang người dùng', value: 'clent-home' },
+    { label: 'Doanh thu tour', value: 'admin-dashboard' },
+    { label: 'Doanh thu khách sạn', value: 'admin-hotel-revenue' },
     { label: 'Quản lí đặt tour', value: 'admin-booking' },
     { label: 'Quản lí tour', value: 'admin-tour' },
-    { label: 'Quản lí loại tour', value: 'admin-tourcategory' },
+    { label: 'Quản lí khách sạn', value: 'admin-hotel' },
+    { label: 'Quản lí đặt khách sạn', value: 'admin-booking-hotel' },
+    // { label: 'Quản lí loại tour', value: 'admin-tourcategory' },
     { label: 'Quản lí địa điểm', value: 'admin-place' },
-    { label: 'Quản lí quốc gia', value: 'admin-contry' },
+    // { label: 'Quản lí quốc gia', value: 'admin-contry' },
     { label: 'Quản lí tin tức', value: 'admin-blog' },
     { label: 'Quản lí cẩm nang', value: 'admin-handbook' },
     { label: 'Quản lí dịch vụ', value: 'admin-service' },

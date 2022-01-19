@@ -9,16 +9,18 @@ import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import BookingAPI from '../../../API/Booking';
+import HotelAPI from '../../../API/HotelAPI';
 
-function AdminDashboardContent() {
+function AdminHotelRevenue() {
     const [filterFromDate, setFilterFromDate] = useState('')
     const [filterToDate, setFilterToDate] = useState('')
     const [listBooking, setListBooking] = useState([])
 
     const getBookingByData = async (from, to) => {
         try{    
-            const bookingRes = await BookingAPI.getBookingByFilterDate({fromDate: filterFromDate, toDate: filterToDate})
-           
+            const bookingRes = await HotelAPI.getBookingByFilterDate({fromDate: filterFromDate, toDate: filterToDate})
+            console.log('bookingRes: ', bookingRes)
+
             if ( bookingRes.data && bookingRes.data.success ){
                 setListBooking(bookingRes.data.payload)
             }
@@ -43,7 +45,7 @@ function AdminDashboardContent() {
             <Grid item xs={12} md={8} lg={9}>
                 <Stack flexDirection={'row'} justifyContent={'space-between'}>
                     <Typography variant="h5" component="h2">
-                        Doanh thu tour
+                        Doanh thu khách sạn
                     </Typography>
                 </Stack>
 
@@ -105,5 +107,5 @@ function AdminDashboardContent() {
 }
 
 export default function Dashboard() {
-    return <AdminDashboardContent />;
+    return <AdminHotelRevenue />;
 }

@@ -17,6 +17,7 @@ import HomeRepairServiceIcon from '@mui/icons-material/HomeRepairService';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
+import HotelIcon from '@mui/icons-material/Hotel';
 import { useNavigate } from 'react-router-dom';
 import RoleAPI from '../../../API/RoleAPI';
 
@@ -52,7 +53,16 @@ export const MainListItems = () => {
                     <ListItemIcon>
                         <DashboardIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Trang chủ" />
+                    <ListItemText primary="Doanh thu tour" />
+                </ListItem> : ''
+            }
+
+            {roleFunction.indexOf('admin-hotel-revenue') >= 0 ?
+                <ListItem button onClick={() => navigate('/admin/hotel-revenue')}>
+                    <ListItemIcon>
+                        <DashboardIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Doanh thu khách sạn" />
                 </ListItem> : ''
             }
 
@@ -71,6 +81,24 @@ export const MainListItems = () => {
                         <FlightIcon />
                     </ListItemIcon>
                     <ListItemText primary="Quản lí tour" />
+                </ListItem> : ''
+            }
+
+            {roleFunction.indexOf('admin-hotel') >= 0 ?
+                <ListItem button onClick={() => navigate('/admin/hotel')}>
+                    <ListItemIcon>
+                        <HotelIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Quản lí khách sạn" />
+                </ListItem> : ''
+            }
+
+            {roleFunction.indexOf('admin-booking-hotel') >= 0 ?
+                <ListItem button onClick={() => navigate('/admin/hotel-booking')}>
+                    <ListItemIcon>
+                        <HotelIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Quản lí đặt khách sạn" />
                 </ListItem> : ''
             }
 

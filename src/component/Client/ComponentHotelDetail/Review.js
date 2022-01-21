@@ -11,6 +11,21 @@ import Pagination from '@mui/material/Pagination';
 import BookingAPI from "../../../API/Booking";
 import HotelAPI from "../../../API/HotelAPI";
 
+function formatDate(date) {
+    let d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+ 
+
 export default function ComponentTourDetailReview(props) {
     const [addReviewData, setAddReviewData] = useState('')
     const [reviewData, setReviewData] = useState([])
@@ -138,7 +153,7 @@ export default function ComponentTourDetailReview(props) {
                                     <h6 style={{ marginLeft: '10px', fontSize: '1.2em', fontWeight: '800', marginBottom: 0 }}>{reviewItem.name}</h6>
                                 </div>
                             </Stack>
-                            <p style={{ marginBottom: 0, fontSize: '0.8em' }}>Ngày review: {reviewItem.review_date && new Date(reviewItem.review_date).toISOString().split('T')[0]}</p>
+                            <p style={{ marginBottom: 0, fontSize: '0.8em' }}>Ngày review: {reviewItem.review_date && formatDate(reviewItem.review_date) }</p>
                             <FormControl fullWidth>
                                 <TextareaAutosize
                                     aria-label="minimum height"

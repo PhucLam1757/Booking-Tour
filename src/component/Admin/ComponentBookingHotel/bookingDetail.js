@@ -49,6 +49,20 @@ const RedditTextField = styled((props) => (
 
 }));
 
+function formatDate(date) {
+    let d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
 export default function ComponentBookingHotelDetail(props) {
     const [updateBookingNoti, setUpdateBookingNoti] = useState({ status: false, noti: '', type: '' })
     const [bookingDetail, setBookingDetail] = useState({})
@@ -190,7 +204,7 @@ export default function ComponentBookingHotelDetail(props) {
                         defaultValue=""
                         id="country-name"
                         variant="filled"
-                        value={bookingDetail.created_date && new Date(bookingDetail.created_date).toISOString().split('T')[0]}
+                        value={bookingDetail.created_date && formatDate(bookingDetail.created_date)}
                         style={{ marginTop: 11 }}
                     />
                 </Box>
@@ -203,7 +217,7 @@ export default function ComponentBookingHotelDetail(props) {
                         defaultValue=""
                         id="country-name"
                         variant="filled"
-                        value={bookingDetail.checkin_date && new Date(bookingDetail.checkin_date).toISOString().split('T')[0]}
+                        value={bookingDetail.checkin_date && formatDate(bookingDetail.checkin_date)}
                         style={{ marginTop: 11 }}
                     />
                 </Box>
@@ -216,7 +230,7 @@ export default function ComponentBookingHotelDetail(props) {
                         defaultValue=""
                         id="country-name"
                         variant="filled"
-                        value={bookingDetail.checkout_date && new Date(bookingDetail.checkout_date).toISOString().split('T')[0]}
+                        value={bookingDetail.checkout_date && formatDate(bookingDetail.checkout_date)}
                         style={{ marginTop: 11 }}
                     />
                 </Box>

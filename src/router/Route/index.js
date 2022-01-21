@@ -41,6 +41,7 @@ import AdminUpdateHotelPrivateRoute from '../PrivateRoute/AdminUpdateHotel';
 import AdminListHotelBookingPrivateRoute from '../PrivateRoute/AdminListHotelBooking';
 import AdminHotelBookingDetailPrivateRoute from '../PrivateRoute/AdminHotelBookingDetail';
 import AdminHotelRevenuePrivateRoute from '../PrivateRoute/AdminHotelRevenue';
+import AdminWelcomePrivateRoute from '../PrivateRoute/AdminWelcome'
 import BookingPage from "../../page/Client/Booking";
 import AccountPage from '../../page/Client/Profile';
 import HotelPage from "../../page/Client/Hotel";
@@ -171,6 +172,14 @@ export default function MainApp(props) {
                 {/*---------------------------------------------*/}
 
                 <Route exact path="/admin"
+                    element={
+                        <AdminLayout {...props} >
+                            <AdminWelcomePrivateRoute />
+                        </AdminLayout>
+                    }
+                />
+
+                <Route exact path="/admin/tour-revenue"
                     element={
                         <AdminLayout {...props} >
                             <AdminDashboardPrivateRoute />

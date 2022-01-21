@@ -100,6 +100,20 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
+function formatDate(date) {
+    let d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
 export default function Booking(props) {
     const [tourDetail, setTourDetail] = useState([])
     const [userInfo, setUserInfo] = useState({})
@@ -213,7 +227,7 @@ export default function Booking(props) {
                                     <Typography variant="p" component="p" sx={{ textAlign: 'left', color: 'black !important' }}>Ngày đi:</Typography>
                                 </Grid>
                                 <Grid item xs={6} sm={8}>
-                                    <Typography variant="p" component="p" sx={{ textAlign: 'left', color: 'black !important' }}><b>{tourDetail.departure_day && new Date(tourDetail.departure_day).toISOString().split('T')[0]}</b></Typography>
+                                    <Typography variant="p" component="p" sx={{ textAlign: 'left', color: 'black !important' }}><b>{tourDetail.departure_day && formatDate(tourDetail.departure_day)}</b></Typography>
                                 </Grid>
                             </Grid>
 
@@ -222,7 +236,7 @@ export default function Booking(props) {
                                     <Typography variant="p" component="p" sx={{ textAlign: 'left', color: 'black !important' }}>Ngày về:</Typography>
                                 </Grid>
                                 <Grid item xs={6} sm={8}>
-                                    <Typography variant="p" component="p" sx={{ textAlign: 'left', color: 'black !important' }}><b>{tourDetail.return_day && new Date(tourDetail.return_day).toISOString().split('T')[0]}</b></Typography>
+                                    <Typography variant="p" component="p" sx={{ textAlign: 'left', color: 'black !important' }}><b>{tourDetail.return_day && formatDate(tourDetail.return_day)}</b></Typography>
                                 </Grid>
                             </Grid>
 

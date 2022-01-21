@@ -45,6 +45,20 @@ const RedditTextField = styled((props) => (
 
 }));
 
+function formatDate(date) {
+    let d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
 export default function ComponentAdminServiceDetail(props) {
     const [serviceDetail, setServiceDetail] = useState({})
     const [updateServiceNoti, setUpdateServiceNoti] = useState({ status: false, noti: '', type: '' })
@@ -153,7 +167,7 @@ export default function ComponentAdminServiceDetail(props) {
                             id="country-name"
                             variant="filled"
                             style={{ marginTop: 11 }}
-                            value={serviceDetail.create_date ? new Date(serviceDetail.create_date).toISOString().split('T')[0] : ''}
+                            value={serviceDetail.create_date ? formatDate(serviceDetail.create_date) : ''}
                             disabled
                         />
                     </Box>

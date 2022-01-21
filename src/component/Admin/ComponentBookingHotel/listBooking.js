@@ -42,6 +42,20 @@ const columns = [
     },
 ];
 
+function formatDate(date) {
+    let d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
 export default function ComponentBookingHotel(props) {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -267,7 +281,7 @@ export default function ComponentBookingHotel(props) {
                                                                     displayStatus(row.status):
                                                                     (
                                                                         column.id === 'checkin_date' || column.id === 'checkout_date'?
-                                                                        new Date(value).toISOString().split('T')[0].toString():
+                                                                        formatDate(value):
                                                                         value
                                                                     )
                                                                 ))}

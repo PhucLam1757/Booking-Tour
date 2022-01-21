@@ -45,6 +45,20 @@ const RedditTextField = styled((props) => (
 
 }));
 
+function formatDate(date) {
+    let d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
 export default function ComponentAdminHandbookDetail(props) {
     const [handbookDetail, setHandbookDetail] = useState({})
     const [updateHandbookNoti, setUpdateHandbookNoti] = useState({ status: false, noti: '', type: '' })
@@ -151,7 +165,7 @@ export default function ComponentAdminHandbookDetail(props) {
                             id="country-name"
                             variant="filled"
                             style={{ marginTop: 11 }}
-                            value={handbookDetail.create_date ? new Date(handbookDetail.create_date).toISOString().split('T')[0] : ''}
+                            value={handbookDetail.create_date ? formatDate(handbookDetail.create_date) : ''}
                             disabled
                         />
                     </Box>

@@ -29,7 +29,7 @@ export default function ComponentHomeBlog(props) {
                 <div className="row">
                     <div className="col-md-12">
                         <div className="section-title text-center">
-                            <h2>Our Blog</h2>
+                            <h2>BÀI VIẾT MỚI NHẤT</h2>
                         </div>
                     </div>
                 </div>

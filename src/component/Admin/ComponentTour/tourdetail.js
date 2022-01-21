@@ -47,6 +47,20 @@ const RedditTextField = styled((props) => (
 
 }));
 
+function formatDate(date) {
+    let d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
 export default function ComponentTourDetail(props) {
     const [allPlace, setAllPlace] = useState([])
     const [allCategory, setAllCategory] = useState([])
@@ -93,8 +107,8 @@ export default function ComponentTourDetail(props) {
                     adult_price: detailPayload.adult_price,
                     tour_name: detailPayload.tour_name,
                     child_price: detailPayload.child_price,
-                    date_go: new Date(detailPayload.departure_day).toISOString().split('T')[0],
-                    date_return: new Date(detailPayload.return_day).toISOString().split('T')[0],
+                    date_go: formatDate(detailPayload.departure_day),
+                    date_return: formatDate(detailPayload.return_day),
                     place_from: detailPayload.place_go_id,
                     place_to: detailPayload.place_destination_id,
                     total_date: detailPayload.go_time,

@@ -83,7 +83,7 @@ export default function LoginComponent() {
                             <LockOutlinedIcon />
                         </Avatar>
                         <Typography component="h1" variant="h5">
-                            Sign in
+                            Đăng nhập
                         </Typography>
                         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1, fontSize: '2em', width: '100%' }}>
                             <TextField
@@ -91,7 +91,7 @@ export default function LoginComponent() {
                                 required
                                 fullWidth
                                 id="email"
-                                label="Email Address"
+                                label="Email"
                                 name="email"
                                 autoComplete="email"
                                 autoFocus
@@ -102,7 +102,7 @@ export default function LoginComponent() {
                                 required
                                 fullWidth
                                 name="password"
-                                label="Password"
+                                label="Mật khẩu"
                                 type="password"
                                 id="password"
                                 autoComplete="current-password"
@@ -118,17 +118,17 @@ export default function LoginComponent() {
                                 variant="contained"
                                 sx={{ mt: 3, mb: 2 }}
                             >
-                                Sign In
+                                Đăng nhập
                             </Button>
                             <Grid container>
-                                <Grid item xs>
+                                {/* <Grid item xs>
                                     <Link href="#" variant="body2">
                                         Forgot password?
                                     </Link>
-                                </Grid>
+                                </Grid> */}
                                 <Grid item>
                                     <Link href="/signup" variant="body2">
-                                        {"Don't have an account? Sign Up"}
+                                        {"Bạn chưa có tài khoản? Đăng ký"}
                                     </Link>
                                 </Grid>
                             </Grid>

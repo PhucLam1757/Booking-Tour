@@ -8,9 +8,8 @@ export default function WebFooter(props) {
                 <div className="row">
                     <div className="col-md-3">
                         <div className="copyright">
-                            <p><small>© 2016 Free HTML5 Template. <br /> All Rights Reserved. <br />
-                                Designed by <a href="http://freehtml5.co" target="_blank">FreeHTML5.co</a> <br />
-                                Demo Images: <a href="http://unsplash.com/" target="_blank">Unsplash</a></small>
+                            <p>
+                                Chúng tôi luôn cố gắng hoàn thiện từng ngày để cung cấp những dịch vụ tốt nhất cho bạn
                             </p>
                         </div>
                     </div>

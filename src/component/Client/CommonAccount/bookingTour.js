@@ -21,6 +21,20 @@ const Item = styled(Paper)(({ theme }) => ({
     paddingLeft: '20px'
 }));
 
+function formatDate(date) {
+    let d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
 export default function ListAccoutTour(props) {
     const [userBooking, setUserBooking] = useState([])
     const [listFavourite, setListFavourite] = useState([])
@@ -120,7 +134,7 @@ export default function ListAccoutTour(props) {
                                                 <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Ngày đi:</Typography>
                                             </Grid>
                                             <Grid item xs={6} sm={7}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.departure_day && new Date(bookingItem.departure_day).toISOString().split('T')[0]}</b></Typography>
+                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.departure_day && formatDate(bookingItem.departure_day)}</b></Typography>
                                             </Grid>
                                         </Grid>
 
@@ -129,7 +143,7 @@ export default function ListAccoutTour(props) {
                                                 <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Ngày về:</Typography>
                                             </Grid>
                                             <Grid item xs={6} sm={7}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.return_day && new Date(bookingItem.return_day).toISOString().split('T')[0]}</b></Typography>
+                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.return_day && formatDate(bookingItem.return_day)}</b></Typography>
                                             </Grid>
                                         </Grid>
 
@@ -202,7 +216,7 @@ export default function ListAccoutTour(props) {
                                                 <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Ngày đi:</Typography>
                                             </Grid>
                                             <Grid item xs={6} sm={7}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.departure_day && new Date(bookingItem.departure_day).toISOString().split('T')[0]}</b></Typography>
+                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.departure_day && formatDate(bookingItem.departure_day)}</b></Typography>
                                             </Grid>
                                         </Grid>
 
@@ -211,7 +225,7 @@ export default function ListAccoutTour(props) {
                                                 <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Ngày về:</Typography>
                                             </Grid>
                                             <Grid item xs={6} sm={7}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.return_day && new Date(bookingItem.return_day).toISOString().split('T')[0]}</b></Typography>
+                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.return_day && formatDate(bookingItem.return_day)}</b></Typography>
                                             </Grid>
                                         </Grid>
 
@@ -259,7 +273,7 @@ export default function ListAccoutTour(props) {
                                                 <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Ngày nhận phòng:</Typography>
                                             </Grid>
                                             <Grid item xs={6} sm={6}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.checkin_date && new Date(bookingItem.checkin_date).toISOString().split('T')[0]}</b></Typography>
+                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.checkin_date && formatDate(bookingItem.checkin_date)}</b></Typography>
                                             </Grid>
                                         </Grid>
 
@@ -268,7 +282,7 @@ export default function ListAccoutTour(props) {
                                                 <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Ngày trả phòng:</Typography>
                                             </Grid>
                                             <Grid item xs={6} sm={6}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.checkout_date && new Date(bookingItem.checkout_date).toISOString().split('T')[0]}</b></Typography>
+                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.checkout_date && formatDate(bookingItem.checkout_date)}</b></Typography>
                                             </Grid>
                                         </Grid>
 
@@ -277,7 +291,7 @@ export default function ListAccoutTour(props) {
                                                 <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Ngày đặt phòng</Typography>
                                             </Grid>
                                             <Grid item xs={6} sm={6}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.created_date && new Date(bookingItem.created_date).toISOString().split('T')[0]}</b></Typography>
+                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.created_date && formatDate(bookingItem.created_date)}</b></Typography>
                                             </Grid>
                                         </Grid>
 

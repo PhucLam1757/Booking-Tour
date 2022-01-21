@@ -20,6 +20,21 @@ const data = [
     createData('24:00', undefined),
 ];
 
+function formatDate(date) {
+    let d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
+
 export default function Chart(props) {
     const [chartData, setChartData] = React.useState()
     const theme = useTheme();
@@ -31,20 +46,20 @@ export default function Chart(props) {
         const getDate = []
 
         allBooking.forEach((bookingItem) => {
-            if (getDate.indexOf(new Date(bookingItem.created_date).toISOString().split('T')[0]) < 0) {
-                getDate.push(new Date(bookingItem.created_date).toISOString().split('T')[0])
+            if (getDate.indexOf(formatDate(bookingItem.created_date)) < 0) {
+                getDate.push(formatDate(bookingItem.created_date))
             }
         })
 
         getDate.forEach((dateItem) => {
             let price = 0
             allBooking.forEach((bookingItem) => {
-                if (new Date(bookingItem.created_date).toISOString().split('T')[0].toString() === dateItem.toString()) {
+                if (formatDate(bookingItem.created_date).toString() === dateItem.toString()) {
                     price += Number(bookingItem.total_price)
                 }
             })
             data.push(
-                createData(new Date(dateItem).toISOString().split('T')[0], price)
+                createData(formatDate(dateItem), price)
             )
         })
         setChartData(data)

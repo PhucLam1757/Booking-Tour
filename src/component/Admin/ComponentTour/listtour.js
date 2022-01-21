@@ -105,8 +105,8 @@ const columns = [
     { id: 'category_name', label: 'Loại tour', minWidth: 100 },
     { id: 'place_go', label: 'Điểm đi', minWidth: 100 },
     { id: 'place_destinate', label: 'Điểm đi', minWidth: 100 },
-    { id: 'departure_day', label: 'Ngày khỏi hành', minWidth: 100 },
-    { id: 'return_day', label: 'Ngày về', minWidth: 100 },
+    { id: 'departure_day', label: 'Ngày khỏi hành', minWidth: 150 },
+    { id: 'return_day', label: 'Ngày về', minWidth: 150 },
     { id: 'tour_status', label: 'Trạng thái', minWidth: 100 },
     {
         id: 'action',
@@ -115,6 +115,20 @@ const columns = [
         align: 'center',
     },
 ];
+
+function formatDate(date) {
+    let d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2)
+        month = '0' + month;
+    if (day.length < 2)
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
 
 export default function ComponentAdminTour(props) {
     const [page, setPage] = useState(0);
@@ -126,13 +140,13 @@ export default function ComponentAdminTour(props) {
     const navigate = useNavigate()
 
     const getAllTour = async () => {
-        try{
+        try {
             const allTour = await TourAPI.getAll()
 
-            if ( allTour.data && allTour.data.success ){
+            if (allTour.data && allTour.data.success) {
                 setTableRowData(allTour.data.payload)
             }
-        }catch(error){
+        } catch (error) {
             console.log('get all tour error: ', error)
         }
     }
@@ -223,7 +237,12 @@ export default function ComponentAdminTour(props) {
                                                                 <ButtonGroup variant="contained" aria-label="outlined primary button group">
                                                                     <Button color='error' onClick={() => deletePlace(row.tour_id)}>Xoá</Button>
                                                                     <Button onClick={() => navigate(`/admin/tour/${row.tour_id}`)}>Chi tiết</Button>
-                                                                </ButtonGroup> : value)}
+                                                                </ButtonGroup> :
+                                                                (
+                                                                    column.id === 'departure_day' || column.id === 'return_day' ?
+                                                                    formatDate(value) :
+                                                                    value
+                                                                ))}
                                                     </TableCell>
                                                 );
                                             })}

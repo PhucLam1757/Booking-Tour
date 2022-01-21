@@ -48,6 +48,20 @@ const RedditTextField = styled((props) => (
 
 }));
 
+function formatDate(date) {
+    let d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
 export default function ComponentBookingDetail(props) {
     const [updateBookingNoti, setUpdateBookingNoti] = useState({ status: false, noti: '', type: '' })
     const [bookingDetail, setBookingDetail] = useState({})
@@ -122,7 +136,7 @@ export default function ComponentBookingDetail(props) {
                         defaultValue=""
                         id="country-name"
                         variant="filled"
-                        value={bookingDetail.departure_day && new Date(bookingDetail.departure_day).toISOString().split('T')[0]}
+                        value={bookingDetail.departure_day && formatDate(bookingDetail.departure_day)}
                         style={{ marginTop: 11 }}
                     />
                 </Box>
@@ -135,7 +149,7 @@ export default function ComponentBookingDetail(props) {
                         defaultValue=""
                         id="country-name"
                         variant="filled"
-                        value={bookingDetail.departure_day && new Date(bookingDetail.departure_day).toISOString().split('T')[0]}
+                        value={bookingDetail.return_day && formatDate(bookingDetail.return_day)}
                         style={{ marginTop: 11 }}
                     />
                 </Box>

@@ -24,7 +24,11 @@ import RoleAPI from '../../../API/RoleAPI';
 export const MainListItems = () => {
     const [roleFunction, setRoleFunction] = React.useState('')
     const navigate = useNavigate()
+
     const customerDataSession = JSON.parse(window.sessionStorage.getItem('user_data'))
+    const pathname = window.location.pathname
+
+    console.log('pathname: ', pathname)
 
     const getRoleFunction = async () => {
         try {
@@ -44,12 +48,17 @@ export const MainListItems = () => {
         getRoleFunction()
     }, [])
 
-    console.log('roleFunction: ', roleFunction)
-
     return (
         <div>
+            <ListItem button onClick={() => navigate('/admin')} style={pathname === '/admin' ? {color: 'red'} : {}}>
+                    <ListItemIcon>
+                        <DashboardIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Trang chủ" />
+                </ListItem> 
+
             {roleFunction.indexOf('admin-dashboard') >= 0 ?
-                <ListItem button onClick={() => navigate('/admin')}>
+                <ListItem button onClick={() => navigate('/admin/tour-revenue')} style={pathname === '/admin/tour-revenue' ? {color: 'red'} : {}}>
                     <ListItemIcon>
                         <DashboardIcon />
                     </ListItemIcon>
@@ -58,7 +67,7 @@ export const MainListItems = () => {
             }
 
             {roleFunction.indexOf('admin-hotel-revenue') >= 0 ?
-                <ListItem button onClick={() => navigate('/admin/hotel-revenue')}>
+                <ListItem button onClick={() => navigate('/admin/hotel-revenue')} style={pathname === '/admin/hotel-revenue' ? {color: 'red'} : {}}>
                     <ListItemIcon>
                         <DashboardIcon />
                     </ListItemIcon>
@@ -67,7 +76,7 @@ export const MainListItems = () => {
             }
 
             {roleFunction.indexOf('admin-booking') >= 0 ?
-                <ListItem button onClick={() => navigate('/admin/booking')}>
+                <ListItem button onClick={() => navigate('/admin/booking')} style={pathname === '/admin/booking' ? {color: 'red'} : {}}>
                     <ListItemIcon>
                         <BorderColorIcon />
                     </ListItemIcon>
@@ -76,7 +85,7 @@ export const MainListItems = () => {
             }
 
             {roleFunction.indexOf('admin-tour') >= 0 ?
-                <ListItem button onClick={() => navigate('/admin/tour')}>
+                <ListItem button onClick={() => navigate('/admin/tour')} style={pathname === '/admin/tour' ? {color: 'red'} : {}}>
                     <ListItemIcon>
                         <FlightIcon />
                     </ListItemIcon>
@@ -85,7 +94,7 @@ export const MainListItems = () => {
             }
 
             {roleFunction.indexOf('admin-hotel') >= 0 ?
-                <ListItem button onClick={() => navigate('/admin/hotel')}>
+                <ListItem button onClick={() => navigate('/admin/hotel')} style={pathname === '/admin/hotel' ? {color: 'red'} : {}}>
                     <ListItemIcon>
                         <HotelIcon />
                     </ListItemIcon>
@@ -94,7 +103,7 @@ export const MainListItems = () => {
             }
 
             {roleFunction.indexOf('admin-booking-hotel') >= 0 ?
-                <ListItem button onClick={() => navigate('/admin/hotel-booking')}>
+                <ListItem button onClick={() => navigate('/admin/hotel-booking')} style={pathname === '/admin/hotel-booking' ? {color: 'red'} : {}}>
                     <ListItemIcon>
                         <HotelIcon />
                     </ListItemIcon>
@@ -103,7 +112,7 @@ export const MainListItems = () => {
             }
 
             {roleFunction.indexOf('admin-place') >= 0 ?
-                <ListItem button onClick={() => navigate('/admin/place')}>
+                <ListItem button onClick={() => navigate('/admin/place')} style={pathname === '/admin/place' ? {color: 'red'} : {}}>
                     <ListItemIcon>
                         <PlaceIcon />
                     </ListItemIcon>
@@ -112,7 +121,7 @@ export const MainListItems = () => {
             }
 
             {roleFunction.indexOf('admin-blog') >= 0 ?
-                <ListItem button onClick={() => navigate('/admin/blog')}>
+                <ListItem button onClick={() => navigate('/admin/blog')} style={pathname === '/admin/blog' ? {color: 'red'} : {}}>
                     <ListItemIcon>
                         <FeedIcon />
                     </ListItemIcon>
@@ -121,7 +130,7 @@ export const MainListItems = () => {
             }
 
             {roleFunction.indexOf('admin-handbook') >= 0 ?
-                <ListItem button onClick={() => navigate('/admin/handbook')}>
+                <ListItem button onClick={() => navigate('/admin/handbook')} style={pathname === '/admin/handbook' ? {color: 'red'} : {}}>
                     <ListItemIcon>
                         <MenuBookIcon />
                     </ListItemIcon>
@@ -131,7 +140,7 @@ export const MainListItems = () => {
 
 
             {roleFunction.indexOf('admin-service') >= 0 ?
-                <ListItem button onClick={() => navigate('/admin/service')}>
+                <ListItem button onClick={() => navigate('/admin/service')} style={pathname === '/admin/service' ? {color: 'red'} : {}}>
                     <ListItemIcon>
                         <HomeRepairServiceIcon />
                     </ListItemIcon>
@@ -140,7 +149,7 @@ export const MainListItems = () => {
             }
 
             {roleFunction.indexOf('admin-contact') >= 0 ?
-                <ListItem button onClick={() => navigate('/admin/contact')}>
+                <ListItem button onClick={() => navigate('/admin/contact')} style={pathname === '/admin/contact' ? {color: 'red'} : {}}>
                     <ListItemIcon>
                         <CallIcon />
                     </ListItemIcon>
@@ -149,7 +158,7 @@ export const MainListItems = () => {
             }
 
             {roleFunction.indexOf('admin-account') >= 0 ?
-                <ListItem button onClick={() => navigate('/admin/account')}>
+                <ListItem button onClick={() => navigate('/admin/account')} style={pathname === '/admin/account' ? {color: 'red'} : {}}>
                     <ListItemIcon>
                         <AccountCircleIcon />
                     </ListItemIcon>
@@ -158,7 +167,7 @@ export const MainListItems = () => {
             }
 
             {roleFunction.indexOf('admin-accountRole') >= 0 ?
-                <ListItem button onClick={() => navigate('/admin/account-role')}>
+                <ListItem button onClick={() => navigate('/admin/account-role')} style={pathname === '/admin/account-role' ? {color: 'red'} : {}}>
                     <ListItemIcon>
                         <ManageAccountsIcon />
                     </ListItemIcon>
@@ -167,7 +176,7 @@ export const MainListItems = () => {
             }
 
             {roleFunction.indexOf('admin-bank') >= 0 ?
-                <ListItem button onClick={() => navigate('/admin/banking')}>
+                <ListItem button onClick={() => navigate('/admin/banking')} style={pathname === '/admin/banking' ? {color: 'red'} : {}}>
                     <ListItemIcon>
                         <AccountBalanceIcon />
                     </ListItemIcon>

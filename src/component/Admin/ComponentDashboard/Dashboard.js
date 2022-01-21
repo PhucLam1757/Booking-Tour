@@ -10,6 +10,20 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import BookingAPI from '../../../API/Booking';
 
+function formatDate(date) {
+    let d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
 function AdminDashboardContent() {
     const [filterFromDate, setFilterFromDate] = useState('')
     const [filterToDate, setFilterToDate] = useState('')
@@ -29,8 +43,8 @@ function AdminDashboardContent() {
     }
 
     useEffect(() => {
-        setFilterFromDate(new Date().toISOString().split('T')[0])
-        setFilterToDate(new Date().toISOString().split('T')[0])
+        setFilterFromDate(formatDate(new Date()))
+        setFilterToDate(formatDate(new Date()))
         getBookingByData('', '')
     }, [])
 

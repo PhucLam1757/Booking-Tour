@@ -1,0 +1,52 @@
+.admin-welcome-page{
+    .booking-info{
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+    
+        div {
+            border-radius: 20px;
+            padding: 10px;
+            width: 18%;
+            min-width: 150px;
+            margin-top: 10px;
+            
+            p {
+                text-align: center;
+                color: white;
+            }
+            p:nth-child(2){
+                font-size: 1.5em;
+                font-weight: 700;
+            }
+
+            p:nth-child(1){
+                font-size: 1.2em;
+                font-weight: 800;
+            }
+        }
+
+        div:nth-child(1){
+            background-color: #00AF9F;
+        }
+
+        div:nth-child(2){
+            background-color: #37E6BA;
+        }
+
+        div:nth-child(3){
+            background-color: #7980C9;
+        }
+
+        div:nth-child(4){
+            background-color: #3B92D9;
+        }
+
+        div:nth-child(5){
+            background-color: #099473;
+        }
+    }
+
+}

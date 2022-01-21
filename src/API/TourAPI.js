@@ -34,7 +34,7 @@ const TourAPI = {
     getTourIdByCategory(categoryId){
         const url = `/tour/get-category/${categoryId}`
         return AxiosClient.get(url);
-    }
+    },
 
 };
 export default TourAPI;

@@ -25,6 +25,7 @@ import Snackbar from '@mui/material/Snackbar';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import PropTypes from 'prop-types';
 import PostAPI from '../../../API/PostAPI';
+import TextareaAutosize from '@mui/material/TextareaAutosize';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -129,7 +130,7 @@ export default function ComponentAdminBlog(props) {
         try {
             const getPostRes = await PostAPI.getAll()
             if (getPostRes.data && getPostRes.data.success) {
-                setAllPostData(getPostRes.data.payload )
+                setAllPostData(getPostRes.data.payload)
             }
         } catch (error) {
             console.log('get all post data error: ', error)
@@ -144,14 +145,14 @@ export default function ComponentAdminBlog(props) {
         try {
             setPostModalNoti({ status: false, noti: '', type: '' })
 
-            if (!postModalData.title.length || !postModalData.desc.length || !postModalData.image.length ) {
+            if (!postModalData.title.length || !postModalData.desc.length || !postModalData.image.length) {
                 setPostModalNoti({ status: true, noti: 'Các trường không được bỏ trống', type: 'error' })
             } else {
-                const postData = {title: postModalData.title, desc: postModalData.desc, image: postModalData.image }
-                
+                const postData = { title: postModalData.title, desc: postModalData.desc, image: postModalData.image }
+
                 const addPostRes = await PostAPI.createNewPost(postData)
-                if (addPostRes.data && addPostRes.data.success ) {
-                    
+                if (addPostRes.data && addPostRes.data.success) {
+
                     setPostModalNoti({ status: true, noti: 'Thêm tin tức thành công', type: 'success' })
                     setAllPostData(addPostRes.data.payload)
 
@@ -171,14 +172,14 @@ export default function ComponentAdminBlog(props) {
     const deletePostData = async (postId) => {
         try {
             const deleteContactRes = await PostAPI.deletePostData(postId)
-            
+
             if (deleteContactRes.data && deleteContactRes.data.success) {
                 const rowData = [...allPostData].filter((item) => item.blog_id !== postId)
 
                 setAllPostData(rowData)
                 setOpenNotiSnackBar({ status: true, noti: 'Xoá tin tức thành công', type: 'success' })
             } else {
-                setOpenNotiSnackBar({ status: true, noti: deleteContactRes.data.error.message , type: 'error' })
+                setOpenNotiSnackBar({ status: true, noti: deleteContactRes.data.error.message, type: 'error' })
             }
 
         } catch (error) {
@@ -197,7 +198,7 @@ export default function ComponentAdminBlog(props) {
 
                 const addPostRes = await PostAPI.updatePostData(postData)
 
-                if (addPostRes.data && addPostRes.data.success ) {
+                if (addPostRes.data && addPostRes.data.success) {
                     setPostModalNoti({ status: true, noti: 'Cập nhật thông tin thành công', type: 'success' })
 
                     const rowData = [...allPostData].map((item) => {
@@ -259,12 +260,11 @@ export default function ComponentAdminBlog(props) {
                             onChange={(event) => setPostModalData({ ...postModalData, title: event.target.value })}
                         />
 
-                        <RedditTextField
-                            label="Description"
-                            defaultValue=""
-                            id="post-title"
-                            variant="filled"
-                            style={{ marginTop: 11 }}
+                        <TextareaAutosize
+                            aria-label="minimum height"
+                            minRows={10}
+                            placeholder="Nhập mô tả"
+                            style={{ width: '100%', marginTop: '20px' }}
                             value={postModalData.desc}
                             onChange={(event) => setPostModalData({ ...postModalData, desc: event.target.value })}
                         />
@@ -278,7 +278,7 @@ export default function ComponentAdminBlog(props) {
                                 id="post-title"
                                 variant="filled"
                                 style={{ marginTop: 11 }}
-                                type= "file"
+                                type="file"
                                 onChange={(event) => {
                                     let reader = new FileReader();
                                     reader.readAsDataURL(event.target.files[0]);
@@ -364,11 +364,11 @@ export default function ComponentAdminBlog(props) {
                                                                         setPostModalData({ id: row.blog_id, title: row.blog_title, desc: row.blog_desc, image: row.blog_image })
                                                                     }}>Cập nhật</Button>
                                                                     <Button color='error' onClick={() => deletePostData(row.blog_id)}>Xoá</Button>
-                                                                </ButtonGroup> : 
+                                                                </ButtonGroup> :
                                                                 (
                                                                     column.id === 'blog_image' ?
-                                                                    <img src={row.blog_image} style={{width: '100px', height: '100px'}}/> :
-                                                                    value
+                                                                        <img src={row.blog_image} style={{ width: '100px', height: '100px' }} /> :
+                                                                        value
                                                                 )
                                                         )}
                                                     </TableCell>

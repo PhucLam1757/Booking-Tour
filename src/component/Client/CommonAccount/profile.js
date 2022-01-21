@@ -69,7 +69,7 @@ export default function CommonProfile(props) {
     const updateUserInfo = async () => {
         try{
             const userRes = await UserAPI.updateUserInfo({...userInfo, id: userData.ctm_id})
-            
+        
             if ( userRes.data && userRes.data.success ){
                 setAddUpdateNoti({status: true, noti: 'Cập nhật thông tin thành công',type: 'success'})
             }else{

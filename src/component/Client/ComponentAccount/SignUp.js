@@ -48,7 +48,6 @@ export default function SignUpComponent() {
         getUserRole()
     }, [])
 
-    console.log('verifyCode >>>> : ', verifyCode)
     const handleSubmitSendCode = async (event) => {
         try {
             event.preventDefault();
@@ -67,7 +66,7 @@ export default function SignUpComponent() {
                 setSignUpNoti({ status: true, noti: 'Không thể thiếu thông tin', type: 'error' })
             } else if (!String(customerData.email).toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
                 setSignUpNoti({ status: true, noti: 'Email sai định dạng', type: 'error' })
-            } else if (!customerData.phone.match(/\d/g).length === 10) {
+            } else if (!/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/.test(customerData.phone)) {
                 setSignUpNoti({ status: true, noti: 'Số điện thoại sai định dạng', type: 'error' })
             } else if (customerData.password !== customerData.confirmPassword) {
                 setSignUpNoti({ status: true, noti: 'Nhập lại mật khẩu không chính xác', type: 'error' })
@@ -108,7 +107,6 @@ export default function SignUpComponent() {
 
             if (Number(code) === Number(verifyCode)) {
                 const createCustomerRes = await UserAPI.createNewUser({ user_name: customerData.name, user_email: customerData.email, user_phone: customerData.phone, user_address: customerData.address, user_password: customerData.password, role: userRole })
-                console.log('createCustomerRes: ', createCustomerRes)
                 if (createCustomerRes.data && createCustomerRes.data.success) {
                     window.sessionStorage.setItem("user_data", JSON.stringify({ ctm_email: customerData.email, ctm_role: 'user', ctm_id: createCustomerRes.data.payload}));
                     navigation('/')
@@ -158,7 +156,7 @@ export default function SignUpComponent() {
                             <LockOutlinedIcon />
                         </Avatar>
                         <Typography component="h1" variant="h5">
-                            Sign up
+                            Đăng ký
                         </Typography>
                         {!verifyForm ?
                             <Box component="form" noValidate onSubmit={handleSubmitSendCode} sx={{ mt: 1, fontSize: '2em', width: '100%' }}>
@@ -243,13 +241,13 @@ export default function SignUpComponent() {
                                     variant="contained"
                                     sx={{ mt: 3, mb: 2 }}
                                 >
-                                    Đăng kí
+                                    Đăng ký
                                 </Button>
 
                                 <Grid container justifyContent="flex-end">
                                     <Grid item>
                                         <Link href="/login" variant="body2">
-                                            Bạn đã có mật khẩu? Đăng nhập
+                                            Bạn đã có tài khoản? Đăng nhập
                                         </Link>
                                     </Grid>
                                 </Grid>

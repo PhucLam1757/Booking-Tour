@@ -193,7 +193,7 @@ export default function Booking(props) {
                 const bookingRes = await BookingAPI.addNew(data)
 
                 if (bookingRes.data && bookingRes.data.success) {
-                    setBookingNoti({ status: true, noti: 'Chúc mừng bạn đã đăng kí thành công', type: 'success' })
+                    setBookingNoti({ status: true, noti: 'Chúc mừng bạn đã thanh toán thành công', type: 'success' })
 
                 } else {
                     setBookingNoti({ status: true, noti: 'Bạn đã thanh toán thất bại', type: 'error' })

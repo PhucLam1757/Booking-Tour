@@ -136,6 +136,7 @@ export default function ComponentAdminTour(props) {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [tableRowData, setTableRowData] = useState([]);
     const [openNotiSnackBar, setOpenNotiSnackBar] = useState({ status: false, noti: '', type: '' })
+    const [comfirmDelete, setComfirmDelete] = useState({ status: false, columnId: '' })
 
     const navigate = useNavigate()
 
@@ -167,23 +168,6 @@ export default function ComponentAdminTour(props) {
         getAllPlaceData()
     }, [])
 
-    const deletePlace = async (columnId) => {
-        try {
-            const deleteTour = await TourAPI.deleteTour(columnId)
-
-            if (deleteTour.data && deleteTour.data.success) {
-                const rowData = [...tableRowData].filter((item) => item.tour_id !== columnId)
-                setTableRowData(rowData)
-
-                setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin tour thành công', type: 'success' })
-            } else {
-                setOpenNotiSnackBar({ status: true, noti: deleteTour.data.error.message, type: 'error' })
-            }
-        } catch (error) {
-            setOpenNotiSnackBar({ status: true, noti: error.message, type: 'error' })
-        }
-    }
-
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -195,6 +179,25 @@ export default function ComponentAdminTour(props) {
 
     return (
         <div>
+             {comfirmDelete.status ?
+                <ComfirmDeteleModal
+                    status={comfirmDelete.status}
+                    columnId={comfirmDelete.columnId}
+                    setStatus={(status) => setComfirmDelete({ columnId: '', status: status })}
+                    setDeleteSuccess={() => {
+                        const rowData = [...tableRowData].filter((item) => item.tour_id !== comfirmDelete.columnId)
+                        setTableRowData(rowData)
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin thành công', type: 'success' })
+                        
+                        setComfirmDelete({ columnId: '', status: false })
+                    }}
+
+                    setDeleteFailed={() => {
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin thất bại', type: 'error' })
+                    }}
+                /> : ''
+            }
+
             <Stack flexDirection={'row'} justifyContent={'space-between'}>
                 <Typography variant="h5" component="h2">
                     Quản lí tour
@@ -235,7 +238,7 @@ export default function ComponentAdminTour(props) {
                                                         {column.id === 'id' ? (page) * 10 + (index + 1) : (
                                                             column.id === 'action' ?
                                                                 <ButtonGroup variant="contained" aria-label="outlined primary button group">
-                                                                    <Button color='error' onClick={() => deletePlace(row.tour_id)}>Xoá</Button>
+                                                                    <Button color='error' onClick={() => setComfirmDelete({ status: true, columnId: row.tour_id })}>Xoá</Button>
                                                                     <Button onClick={() => navigate(`/admin/tour/${row.tour_id}`)}>Chi tiết</Button>
                                                                 </ButtonGroup> :
                                                                 (
@@ -272,3 +275,62 @@ export default function ComponentAdminTour(props) {
     );
 }
 
+
+const ComfirmDeteleModal = (props) => {
+    const [comfirmDeleteModal, setComfirmDeleteModal] = useState(false)
+    const [comfirmId, setColumnId] = useState('')
+
+    useEffect(() => {
+        setComfirmDeleteModal(props.status)
+        setColumnId(props.columnId)
+    }, [])
+
+    const deleteTour = async (columnId) => {
+        try {
+            const deleteTourRes = await TourAPI.deleteTour(columnId)
+
+            if (deleteTourRes.data && deleteTourRes.data.success) {
+                props.setDeleteSuccess()
+            } else {
+                props.setDeleteFailed()
+            }
+        } catch (error) {
+            props.setDeleteFailed()
+        }
+    }
+
+    return (
+        <div>
+            <BootstrapDialog
+                onClose={() => {
+                    props.setStatus(false)
+                    setComfirmDeleteModal(false)
+                }}
+                aria-labelledby="customized-dialog-title"
+                open={comfirmDeleteModal}
+            >
+                <BootstrapDialogTitle id="customized-dialog-title"
+                    onClose={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                    Xác nhận xoá
+                </BootstrapDialogTitle>
+                <DialogContent dividers>
+                    Bạn có chắc chắn muốn xoá
+                </DialogContent>
+                <DialogActions>
+                    <Button autoFocus onClick={() => deleteTour(comfirmId)}>
+                        Xoá
+                    </Button>
+                    <Button autoFocus onClick={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                        Huỷ
+                    </Button>
+                </DialogActions>
+            </BootstrapDialog>
+        </div>
+    )
+}

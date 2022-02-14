@@ -49,11 +49,11 @@ export default function ComponentTour(props) {
 
     const getTourData = async (page, search, category, dateGo, dateReturn) => {
         try {
-            const tour = await TourAPI.getTourByFilter({ page: page, limit: 2, search, category, dateGo, dateReturn })
+            const tour = await TourAPI.getTourByFilter({ page: page, limit: 4, search, category, dateGo, dateReturn })
             if (tour.data && tour.data.success) {
                 setTourData(tour.data.payload.tour)
                 const allItem = tour.data.payload.totalItem
-                const total_page = Math.ceil(Number(allItem) / 2)
+                const total_page = Math.ceil(Number(allItem) / 4)
                 setTotalPage(total_page)
                 setCurrentPage(page)
             }
@@ -83,7 +83,10 @@ export default function ComponentTour(props) {
                 const removeRes = await FavouriteAPI.deleteFavourite({user_id: customerDataSession.ctm_id, tour_id: tour_id})
                 
                 if ( removeRes.data && removeRes.data.success){
-                    setFavouriteList(removeRes.data.payload)
+                    if ( removeRes.data.payload.length ){
+                        const favourite = removeRes.data.payload.map((item) => item.tour_id)
+                        setFavouriteList(favourite)
+                    }
                 }
             }     
         }catch(error){
@@ -206,7 +209,7 @@ export default function ComponentTour(props) {
                             <div style={{ width: '100%', minheight: '100px', boxShadow: '0 3px 10px rgb(0 0 0 / 20%)', padding: '20px' }}>
                                 <div className='row' style={{ marginLeft: 0, marginRight: 0 }}>
                                     <div className='col-sm-12 col-md-4'>
-                                        <img src={TouBanner} style={{ width: '100%', height: 'auto' }} />
+                                        <img src={tourItem.tour_img ? tourItem.tour_img : TouBanner} style={{ width: '100%', height: 'auto' }} />
                                     </div>
                                     <div className='col-sm-10 col-md-6'>
                                         <h2 style={{ color: '#06558A', fontWeight: 700 }}>{tourItem.tour_name}</h2>

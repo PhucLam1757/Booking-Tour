@@ -110,6 +110,7 @@ export default function ComponentAdminCountry(props) {
     const [newCountryData, setNewCountryData] = useState({ name: ''})
     const [addCountryNoti, setAddCountryNoti] = useState({ status: false, noti: '', type: '' }) /*display noti in modal when add and update*/
     const [openNotiSnackBar, setOpenNotiSnackBar] = useState({ status: false, noti: '', type: '' })
+    const [comfirmDelete, setComfirmDelete] = useState({ status: false, columnId: '' })
 
     const getAllCountryData = async () => {
         try {
@@ -155,24 +156,6 @@ export default function ComponentAdminCountry(props) {
             }
         } catch (error) {
             setAddCountryNoti({ status: true, noti: error.message, type: 'error' })
-        }
-    }
-
-    const deleteCountry = async (columnId) => {
-        try {
-            const deleteCategoryRes = await CountryAPI.deleteCountry(columnId)
-
-            if (deleteCategoryRes.data && deleteCategoryRes.data.success ) {
-                const rowData = [...tableRowData].filter((item) => item.country_id !== columnId)
-                setTableRowData(rowData)
-                props.setCountry(rowData)
-
-                setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin quốc giá thành công', type: 'success' })
-            } else {
-                setOpenNotiSnackBar({ status: true, noti: deleteCategoryRes.data.error.message, type: 'error' })
-            }
-        } catch (error) {
-            setOpenNotiSnackBar({ status: true, noti: error.message, type: 'error' })
         }
     }
 
@@ -224,6 +207,25 @@ export default function ComponentAdminCountry(props) {
 
     return (
         <div>
+            {comfirmDelete.status ?
+                <ComfirmDeteleModal
+                    status={comfirmDelete.status}
+                    columnId={comfirmDelete.columnId}
+                    setStatus={(status) => setComfirmDelete({ columnId: '', status: status })}
+                    setDeleteSuccess={() => {
+                        const rowData = [...tableRowData].filter((item) => item.country_id !== comfirmDelete.columnId)
+                        setTableRowData(rowData)
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin thành công', type: 'success' })
+                        
+                        setComfirmDelete({ columnId: '', status: false })
+                    }}
+
+                    setDeleteFailed={() => {
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin thất bại', type: 'error' })
+                    }}
+                /> : ''
+            }
+
             {openCountryModal.status &&
                 <div>
                     <BootstrapDialog
@@ -311,7 +313,7 @@ export default function ComponentAdminCountry(props) {
                                                                         setOpenCountryModal({ status: true, type: 'update' })
                                                                         setNewCountryData({ id: row.country_id, name: row.name})
                                                                     }}>Cập nhật</Button>
-                                                                    <Button color='error' onClick={() => deleteCountry(row.country_id)}>Xoá</Button>
+                                                                    <Button color='error' onClick={() => setComfirmDelete({ status: true, columnId: row.country_id })}>Xoá</Button>
                                                                 </ButtonGroup> : value)}
                                                     </TableCell>
                                                 );
@@ -340,5 +342,64 @@ export default function ComponentAdminCountry(props) {
             </Snackbar>
         </div>
     );
+}
+
+const ComfirmDeteleModal = (props) => {
+    const [comfirmDeleteModal, setComfirmDeleteModal] = useState(false)
+    const [comfirmId, setColumnId] = useState('')
+
+    useEffect(() => {
+        setComfirmDeleteModal(props.status)
+        setColumnId(props.columnId)
+    }, [])
+
+    const deleteCountry = async (columnId) => {
+        try {
+            const deleteCountryRes = await CountryAPI.deleteCountry(columnId)
+
+            if (deleteCountryRes.data && deleteCountryRes.data.success) {
+                props.setDeleteSuccess()
+            } else {
+                props.setDeleteFailed()
+            }
+        } catch (error) {
+            props.setDeleteFailed()
+        }
+    }
+
+    return (
+        <div>
+            <BootstrapDialog
+                onClose={() => {
+                    props.setStatus(false)
+                    setComfirmDeleteModal(false)
+                }}
+                aria-labelledby="customized-dialog-title"
+                open={comfirmDeleteModal}
+            >
+                <BootstrapDialogTitle id="customized-dialog-title"
+                    onClose={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                    Xác nhận xoá
+                </BootstrapDialogTitle>
+                <DialogContent dividers>
+                    Bạn có chắc chắn muốn xoá
+                </DialogContent>
+                <DialogActions>
+                    <Button autoFocus onClick={() => deleteCountry(comfirmId)}>
+                        Xoá
+                    </Button>
+                    <Button autoFocus onClick={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                        Huỷ
+                    </Button>
+                </DialogActions>
+            </BootstrapDialog>
+        </div>
+    )
 }
 

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import TravelBlog from '../../../asset/images/Travel-blog.jpeg'
 import PostAPI from '../../../API/PostAPI'
+import { useNavigate } from "react-router-dom";
 
 const monthNames = [ "January", "February", "March", "April", "May", "June", 
                        "July", "August", "September", "October", "November", "December" ];
 
 export default function ComponentHomeBlog(props) {
     const [allBlog, setAllBlog] = useState([])
+    const navigate = useNavigate()
 
     const getAllBlog = async () => {
         try {
@@ -44,7 +46,7 @@ export default function ComponentHomeBlog(props) {
                                     </div>
                                 </div>
                                 <div className="desc">
-                                    <h3><a href="#">{blogItem.blog_title}</a></h3>
+                                    <h3><a onClick={()=>navigate(`/blog/${blogItem.blog_id}`)} style={{cursor: 'pointer'}}>{blogItem.blog_title}</a></h3>
                                 </div>
                             </div>
                         )

@@ -66,14 +66,14 @@ export const MainListItems = () => {
                 </ListItem> : ''
             }
 
-            {roleFunction.indexOf('admin-hotel-revenue') >= 0 ?
+            {/* {roleFunction.indexOf('admin-hotel-revenue') >= 0 ?
                 <ListItem button onClick={() => navigate('/admin/hotel-revenue')} style={pathname === '/admin/hotel-revenue' ? {color: 'red'} : {}}>
                     <ListItemIcon>
                         <DashboardIcon />
                     </ListItemIcon>
                     <ListItemText primary="Doanh thu khách sạn" />
                 </ListItem> : ''
-            }
+            } */}
 
             {roleFunction.indexOf('admin-booking') >= 0 ?
                 <ListItem button onClick={() => navigate('/admin/booking')} style={pathname === '/admin/booking' ? {color: 'red'} : {}}>
@@ -93,7 +93,7 @@ export const MainListItems = () => {
                 </ListItem> : ''
             }
 
-            {roleFunction.indexOf('admin-hotel') >= 0 ?
+            {/* {roleFunction.indexOf('admin-hotel') >= 0 ?
                 <ListItem button onClick={() => navigate('/admin/hotel')} style={pathname === '/admin/hotel' ? {color: 'red'} : {}}>
                     <ListItemIcon>
                         <HotelIcon />
@@ -109,7 +109,7 @@ export const MainListItems = () => {
                     </ListItemIcon>
                     <ListItemText primary="Quản lí đặt khách sạn" />
                 </ListItem> : ''
-            }
+            } */}
 
             {roleFunction.indexOf('admin-place') >= 0 ?
                 <ListItem button onClick={() => navigate('/admin/place')} style={pathname === '/admin/place' ? {color: 'red'} : {}}>

@@ -19,12 +19,12 @@ export default function ConponentListBlog(props) {
     const getAllService = async (page) => {
         try {
             setLoading(true)
-            const blogRes = await ServiceAPI.getAll(2, page)
+            const blogRes = await ServiceAPI.getAll(12, page)
 
             if (blogRes.data && blogRes.data.success) {
                 setAllService(blogRes.data.payload.service)
                 const allItem = blogRes.data.payload.totalItem
-                const total_page = Math.ceil(Number(allItem) / 2)
+                const total_page = Math.ceil(Number(allItem) / 12)
                 setTotalPage(total_page)
                 setCurrentPage(page)
             }
@@ -52,7 +52,7 @@ export default function ConponentListBlog(props) {
                                     </div>
                                     <div className="desc">
                                         <h3 style={{cursor: 'pointer'}}>
-                                            <a onClick={()=>navigate(`/service/${serviceItem.service_id}`)}>{serviceItem.service_desc}</a>
+                                            <a onClick={()=>navigate(`/service/${serviceItem.service_id}`)}>{serviceItem.service_name}</a>
                                         </h3>
                                     </div>
                                 </div>

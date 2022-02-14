@@ -122,6 +122,8 @@ export default function ComponentAdminListService(props) {
     const [openServiceModal, setOpenServiceModal] = useState({ status: false, type: '' })
     const [serviceModalData, setServiceModalData] = useState({ id: '', service_name: '', service_desc: '', service_img: '' })
     const [serviceModalNoti, setServiceModalNoti] = useState({ status: false, noti: '', type: '' })
+    const [comfirmDelete, setComfirmDelete] = useState({ status: false, columnId: '' })
+
     const navigate = useNavigate()
 
     const getAllServiceData = async () => {
@@ -143,12 +145,12 @@ export default function ComponentAdminListService(props) {
         try {
             setServiceModalNoti({ status: false, noti: '', type: '' })
 
-            if (!serviceModalData.service_name.length || !serviceModalData.service_desc.length || !serviceModalData.service_img.length ) {
+            if (!serviceModalData.service_name.length || !serviceModalData.service_desc.length || !serviceModalData.service_img.length) {
                 setServiceModalNoti({ status: true, noti: 'Các trường không được để trống', type: 'error' })
             } else {
-                const serviceData = {service_name: serviceModalData.service_name, service_desc: serviceModalData.service_desc, service_img: serviceModalData.service_img }
+                const serviceData = { service_name: serviceModalData.service_name, service_desc: serviceModalData.service_desc, service_img: serviceModalData.service_img }
                 const addPostRes = await ServiceAPI.createNewService(serviceData)
-                if (addPostRes.data && addPostRes.data.success ) {
+                if (addPostRes.data && addPostRes.data.success) {
                     setServiceModalNoti({ status: true, noti: 'Thêm thông tin thành công', type: 'success' })
                     setAllServiceData(addPostRes.data.payload)
 
@@ -165,25 +167,6 @@ export default function ComponentAdminListService(props) {
         }
     }
 
-    const deleteServiceData = async (serviceId) => {
-        try {
-            const deleteServiceRes = await ServiceAPI.deleteServiceData(serviceId)
-            if (deleteServiceRes.data && deleteServiceRes.data.success ) {
-                const rowData = [...allServiceData].filter((item) => item.service_id !== serviceId)
-
-                setAllServiceData(rowData)
-                setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin dịch vụ thành công', type: 'success' })
-            } else {
-                setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin dịch vụ thất bại', type: 'error' })
-            }
-
-        } catch (error) {
-            setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin dịch vụ thất bại', type: 'error' })
-        }
-    }
-
-   
-
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -195,6 +178,25 @@ export default function ComponentAdminListService(props) {
 
     return (
         <div>
+            {comfirmDelete.status ?
+                <ComfirmDeteleModal
+                    status={comfirmDelete.status}
+                    columnId={comfirmDelete.columnId}
+                    setStatus={(status) => setComfirmDelete({ columnId: '', status: status })}
+                    setDeleteSuccess={() => {
+                        const rowData = [...allServiceData].filter((item) => item.service_id !== comfirmDelete.columnId)
+                        setAllServiceData(rowData)
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin dịch vụ thành công', type: 'success' })
+
+                        setComfirmDelete({ columnId: '', status: false })
+                    }}
+
+                    setDeleteFailed={() => {
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin thất bại', type: 'error' })
+                    }}
+                /> : ''
+            }
+
             <div>
                 <BootstrapDialog
                     onClose={() => setOpenServiceModal({ status: false, type: '' })}
@@ -236,7 +238,7 @@ export default function ComponentAdminListService(props) {
                                     reader.onload = function () {
                                         setServiceModalData({ ...serviceModalData, service_img: reader.result })
                                     };
-    
+
                                     reader.onerror = function (error) {
                                         console.log('Error: ', error);
                                     };
@@ -264,7 +266,7 @@ export default function ComponentAdminListService(props) {
 
             <Stack flexDirection={'row'} justifyContent={'space-between'}>
                 <Typography variant="h5" component="h2">
-                        Dịch vụ
+                    Dịch vụ
                 </Typography>
 
                 <Button variant="contained" onClick={() => {
@@ -308,14 +310,14 @@ export default function ComponentAdminListService(props) {
                                                             column.id === 'action' ?
                                                                 <ButtonGroup variant="contained" aria-label="outlined primary button group">
                                                                     <Button onClick={() => navigate(`/admin/service/${row.service_id}`)}>Chi tiết</Button>
-                                                                    <Button color='error' onClick={() => deleteServiceData(row.service_id)}>Xoá</Button>
-                                                                </ButtonGroup> : 
+                                                                    <Button color='error' onClick={() => setComfirmDelete({ status: true, columnId: row.service_id })}>Xoá</Button>
+                                                                </ButtonGroup> :
                                                                 (
                                                                     column.id === 'service_img' ?
-                                                                    <img src = {row.service_img} style={{width: '100px', height: '100px'}} /> :
-                                                                    value
+                                                                        <img src={row.service_img} style={{ width: '100px', height: '100px' }} /> :
+                                                                        value
                                                                 )
-                                                                )}
+                                                        )}
                                                     </TableCell>
                                                 );
                                             })}
@@ -341,6 +343,65 @@ export default function ComponentAdminListService(props) {
                     {openNotiSnackBar.noti}
                 </Alert>
             </Snackbar>
+        </div>
+    )
+}
+
+const ComfirmDeteleModal = (props) => {
+    const [comfirmDeleteModal, setComfirmDeleteModal] = useState(false)
+    const [comfirmId, setColumnId] = useState('')
+
+    useEffect(() => {
+        setComfirmDeleteModal(props.status)
+        setColumnId(props.columnId)
+    }, [])
+
+    const deleteService = async (columnId) => {
+        try {
+            const deleteServiceRes = await ServiceAPI.deleteServiceData(columnId)
+
+            if (deleteServiceRes.data && deleteServiceRes.data.success) {
+                props.setDeleteSuccess()
+            } else {
+                props.setDeleteFailed()
+            }
+        } catch (error) {
+            props.setDeleteFailed()
+        }
+    }
+
+    return (
+        <div>
+            <BootstrapDialog
+                onClose={() => {
+                    props.setStatus(false)
+                    setComfirmDeleteModal(false)
+                }}
+                aria-labelledby="customized-dialog-title"
+                open={comfirmDeleteModal}
+            >
+                <BootstrapDialogTitle id="customized-dialog-title"
+                    onClose={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                    Xác nhận xoá
+                </BootstrapDialogTitle>
+                <DialogContent dividers>
+                    Bạn có chắc chắn muốn xoá
+                </DialogContent>
+                <DialogActions>
+                    <Button autoFocus onClick={() => deleteService(comfirmId)}>
+                        Xoá
+                    </Button>
+                    <Button autoFocus onClick={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                        Huỷ
+                    </Button>
+                </DialogActions>
+            </BootstrapDialog>
         </div>
     )
 }

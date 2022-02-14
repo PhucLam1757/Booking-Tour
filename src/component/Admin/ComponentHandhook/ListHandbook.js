@@ -122,6 +122,8 @@ export default function ComponentAdminListHandbook(props) {
     const [openHandbookModal, setOpenHandbookModal] = useState({ status: false, type: '' })
     const [handbookModalData, setHandbookModalData] = useState({ id: '', handbook_name: '', handbook_desc: '', handbook_img: '' })
     const [handbookModalNoti, setHandbookModalNoti] = useState({ status: false, noti: '', type: '' })
+    const [comfirmDelete, setComfirmDelete] = useState({ status: false, columnId: '' })
+
     const navigate = useNavigate()
 
     const getAllServiceData = async () => {
@@ -143,12 +145,12 @@ export default function ComponentAdminListHandbook(props) {
         try {
             setHandbookModalNoti({ status: false, noti: '', type: '' })
 
-            if (!handbookModalData.handbook_name.length || !handbookModalData.handbook_desc.length || !handbookModalData.handbook_img.length ) {
+            if (!handbookModalData.handbook_name.length || !handbookModalData.handbook_desc.length || !handbookModalData.handbook_img.length) {
                 setHandbookModalNoti({ status: true, noti: 'Các trường không được để trống', type: 'error' })
             } else {
-                const handbookData = {handbook_name: handbookModalData.handbook_name, handbook_desc: handbookModalData.handbook_desc, handbook_img: handbookModalData.handbook_img }
+                const handbookData = { handbook_name: handbookModalData.handbook_name, handbook_desc: handbookModalData.handbook_desc, handbook_img: handbookModalData.handbook_img }
                 const addHandbookRes = await HandbookAPI.createNewHandbook(handbookData)
-                if (addHandbookRes.data && addHandbookRes.data.success ) {
+                if (addHandbookRes.data && addHandbookRes.data.success) {
                     setHandbookModalNoti({ status: true, noti: 'Thêm thông tin thành công', type: 'success' })
                     setAllHandbookData(addHandbookRes.data.payload)
 
@@ -165,25 +167,6 @@ export default function ComponentAdminListHandbook(props) {
         }
     }
 
-    const deleteHandbookData = async (serviceId) => {
-        try {
-            const deleteServiceRes = await HandbookAPI.deleteHandbookData(serviceId)
-            if (deleteServiceRes.data && deleteServiceRes.data.success ) {
-                const rowData = [...allHandbookData].filter((item) => item.service_id !== serviceId)
-
-                setAllHandbookData(rowData)
-                setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin cẩm nang thành công', type: 'success' })
-            } else {
-                setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin cẩm nang thất bại', type: 'error' })
-            }
-
-        } catch (error) {
-            setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin cẩm nang thất bại', type: 'error' })
-        }
-    }
-
-   
-
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -195,6 +178,26 @@ export default function ComponentAdminListHandbook(props) {
 
     return (
         <div>
+            {comfirmDelete.status ?
+                <ComfirmDeteleModal
+                    status={comfirmDelete.status}
+                    columnId={comfirmDelete.columnId}
+                    setStatus={(status) => setComfirmDelete({ columnId: '', status: status })}
+                    setDeleteSuccess={() => {
+                        const rowData = [...allHandbookData].filter((item) => item.handbook_id !== comfirmDelete.columnId)
+
+                        setAllHandbookData(rowData)
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin cẩm nang thành công', type: 'success' })
+
+                        setComfirmDelete({ columnId: '', status: false })
+                    }}
+
+                    setDeleteFailed={() => {
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin thất bại', type: 'error' })
+                    }}
+                /> : ''
+            }
+
             <div>
                 <BootstrapDialog
                     onClose={() => setOpenHandbookModal({ status: false, type: '' })}
@@ -236,7 +239,7 @@ export default function ComponentAdminListHandbook(props) {
                                     reader.onload = function () {
                                         setHandbookModalData({ ...handbookModalData, handbook_img: reader.result })
                                     };
-    
+
                                     reader.onerror = function (error) {
                                         console.log('Error: ', error);
                                     };
@@ -264,7 +267,7 @@ export default function ComponentAdminListHandbook(props) {
 
             <Stack flexDirection={'row'} justifyContent={'space-between'}>
                 <Typography variant="h5" component="h2">
-                        Cẩm Nang
+                    Cẩm Nang
                 </Typography>
 
                 <Button variant="contained" onClick={() => {
@@ -308,14 +311,14 @@ export default function ComponentAdminListHandbook(props) {
                                                             column.id === 'action' ?
                                                                 <ButtonGroup variant="contained" aria-label="outlined primary button group">
                                                                     <Button onClick={() => navigate(`/admin/handbook/${row.handbook_id}`)}>Chi tiết</Button>
-                                                                    <Button color='error' onClick={() => deleteHandbookData(row.handbook_id)}>Xoá</Button>
-                                                                </ButtonGroup> : 
+                                                                    <Button color='error' onClick={() => setComfirmDelete({ status: true, columnId: row.handbook_id })}>Xoá</Button>
+                                                                </ButtonGroup> :
                                                                 (
                                                                     column.id === 'handbook_img' ?
-                                                                    <img src = {row.handbook_img} style={{width: '100px', height: '100px'}} /> :
-                                                                    value
+                                                                        <img src={row.handbook_img} style={{ width: '100px', height: '100px' }} /> :
+                                                                        value
                                                                 )
-                                                                )}
+                                                        )}
                                                     </TableCell>
                                                 );
                                             })}
@@ -341,6 +344,65 @@ export default function ComponentAdminListHandbook(props) {
                     {openNotiSnackBar.noti}
                 </Alert>
             </Snackbar>
+        </div>
+    )
+}
+
+const ComfirmDeteleModal = (props) => {
+    const [comfirmDeleteModal, setComfirmDeleteModal] = useState(false)
+    const [comfirmId, setColumnId] = useState('')
+
+    useEffect(() => {
+        setComfirmDeleteModal(props.status)
+        setColumnId(props.columnId)
+    }, [])
+
+    const deleteHandbook = async (columnId) => {
+        try {
+            const deleteHandbookRes = await HandbookAPI.deleteHandbookData(columnId)
+
+            if (deleteHandbookRes.data && deleteHandbookRes.data.success) {
+                props.setDeleteSuccess()
+            } else {
+                props.setDeleteFailed()
+            }
+        } catch (error) {
+            props.setDeleteFailed()
+        }
+    }
+
+    return (
+        <div>
+            <BootstrapDialog
+                onClose={() => {
+                    props.setStatus(false)
+                    setComfirmDeleteModal(false)
+                }}
+                aria-labelledby="customized-dialog-title"
+                open={comfirmDeleteModal}
+            >
+                <BootstrapDialogTitle id="customized-dialog-title"
+                    onClose={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                    Xác nhận xoá
+                </BootstrapDialogTitle>
+                <DialogContent dividers>
+                    Bạn có chắc chắn muốn xoá
+                </DialogContent>
+                <DialogActions>
+                    <Button autoFocus onClick={() => deleteHandbook(comfirmId)}>
+                        Xoá
+                    </Button>
+                    <Button autoFocus onClick={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                        Huỷ
+                    </Button>
+                </DialogActions>
+            </BootstrapDialog>
         </div>
     )
 }

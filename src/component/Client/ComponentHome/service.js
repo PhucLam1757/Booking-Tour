@@ -30,7 +30,7 @@ export default function ComponentHomeService(props) {
                 <div className="row">
                     <div className="col-md-12">
                         <div className="section-title text-center" style={{ marginBottom: '2em' }}>
-                            <h2 style={{ color: '#FF5721',fontWeight: 900  }}>Dịch Vụ công ty</h2>
+                            <h2 style={{ color: '#FF5721',fontWeight: 900, fontSize: '2em'  }}>Dịch Vụ công ty</h2>
                         </div>
                     </div>
                 </div>

@@ -23,6 +23,14 @@ import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import TourCategoryAPI from '../../../API/TourCategoryAPI';
 import BookingAPI from '../../../API/Booking';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import { styled, alpha } from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import PropTypes from 'prop-types';
 
 const columns = [
     { id: 'id', label: 'Id', minWidth: 100 },
@@ -40,6 +48,44 @@ const columns = [
     },
 ];
 
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+    '& .MuiDialogContent-root': {
+        padding: theme.spacing(2),
+    },
+    '& .MuiDialogActions-root': {
+        padding: theme.spacing(1),
+    },
+}));
+
+const BootstrapDialogTitle = (props) => {
+    const { children, onClose, ...other } = props;
+
+    return (
+        <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+            {children}
+            {onClose ? (
+                <IconButton
+                    aria-label="close"
+                    onClick={onClose}
+                    sx={{
+                        position: 'absolute',
+                        right: 8,
+                        top: 8,
+                        color: (theme) => theme.palette.grey[500],
+                    }}
+                >
+                    <CloseIcon />
+                </IconButton>
+            ) : null}
+        </DialogTitle>
+    );
+};
+
+BootstrapDialogTitle.propTypes = {
+    children: PropTypes.node,
+    onClose: PropTypes.func.isRequired,
+};
+
 export default function ComponentBookingTour(props) {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -50,14 +96,15 @@ export default function ComponentBookingTour(props) {
     const [listTour, setListTour] = useState([])
     const [selectedTour, setSelectedTour] = useState(0)
     const [selectedStatus, setSelectedStatus] = useState('all')
+    const [comfirmDelete, setComfirmDelete] = useState({ status: false, columnId: '' })
 
     const navigate = useNavigate()
 
     const getAllBooking = async (category, tour, status) => {
         try {
-            const tourByFilter = await BookingAPI.getBookingByFilter({category, tour, status})
+            const tourByFilter = await BookingAPI.getBookingByFilter({ category, tour, status })
 
-            if ( tourByFilter.data && tourByFilter.data.success ){
+            if (tourByFilter.data && tourByFilter.data.success) {
                 setTableRowData(tourByFilter.data.payload)
             }
         } catch (error) {
@@ -101,23 +148,6 @@ export default function ComponentBookingTour(props) {
         getAllBooking(0, 0, 'all')
     }, [])
 
-    const deleteBooking = async (columnId) => {
-        try {
-            const deleteBooking = await BookingAPI.deleteBooking(columnId)
-
-            if (deleteBooking.data && deleteBooking.data.success) {
-                const rowData = [...tableRowData].filter((item) => item.booking_id !== columnId)
-                setTableRowData(rowData)
-
-                setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin booking thành công', type: 'success' })
-            } else {
-                setOpenNotiSnackBar({ status: true, noti: deleteBooking.data.error.message, type: 'error' })
-            }
-        } catch (error) {
-            setOpenNotiSnackBar({ status: true, noti: error.message, type: 'error' })
-        }
-    }
-
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -150,6 +180,24 @@ export default function ComponentBookingTour(props) {
 
     return (
         <div>
+            {comfirmDelete.status ?
+                <ComfirmDeteleModal
+                    status={comfirmDelete.status}
+                    columnId={comfirmDelete.columnId}
+                    setStatus={(status) => setComfirmDelete({ columnId: '', status: status })}
+                    setDeleteSuccess={() => {
+                        const rowData = [...tableRowData].filter((item) => item.booking_id !== comfirmDelete.columnId)
+                        setTableRowData(rowData)
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin booking thành công', type: 'success' })
+                        setComfirmDelete({ columnId: '', status: false })
+                    }}
+
+                    setDeleteFailed={() => {
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin thất bại', type: 'error' })
+                    }}
+                /> : ''
+            }
+
             <Stack flexDirection={'row'} justifyContent={'space-between'}>
                 <Typography variant="h5" component="h2">
                     Quản lí đặt tour
@@ -167,7 +215,7 @@ export default function ComponentBookingTour(props) {
                             value={selectedCategory}
                             onChange={(event) => {
                                 // category, tour, status
-                                getAllBooking(event.target.value, selectedTour, selectedStatus )
+                                getAllBooking(event.target.value, selectedTour, selectedStatus)
                                 setSelectedCategory(event.target.value)
                             }}
                         >
@@ -190,7 +238,7 @@ export default function ComponentBookingTour(props) {
                             label="Age"
                             onChange={(event) => {
                                 // category, tour, status
-                                getAllBooking(selectedCategory, event.target.value, selectedStatus )
+                                getAllBooking(selectedCategory, event.target.value, selectedStatus)
                                 setSelectedTour(event.target.value)
                             }}
                         >
@@ -213,7 +261,7 @@ export default function ComponentBookingTour(props) {
                             label="Age"
                             onChange={(event) => {
                                 // category, tour, status
-                                getAllBooking(selectedCategory ? selectedCategory : 0, selectedTour ? selectedTour: 0, event.target.value )
+                                getAllBooking(selectedCategory ? selectedCategory : 0, selectedTour ? selectedTour : 0, event.target.value)
                                 setSelectedStatus(event.target.value)
                             }}
                         >
@@ -257,13 +305,15 @@ export default function ComponentBookingTour(props) {
                                                         {column.id === 'id' ? (page) * 10 + (index + 1) : (
                                                             column.id === 'action' ?
                                                                 <ButtonGroup variant="contained" aria-label="outlined primary button group">
-                                                                    <Button color='error' onClick={() => deleteBooking(row.booking_id)}>Xoá</Button>
+                                                                    <Button color='error'
+                                                                        onClick={() => setComfirmDelete({ status: true, columnId: row.booking_id })}
+                                                                    >Xoá</Button>
                                                                     <Button onClick={() => navigate(`/admin/booking/${row.booking_id}`)}>Chi tiết</Button>
-                                                                </ButtonGroup> : 
+                                                                </ButtonGroup> :
                                                                 (
                                                                     column.id === 'status' ?
-                                                                    displayStatus(row.status):
-                                                                    value
+                                                                        displayStatus(row.status) :
+                                                                        value
                                                                 ))}
                                                     </TableCell>
                                                 );
@@ -293,4 +343,64 @@ export default function ComponentBookingTour(props) {
         </div>
     );
 }
+
+const ComfirmDeteleModal = (props) => {
+    const [comfirmDeleteModal, setComfirmDeleteModal] = useState(false)
+    const [comfirmId, setColumnId] = useState('')
+
+    useEffect(() => {
+        setComfirmDeleteModal(props.status)
+        setColumnId(props.columnId)
+    }, [])
+
+    const deleteBooking = async (columnId) => {
+        try {
+            const deleteBookingResult = await BookingAPI.deleteBooking(columnId)
+
+            if (deleteBookingResult.data && deleteBookingResult.data.success) {
+                props.setDeleteSuccess()
+            } else {
+                props.setDeleteFailed()
+            }
+        } catch (error) {
+            props.setDeleteFailed()
+        }
+    }
+
+    return (
+        <div>
+            <BootstrapDialog
+                onClose={() => {
+                    props.setStatus(false)
+                    setComfirmDeleteModal(false)
+                }}
+                aria-labelledby="customized-dialog-title"
+                open={comfirmDeleteModal}
+            >
+                <BootstrapDialogTitle id="customized-dialog-title"
+                    onClose={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                    Xác nhận xoá
+                </BootstrapDialogTitle>
+                <DialogContent dividers>
+                    Bạn có chắc chắn muốn xoá
+                </DialogContent>
+                <DialogActions>
+                    <Button autoFocus onClick={() => deleteBooking(comfirmId)}>
+                        Xoá
+                    </Button>
+                    <Button autoFocus onClick={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                        Huỷ
+                    </Button>
+                </DialogActions>
+            </BootstrapDialog>
+        </div>
+    )
+}
+
 

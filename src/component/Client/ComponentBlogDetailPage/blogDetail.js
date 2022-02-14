@@ -62,7 +62,7 @@ export default function ComponentTravelBlogDetail(props) {
                 </div>
                 <div class="col-sm-12 col-md-4 col-lg-3">
                     <div style={{paddingRight: '20px', boxSizing: 'border-box'}}>
-                        <h3 style={{fontWeight: 800, marginBottom: 0, textAlign: 'center' }}>New Post</h3>
+                        <h3 style={{fontWeight: 800, marginBottom: 0, textAlign: 'center' }}>Bài viết mới nhất</h3>
                         {newPost.map((blogItem, blogIndex) => {
                             return (
                                 <div className="new-post-card" key={`new-post-${blogIndex}`}>

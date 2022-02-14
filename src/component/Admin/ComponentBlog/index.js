@@ -125,6 +125,7 @@ export default function ComponentAdminBlog(props) {
     const [openPostModal, setOpenPostModal] = useState({ status: false, type: '' })
     const [postModalData, setPostModalData] = useState({ id: '', title: '', desc: '', image: '' })
     const [postModalNoti, setPostModalNoti] = useState({ status: false, noti: '', type: '' })
+    const [comfirmDelete, setComfirmDelete] = useState({ status: false, columnId: '' })
 
     const getAllPostData = async () => {
         try {
@@ -166,24 +167,6 @@ export default function ComponentAdminBlog(props) {
 
         } catch (error) {
             setPostModalNoti({ status: true, noti: 'Add data failed', type: 'error' })
-        }
-    }
-
-    const deletePostData = async (postId) => {
-        try {
-            const deleteContactRes = await PostAPI.deletePostData(postId)
-
-            if (deleteContactRes.data && deleteContactRes.data.success) {
-                const rowData = [...allPostData].filter((item) => item.blog_id !== postId)
-
-                setAllPostData(rowData)
-                setOpenNotiSnackBar({ status: true, noti: 'Xoá tin tức thành công', type: 'success' })
-            } else {
-                setOpenNotiSnackBar({ status: true, noti: deleteContactRes.data.error.message, type: 'error' })
-            }
-
-        } catch (error) {
-            setOpenNotiSnackBar({ status: true, noti: error.message, type: 'error' })
         }
     }
 
@@ -240,6 +223,25 @@ export default function ComponentAdminBlog(props) {
 
     return (
         <div>
+            {comfirmDelete.status ?
+                <ComfirmDeteleModal
+                    status={comfirmDelete.status}
+                    columnId={comfirmDelete.columnId}
+                    setStatus={(status) => setComfirmDelete({ columnId: '', status: status })}
+                    setDeleteSuccess={() => {
+                        const rowData = [...allPostData].filter((item) => item.blog_id !== comfirmDelete.columnId)
+                        setAllPostData(rowData)
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá tin tức thành công', type: 'success' })
+
+                        setComfirmDelete({ columnId: '', status: false })
+                    }}
+
+                    setDeleteFailed={() => {
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin thất bại', type: 'error' })
+                    }}
+                /> : ''
+            }
+
             <div>
                 <BootstrapDialog
                     onClose={() => setOpenPostModal({ status: false, type: '' })}
@@ -363,7 +365,7 @@ export default function ComponentAdminBlog(props) {
                                                                         setOpenPostModal({ status: true, type: 'update' })
                                                                         setPostModalData({ id: row.blog_id, title: row.blog_title, desc: row.blog_desc, image: row.blog_image })
                                                                     }}>Cập nhật</Button>
-                                                                    <Button color='error' onClick={() => deletePostData(row.blog_id)}>Xoá</Button>
+                                                                    <Button color='error' onClick={() => setComfirmDelete({ status: true, columnId: row.blog_id })}>Xoá</Button>
                                                                 </ButtonGroup> :
                                                                 (
                                                                     column.id === 'blog_image' ?
@@ -396,6 +398,65 @@ export default function ComponentAdminBlog(props) {
                     {openNotiSnackBar.noti}
                 </Alert>
             </Snackbar>
+        </div>
+    )
+}
+
+const ComfirmDeteleModal = (props) => {
+    const [comfirmDeleteModal, setComfirmDeleteModal] = useState(false)
+    const [comfirmId, setColumnId] = useState('')
+
+    useEffect(() => {
+        setComfirmDeleteModal(props.status)
+        setColumnId(props.columnId)
+    }, [])
+
+    const deletePost = async (columnId) => {
+        try {
+            const deletePostRes = await PostAPI.deletePostData(columnId)
+
+            if (deletePostRes.data && deletePostRes.data.success) {
+                props.setDeleteSuccess()
+            } else {
+                props.setDeleteFailed()
+            }
+        } catch (error) {
+            props.setDeleteFailed()
+        }
+    }
+
+    return (
+        <div>
+            <BootstrapDialog
+                onClose={() => {
+                    props.setStatus(false)
+                    setComfirmDeleteModal(false)
+                }}
+                aria-labelledby="customized-dialog-title"
+                open={comfirmDeleteModal}
+            >
+                <BootstrapDialogTitle id="customized-dialog-title"
+                    onClose={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                    Xác nhận xoá
+                </BootstrapDialogTitle>
+                <DialogContent dividers>
+                    Bạn có chắc chắn muốn xoá
+                </DialogContent>
+                <DialogActions>
+                    <Button autoFocus onClick={() => deletePost(comfirmId)}>
+                        Xoá
+                    </Button>
+                    <Button autoFocus onClick={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                        Huỷ
+                    </Button>
+                </DialogActions>
+            </BootstrapDialog>
         </div>
     )
 }

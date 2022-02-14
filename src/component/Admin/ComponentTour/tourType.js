@@ -107,9 +107,10 @@ export default function ComponentTourType(props) {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [tableRowData, setTableRowData] = useState([]);
     const [openCategoryModal, setOpenCategoryModal] = useState({ status: false, type: '' });
-    const [newCategoryData, setNewCategoryData] = useState({ name: ''})
+    const [newCategoryData, setNewCategoryData] = useState({ name: '' })
     const [addCategoryNoti, setAddCategoryNoti] = useState({ status: false, noti: '', type: '' }) /*display noti in modal when add and update*/
     const [openNotiSnackBar, setOpenNotiSnackBar] = useState({ status: false, noti: '', type: '' })
+    const [comfirmDelete, setComfirmDelete] = useState({ status: false, columnId: '' })
 
     const getAllCategoryData = async () => {
         try {
@@ -134,12 +135,12 @@ export default function ComponentTourType(props) {
 
             if (!newCategoryData.name.length) {
                 setAddCategoryNoti({ status: true, noti: 'Các trường không được để trống', type: 'error' })
-            }else {
-                const addNewCategoryRes = await TourCategoryAPI.addNew({ name: newCategoryData.name})
-                
+            } else {
+                const addNewCategoryRes = await TourCategoryAPI.addNew({ name: newCategoryData.name })
+
                 if (addNewCategoryRes.data && addNewCategoryRes.data.success) {
                     setAddCategoryNoti({ status: true, noti: 'Thêm thông tin loại tour thành công', type: 'success' })
-                    
+
                     setTableRowData(addNewCategoryRes.data.payload)
 
                     setTimeout(() => {
@@ -147,29 +148,12 @@ export default function ComponentTourType(props) {
                         setAddCategoryNoti({ status: false, noti: '', type: '' })
                         setNewCategoryData({ name: '' })
                     }, 1000)
-                }else{
+                } else {
                     setAddCategoryNoti({ status: true, noti: addNewCategoryRes.data.error.message, type: 'error' })
                 }
             }
         } catch (error) {
             setAddCategoryNoti({ status: true, noti: error.message, type: 'error' })
-        }
-    }
-
-    const deleteCategory = async (columnId) => {
-        try {
-            const deleteCategoryRes = await TourCategoryAPI.deleteCategory(columnId)
-
-            if (deleteCategoryRes.data && deleteCategoryRes.data.success ) {
-                const rowData = [...tableRowData].filter((item) => item.category_id !== columnId)
-                setTableRowData(rowData)
-
-                setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin liên hệ thành công', type: 'success' })
-            } else {
-                setOpenNotiSnackBar({ status: true, noti: deleteCategoryRes.data.error.message, type: 'error' })
-            }
-        } catch (error) {
-            setOpenNotiSnackBar({ status: true, noti: error.message, type: 'error' })
         }
     }
 
@@ -179,8 +163,8 @@ export default function ComponentTourType(props) {
 
             if (!newCategoryData.name.length) {
                 setAddCategoryNoti({ status: true, noti: 'Các trường không được để trống', type: 'error' })
-            }else {
-                const updateCategoryRes = await TourCategoryAPI.updateCategory({ id: newCategoryData.id, name: newCategoryData.name})
+            } else {
+                const updateCategoryRes = await TourCategoryAPI.updateCategory({ id: newCategoryData.id, name: newCategoryData.name })
 
                 if (updateCategoryRes.data && updateCategoryRes.data.success) {
                     setAddCategoryNoti({ status: true, noti: 'Cập nhật thông tin thành công', type: 'success' })
@@ -221,6 +205,25 @@ export default function ComponentTourType(props) {
 
     return (
         <div>
+            {comfirmDelete.status ?
+                <ComfirmDeteleModal
+                    status={comfirmDelete.status}
+                    columnId={comfirmDelete.columnId}
+                    setStatus={(status) => setComfirmDelete({ columnId: '', status: status })}
+                    setDeleteSuccess={() => {
+                        const rowData = [...tableRowData].filter((item) => item.category_id !== comfirmDelete.columnId)
+                        setTableRowData(rowData)
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin thành công', type: 'success' })
+                        
+                        setComfirmDelete({ columnId: '', status: false })
+                    }}
+
+                    setDeleteFailed={() => {
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin thất bại', type: 'error' })
+                    }}
+                /> : ''
+            }
+
             {openCategoryModal.status &&
                 <div>
                     <BootstrapDialog
@@ -267,7 +270,7 @@ export default function ComponentTourType(props) {
                 </Typography>
                 <Button variant="contained" onClick={() => {
                     setOpenCategoryModal({ status: true, type: 'add' })
-                    setNewCategoryData({name: ''})
+                    setNewCategoryData({ name: '' })
                 }}>
                     Thêm mới
                 </Button>
@@ -306,9 +309,9 @@ export default function ComponentTourType(props) {
                                                                 <ButtonGroup variant="contained" aria-label="outlined primary button group">
                                                                     <Button onClick={() => {
                                                                         setOpenCategoryModal({ status: true, type: 'update' })
-                                                                        setNewCategoryData({ id: row.category_id, name: row.name})
+                                                                        setNewCategoryData({ id: row.category_id, name: row.name })
                                                                     }}>Cập nhật</Button>
-                                                                    <Button color='error' onClick={() => deleteCategory(row.category_id)}>Xoá</Button>
+                                                                    <Button color='error' onClick={() => setComfirmDelete({ status: true, columnId: row.category_id })}>Xoá</Button>
                                                                 </ButtonGroup> : value)}
                                                     </TableCell>
                                                 );
@@ -337,5 +340,64 @@ export default function ComponentTourType(props) {
             </Snackbar>
         </div>
     );
+}
+
+const ComfirmDeteleModal = (props) => {
+    const [comfirmDeleteModal, setComfirmDeleteModal] = useState(false)
+    const [comfirmId, setColumnId] = useState('')
+
+    useEffect(() => {
+        setComfirmDeleteModal(props.status)
+        setColumnId(props.columnId)
+    }, [])
+
+    const deleteCategory = async (columnId) => {
+        try {
+            const deleteCategoryRes = await TourCategoryAPI.deleteCategory(columnId)
+
+            if (deleteCategoryRes.data && deleteCategoryRes.data.success) {
+                props.setDeleteSuccess()
+            } else {
+                props.setDeleteFailed()
+            }
+        } catch (error) {
+            props.setDeleteFailed()
+        }
+    }
+
+    return (
+        <div>
+            <BootstrapDialog
+                onClose={() => {
+                    props.setStatus(false)
+                    setComfirmDeleteModal(false)
+                }}
+                aria-labelledby="customized-dialog-title"
+                open={comfirmDeleteModal}
+            >
+                <BootstrapDialogTitle id="customized-dialog-title"
+                    onClose={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                    Xác nhận xoá
+                </BootstrapDialogTitle>
+                <DialogContent dividers>
+                    Bạn có chắc chắn muốn xoá
+                </DialogContent>
+                <DialogActions>
+                    <Button autoFocus onClick={() => deleteCategory(comfirmId)}>
+                        Xoá
+                    </Button>
+                    <Button autoFocus onClick={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                        Huỷ
+                    </Button>
+                </DialogActions>
+            </BootstrapDialog>
+        </div>
+    )
 }
 

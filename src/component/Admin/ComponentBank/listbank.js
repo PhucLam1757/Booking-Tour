@@ -121,6 +121,7 @@ export default function ComponentAdminBank(props) {
     const [newBankData, setNewBankData] = useState({ card_name: '', card_number: '', card_author: '' })
     const [addBankNoti, setAddBankNoti] = useState({ status: false, noti: '', type: '' }) /*display noti in modal when add and update*/
     const [openNotiSnackBar, setOpenNotiSnackBar] = useState({ status: false, noti: '', type: '' })
+    const [comfirmDelete, setComfirmDelete] = useState({ status: false, columnId: '' })
 
     const getAllContactData = async () => {
         try {
@@ -162,23 +163,6 @@ export default function ComponentAdminBank(props) {
             }
         } catch (error) {
             setAddBankNoti({ status: true, noti: error.message, type: 'error' })
-        }
-    }
-
-    const deleteBankInfo = async (columnId) => {
-        try {
-            const deleteBankRes = await BankAPI.deleteBankInfo(columnId)
-
-            if (deleteBankRes.data && deleteBankRes.data.success ) {
-                const rowData = [...tableRowData].filter((item) => item.card_id !== columnId)
-                setTableRowData(rowData)
-
-                setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin tài khoản ngân hàng thành công', type: 'success' })
-            } else {
-                setOpenNotiSnackBar({ status: true, noti: deleteBankRes.data.error.message, type: 'error' })
-            }
-        } catch (error) {
-            setOpenNotiSnackBar({ status: true, noti: error.message, type: 'error' })
         }
     }
 
@@ -232,6 +216,25 @@ export default function ComponentAdminBank(props) {
 
     return (
         <div>
+            {comfirmDelete.status ?
+                <ComfirmDeteleModal
+                    status={comfirmDelete.status}
+                    columnId={comfirmDelete.columnId}
+                    setStatus={(status) => setComfirmDelete({ columnId: '', status: status })}
+                    setDeleteSuccess={() => {
+                        const rowData = [...tableRowData].filter((item) => item.card_id !== comfirmDelete.columnId)
+                        setTableRowData(rowData)
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin thành công', type: 'success' })
+                        
+                        setComfirmDelete({ columnId: '', status: false })
+                    }}
+
+                    setDeleteFailed={() => {
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin thất bại', type: 'error' })
+                    }}
+                /> : ''
+            }
+
             {openBankModal.status &&
                 <div>
                     <BootstrapDialog
@@ -339,7 +342,7 @@ export default function ComponentAdminBank(props) {
                                                                         setOpenBankModal({ status: true, type: 'update' })
                                                                         setNewBankData({ id: row.card_id, card_name: row.card_name, card_number: row.card_number, card_author: row.card_author })
                                                                     }}>Cập nhật</Button>
-                                                                    <Button color='error' onClick={() => deleteBankInfo(row.card_id)}>Xoá</Button>
+                                                                    <Button color='error' onClick={() => setComfirmDelete({ status: true, columnId: row.card_id })}>Xoá</Button>
                                                                 </ButtonGroup> : value)}
                                                     </TableCell>
                                                 );
@@ -368,5 +371,64 @@ export default function ComponentAdminBank(props) {
             </Snackbar>
         </div>
     );
+}
+
+const ComfirmDeteleModal = (props) => {
+    const [comfirmDeleteModal, setComfirmDeleteModal] = useState(false)
+    const [comfirmId, setColumnId] = useState('')
+
+    useEffect(() => {
+        setComfirmDeleteModal(props.status)
+        setColumnId(props.columnId)
+    }, [])
+
+    const deleteBank = async (columnId) => {
+        try {
+            const deleteBankRes = await BankAPI.deleteBankInfo(columnId)
+
+            if (deleteBankRes.data && deleteBankRes.data.success) {
+                props.setDeleteSuccess()
+            } else {
+                props.setDeleteFailed()
+            }
+        } catch (error) {
+            props.setDeleteFailed()
+        }
+    }
+
+    return (
+        <div>
+            <BootstrapDialog
+                onClose={() => {
+                    props.setStatus(false)
+                    setComfirmDeleteModal(false)
+                }}
+                aria-labelledby="customized-dialog-title"
+                open={comfirmDeleteModal}
+            >
+                <BootstrapDialogTitle id="customized-dialog-title"
+                    onClose={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                    Xác nhận xoá
+                </BootstrapDialogTitle>
+                <DialogContent dividers>
+                    Bạn có chắc chắn muốn xoá
+                </DialogContent>
+                <DialogActions>
+                    <Button autoFocus onClick={() => deleteBank(comfirmId)}>
+                        Xoá
+                    </Button>
+                    <Button autoFocus onClick={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                        Huỷ
+                    </Button>
+                </DialogActions>
+            </BootstrapDialog>
+        </div>
+    )
 }
 

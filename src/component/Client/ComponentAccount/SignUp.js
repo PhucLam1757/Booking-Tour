@@ -76,6 +76,7 @@ export default function SignUpComponent() {
 
                 const verifyEmail = await UserAPI.verifyEmail(customerData.email)
 
+                console.log('verifyEmail: ', verifyEmail)
                 if (verifyEmail.data && verifyEmail.data.success) {
                     setVerifyCode(verifyEmail.data.payload)
 

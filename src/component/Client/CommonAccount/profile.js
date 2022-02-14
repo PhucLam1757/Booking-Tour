@@ -52,11 +52,11 @@ export default function CommonProfile(props) {
     const [addUpdateNoti, setAddUpdateNoti] = useState({status: false, noti: '', type: ''})
 
     const styles = makeStyles()
-    const userData = JSON.parse(window.sessionStorage.getItem('user_data'))
+    const customerDataSession = JSON.parse(window.sessionStorage.getItem('user_data'))
 
     const getUserData = async () => {
         try{
-            const userRes = await UserAPI.getUserInfo(userData.ctm_id)
+            const userRes = await UserAPI.getUserInfo(customerDataSession.ctm_id)
             
             if ( userRes.data && userRes.data.success ){
                 setUserInfo(userRes.data.payload)
@@ -68,7 +68,7 @@ export default function CommonProfile(props) {
 
     const updateUserInfo = async () => {
         try{
-            const userRes = await UserAPI.updateUserInfo({...userInfo, id: userData.ctm_id})
+            const userRes = await UserAPI.updateUserInfo({...userInfo, id: customerDataSession.ctm_id})
         
             if ( userRes.data && userRes.data.success ){
                 setAddUpdateNoti({status: true, noti: 'Cập nhật thông tin thành công',type: 'success'})

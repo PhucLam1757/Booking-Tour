@@ -9,6 +9,11 @@ import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
 import FavouriteAPI from "../../../API/FavouriteAPI";
 import HotelAPI from "../../../API/HotelAPI";
+import { useNavigate } from 'react-router-dom';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import IconButton from '@mui/material/IconButton';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import TouBanner from '../../../asset/images/TourBanner.jpeg';
 
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -27,9 +32,9 @@ function formatDate(date) {
         day = '' + d.getDate(),
         year = d.getFullYear();
 
-    if (month.length < 2) 
+    if (month.length < 2)
         month = '0' + month;
-    if (day.length < 2) 
+    if (day.length < 2)
         day = '0' + day;
 
     return [year, month, day].join('-');
@@ -39,12 +44,13 @@ export default function ListAccoutTour(props) {
     const [userBooking, setUserBooking] = useState([])
     const [listFavourite, setListFavourite] = useState([])
     const [userListHotelBooking, setUserListHotelBooking] = useState([])
+    const navigate = useNavigate()
 
-    const userDataSession = JSON.parse(window.sessionStorage.getItem('user_data'))
+    const customerDataSession = JSON.parse(window.sessionStorage.getItem('user_data'))
 
     const getFavouriteTour = async () => {
         try {
-            const favouriteRes = await FavouriteAPI.getAllData(userDataSession.ctm_id)
+            const favouriteRes = await FavouriteAPI.getAllData(customerDataSession.ctm_id)
             if (favouriteRes.data && favouriteRes.data.success) {
                 setListFavourite(favouriteRes.data.payload)
             }
@@ -55,7 +61,7 @@ export default function ListAccoutTour(props) {
 
     const getUserAllBooking = async () => {
         try {
-            const bookingRes = await BookingAPI.getUserBooking(userDataSession.ctm_id)
+            const bookingRes = await BookingAPI.getUserBooking(customerDataSession.ctm_id)
 
             if (bookingRes.data && bookingRes.data.success) {
                 setUserBooking(bookingRes.data.payload)
@@ -68,7 +74,7 @@ export default function ListAccoutTour(props) {
 
     const getUserListHotelBooking = async () => {
         try {
-            const hotelRes = await HotelAPI.getUserBooking(userDataSession.ctm_id)
+            const hotelRes = await HotelAPI.getUserBooking(customerDataSession.ctm_id)
 
             if (hotelRes.data && hotelRes.data.success) {
                 setUserListHotelBooking(hotelRes.data.payload)
@@ -77,6 +83,20 @@ export default function ListAccoutTour(props) {
 
         } catch (error) {
             console.log('get user list hotel booking error: ', error)
+        }
+    }
+
+    const removeFavourite = async (tour_id) => {
+        try {
+            if (customerDataSession) {
+                const removeRes = await FavouriteAPI.deleteFavourite({ user_id: customerDataSession.ctm_id, tour_id: tour_id })
+                
+                if (removeRes.data && removeRes.data.success) {
+                    setListFavourite(removeRes.data.payload)
+                }
+            }
+        } catch (error) {
+            console.log('remove favourite error: ', error)
         }
     }
 
@@ -112,149 +132,82 @@ export default function ListAccoutTour(props) {
             <TabList>
                 <Tab>TOUR ĐÃ ĐẶT</Tab>
                 <Tab>TOUR YÊU THÍCH</Tab>
-                <Tab>KHÁCH SẠN ĐÃ ĐẶT</Tab>
+                {/* <Tab>KHÁCH SẠN ĐÃ ĐẶT</Tab> */}
             </TabList>
 
             <TabPanel>
-                {userBooking.map((bookingItem) => {
+                {userBooking.map((tourItem, tourIndex) => {
                     return (
-                        <Box sx={{ marginTop: '80px' }}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12} sm={4}>
-                                    <img src={bookingItem.tour_img && bookingItem.tour_img} style={{ width: '100%', height: '100%' }} />
-                                </Grid>
-                                <Grid item xs={12} sm={8} >
-                                    <Item>
-                                        <Typography variant="h1" component="h2" >
-                                            <b style={{ color: 'cadetblue' }}>{bookingItem.tour_name && bookingItem.tour_name}</b>
-                                        </Typography>
-                                        <hr style={{ borderTop: '2px solid gray' }} />
-                                        <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
-                                            <Grid item xs={6} sm={5} >
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Ngày đi:</Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm={7}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.departure_day && formatDate(bookingItem.departure_day)}</b></Typography>
-                                            </Grid>
-                                        </Grid>
+                        <div className='col-12' style={{ marginTop: '20px' }} key={`list-tour-${tourIndex}`}>
+                            <div style={{ width: '100%', minheight: '100px', boxShadow: '0 3px 10px rgb(0 0 0 / 20%)', padding: '20px' }}>
+                                <div className='row' style={{ marginLeft: 0, marginRight: 0 }}>
+                                    <div className='col-sm-12 col-md-4'>
+                                        <img src={tourItem.tour_img ? tourItem.tour_img : TouBanner} style={{ width: '100%', height: '100%' }} />
+                                    </div>
 
-                                        <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
-                                            <Grid item xs={6} sm={5}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Ngày về:</Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm={7}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.return_day && formatDate(bookingItem.return_day)}</b></Typography>
-                                            </Grid>
-                                        </Grid>
+                                    <div className='col-sm-10 col-md-5'>
+                                        <h2 style={{ color: '#06558A', fontWeight: 700 }}>{tourItem.tour_name}</h2>
+                                        <h3 style={{ fontWeight: 600, color: 'black' }}>{tourItem.place_destinate}-{tourItem.place_go}</h3>
+                                        <h5>Thời gian: {tourItem.go_time}</h5>
+                                        <h5>Phương tiện: {tourItem.transport}</h5>
+                                        <div>{displayStatus(tourItem.status)}</div>
+                                    </div>
 
-                                        <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
-                                            <Grid item xs={6} sm={5}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Tổng thời gian</Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm={7}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.go_time && bookingItem.go_time}</b></Typography>
-                                            </Grid>
-                                        </Grid>
-
-                                        <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
-                                            <Grid item xs={6} sm={5}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Số lượng trẻ em: </Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm={7}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.total_child && bookingItem.total_child}</b></Typography>
-                                            </Grid>
-                                        </Grid>
-
-                                        <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
-                                            <Grid item xs={6} sm={5}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Số lượng người lớn: </Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm={7}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.total_adult && bookingItem.total_adult}</b></Typography>
-                                            </Grid>
-                                        </Grid>
-                                        <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
-                                            <Grid item xs={6} sm={5}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Số giá tiền: </Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm={7}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b style={{ color: 'red' }}>{bookingItem.total_price && bookingItem.total_price} VNĐ</b></Typography>
-                                            </Grid>
-                                        </Grid>
-
-                                        <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
-                                            <Grid item xs={6} sm={5}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Tình trạng: </Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm={7}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{displayStatus(bookingItem.status)}</b></Typography>
-                                            </Grid>
-                                        </Grid>
-                                    </Item>
-                                </Grid>
-                            </Grid>
-                        </Box>
-                    )
-                })}
-            </TabPanel>
-            <TabPanel>
-                {listFavourite.map((bookingItem) => {
-                    return (
-                        <Box sx={{ marginTop: '80px' }}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12} sm={4}>
-                                    <img src={bookingItem.tour_img && bookingItem.tour_img} style={{ width: '100%', height: '100%' }} />
-                                </Grid>
-                                <Grid item xs={12} sm={8} >
-                                    <Item>
-                                        <Typography variant="h1" component="h2" >
-                                            <b style={{ color: 'cadetblue' }}>{bookingItem.tour_name && bookingItem.tour_name}</b>
-                                        </Typography>
-                                        <hr style={{ borderTop: '2px solid gray' }} />
-                                        <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
-                                            <Grid item xs={6} sm={5} >
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Ngày đi:</Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm={7}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.departure_day && formatDate(bookingItem.departure_day)}</b></Typography>
-                                            </Grid>
-                                        </Grid>
-
-                                        <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
-                                            <Grid item xs={6} sm={5}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Ngày về:</Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm={7}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.return_day && formatDate(bookingItem.return_day)}</b></Typography>
-                                            </Grid>
-                                        </Grid>
-
-                                        <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
-                                            <Grid item xs={6} sm={5}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Tổng thời gian</Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm={7}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.go_time && bookingItem.go_time}</b></Typography>
-                                            </Grid>
-                                        </Grid>
-
-                                        <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
-                                            <Grid item xs={6} sm={5}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Giá chỉ từ: </Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm={7}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b style={{ color: 'red' }}>{bookingItem.child_price} VNĐ</b></Typography>
-                                            </Grid>
-                                        </Grid>
-                                    </Item>
-                                </Grid>
-                            </Grid>
-                        </Box>
+                                    <div className='col-3'>
+                                        <button class="view-tour-detail-button"
+                                            onClick={() => navigate(`/booking-detail/${tourItem.booking_id}`)}
+                                            role="button"
+                                            style={{ whiteSpace: 'nowrap', backgroundColor: 'transparent' }}
+                                        >
+                                            Chi tiết đặt tour
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     )
                 })}
             </TabPanel>
 
             <TabPanel>
+                <div>
+                    {listFavourite.map((tourItem, tourIndex) => {
+                        return (
+                            <div className='col-12' style={{ marginTop: '20px' }} key={`list-tour-${tourIndex}`}>
+                                <div style={{ width: '100%', minheight: '100px', boxShadow: '0 3px 10px rgb(0 0 0 / 20%)', padding: '20px' }}>
+                                    <div className='row' style={{ marginLeft: 0, marginRight: 0 }}>
+                                        <div className='col-sm-12 col-md-4'>
+                                            <img src={tourItem.tour_img ? tourItem.tour_img : TouBanner} style={{ width: '100%', height: '100%' }} />
+                                        </div>
+
+                                        <div className='col-sm-10 col-md-5'>
+                                            <h2 style={{ color: '#06558A', fontWeight: 700 }}>{tourItem.tour_name}</h2>
+                                            <h3 style={{ fontWeight: 600, color: 'black' }}>{tourItem.place_destinate}-{tourItem.place_go}</h3>
+                                            <h5>Thời gian: {tourItem.go_time}</h5>
+                                            <h5>Phương tiện: {tourItem.transport}</h5>
+                                            <h5 style={{ color: 'red', fontSize: '1.2em' }}>Giá vé: Chỉ từ {tourItem.child_price} vnđ</h5>
+                                        </div>
+
+                                        <div className='col-3'>
+                                            <button class="view-tour-detail-button"
+                                                onClick={() => navigate(`/tour/${tourItem.tour_id}`)}
+                                                role="button"
+                                                style={{ whiteSpace: 'nowrap', backgroundColor: 'transparent' }}
+                                            >Xem chi tiết</button>
+
+                                            <IconButton onClick={() => removeFavourite(tourItem.tour_id)} color="error">
+                                                <FavoriteIcon color="error" />
+                                            </IconButton>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    })}
+                </div>
+            </TabPanel>
+
+            {/* <TabPanel>
                 {userListHotelBooking.map((bookingItem) => {
                     return (
                         <Box sx={{ marginTop: '80px' }}>
@@ -336,7 +289,7 @@ export default function ListAccoutTour(props) {
                         </Box>
                     )
                 })}
-            </TabPanel>
+            </TabPanel> */}
         </Tabs>
     )
 }

@@ -19,12 +19,12 @@ export default function ConponentListBlog(props) {
     const getAllBlog = async (page) => {
         try {
             setLoading(true)
-            const blogRes = await PostAPI.getAll(2, page)
+            const blogRes = await PostAPI.getAll(12, page)
 
             if (blogRes.data && blogRes.data.success) {
                 setAllBlog(blogRes.data.payload.post)
                 const allItem = blogRes.data.payload.totalItem
-                const total_page = Math.ceil(Number(allItem) / 2)
+                const total_page = Math.ceil(Number(allItem) / 12)
                 setTotalPage(total_page)
                 setCurrentPage(page)
             }

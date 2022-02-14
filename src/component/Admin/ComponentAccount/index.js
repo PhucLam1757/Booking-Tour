@@ -136,6 +136,7 @@ export default function ComponentAdminAccount(props) {
     const [newAccountData, setNewAccountData] = useState({ name: '', email: '', phone_number: '', role: 0, password: '', comfirm_password: '' })
     const [addAccountNoti, setAddAccountNoti] = useState({ status: false, noti: '', type: '' })
     const [openNotiSnackBar, setOpenNotiSnackBar] = useState({ status: false, noti: '', type: '' })
+    const [comfirmDelete, setComfirmDelete] = useState({ status: false, columnId: '' })
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -209,22 +210,6 @@ export default function ComponentAdminAccount(props) {
         }
     }
 
-    const deleteAccount = async (userId) => {
-        try {
-            const deleteUserRes = await UserAPI.deleteAccount(userId)
-
-            if (deleteUserRes.data && deleteUserRes.data.success) {
-                setAllAccount(deleteUserRes.data.payload)
-                setOpenNotiSnackBar({ status: true, noti: 'Xoá tài khoản thành công', type: 'success' })
-            } else {
-                setOpenNotiSnackBar({ status: true, noti: 'Xoá tài khoản thất bại', type: 'error' })
-            }
-
-        } catch (error) {
-            setOpenNotiSnackBar({ status: true, noti: error.message, type: 'error' })
-        }
-    }
-
     const updateAccount = async () => {
         try {
             setAddAccountNoti({ status: false, noti: '', type: '' })
@@ -272,6 +257,25 @@ export default function ComponentAdminAccount(props) {
 
     return (
         <div>
+            {comfirmDelete.status ?
+                <ComfirmDeteleModal
+                    status={comfirmDelete.status}
+                    columnId={comfirmDelete.columnId}
+                    setStatus={(status) => setComfirmDelete({ columnId: '', status: status })}
+                    setDeleteSuccess={() => {
+                        const rowData = [...allAccount].filter((item) => item.user_id !== comfirmDelete.columnId)
+                        setAllAccount(rowData)
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin thành công', type: 'success' })
+                        
+                        setComfirmDelete({ columnId: '', status: false })
+                    }}
+
+                    setDeleteFailed={() => {
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin thất bại', type: 'error' })
+                    }}
+                /> : ''
+            }
+
             {openAccountModal.status &&
                 <div>
                     <BootstrapDialog
@@ -424,7 +428,7 @@ export default function ComponentAdminAccount(props) {
                                                                         setNewAccountData({name: row.name, email: row.email, phone_number: row.phone_number, role: row.role, user_id: row.user_id })
                                                                         setOpenAccountModal({ status: true, type: 'update' })
                                                                     }}>Cập nhật</Button>
-                                                                    <Button color='error' onClick={() => deleteAccount(row.user_id)}>Xoá</Button>
+                                                                    <Button color='error' onClick={() => setComfirmDelete({ status: true, columnId: row.user_id })}>Xoá</Button>
                                                                 </ButtonGroup> : 
                                                                 (
                                                                     column.id === 'role' ?
@@ -458,5 +462,64 @@ export default function ComponentAdminAccount(props) {
             </Snackbar>
         </div>
     );
+}
+
+const ComfirmDeteleModal = (props) => {
+    const [comfirmDeleteModal, setComfirmDeleteModal] = useState(false)
+    const [comfirmId, setColumnId] = useState('')
+
+    useEffect(() => {
+        setComfirmDeleteModal(props.status)
+        setColumnId(props.columnId)
+    }, [])
+
+    const deleteUser = async (columnId) => {
+        try {
+            const deleteUserRes = await UserAPI.deleteAccount(columnId)
+
+            if (deleteUserRes.data && deleteUserRes.data.success) {
+                props.setDeleteSuccess()
+            } else {
+                props.setDeleteFailed()
+            }
+        } catch (error) {
+            props.setDeleteFailed()
+        }
+    }
+
+    return (
+        <div>
+            <BootstrapDialog
+                onClose={() => {
+                    props.setStatus(false)
+                    setComfirmDeleteModal(false)
+                }}
+                aria-labelledby="customized-dialog-title"
+                open={comfirmDeleteModal}
+            >
+                <BootstrapDialogTitle id="customized-dialog-title"
+                    onClose={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                    Xác nhận xoá
+                </BootstrapDialogTitle>
+                <DialogContent dividers>
+                    Bạn có chắc chắn muốn xoá
+                </DialogContent>
+                <DialogActions>
+                    <Button autoFocus onClick={() => deleteUser(comfirmId)}>
+                        Xoá
+                    </Button>
+                    <Button autoFocus onClick={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                        Huỷ
+                    </Button>
+                </DialogActions>
+            </BootstrapDialog>
+        </div>
+    )
 }
 

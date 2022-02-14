@@ -139,6 +139,7 @@ export default function ComponentAdminAccountRole(props) {
     const [newRoleData, setNewRoleData] = useState({ name: '', role_function: '' })
     const [addRoleNoti, setAddRoleNoti] = useState({ status: false, noti: '', type: '' }) /*display noti in modal when add and update*/
     const [openNotiSnackBar, setOpenNotiSnackBar] = useState({ status: false, noti: '', type: '' })
+    const [comfirmDelete, setComfirmDelete] = useState({ status: false, columnId: '' })
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -192,22 +193,6 @@ export default function ComponentAdminAccountRole(props) {
         }
     }
 
-    const deleteRole = async (roleId) => {
-        try {
-            const deleteRoleRes = await RoleAPI.deleteRole(roleId)
-
-            if (deleteRoleRes.data && deleteRoleRes.data.success) {
-                setAllRoleData(deleteRoleRes.data.payload)
-                setOpenNotiSnackBar({ status: true, noti: 'Xoá phân quyền thành công', type: 'success' })
-            } else {
-                setOpenNotiSnackBar({ status: true, noti: 'Xoá phân quyền thất bại', type: 'error' })
-            }
-
-        } catch (error) {
-            setOpenNotiSnackBar({ status: true, noti: error.message, type: 'error' })
-        }
-    }
-
     const updateRole = async () => {
         try {
             setAddRoleNoti({ status: false, noti: '', type: '' })
@@ -249,6 +234,25 @@ export default function ComponentAdminAccountRole(props) {
 
     return (
         <div>
+            {comfirmDelete.status ?
+                <ComfirmDeteleModal
+                    status={comfirmDelete.status}
+                    columnId={comfirmDelete.columnId}
+                    setStatus={(status) => setComfirmDelete({ columnId: '', status: status })}
+                    setDeleteSuccess={() => {
+                        const rowData = [...allRoleData].filter((item) => item.role_id !== comfirmDelete.columnId)
+                        setAllRoleData(rowData)
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin thành công', type: 'success' })
+                        
+                        setComfirmDelete({ columnId: '', status: false })
+                    }}
+
+                    setDeleteFailed={() => {
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin thất bại', type: 'error' })
+                    }}
+                /> : ''
+            }
+
             {openRoleModal.status &&
                 <div>
                     <BootstrapDialog
@@ -368,7 +372,7 @@ export default function ComponentAdminAccountRole(props) {
                                                                     }}
                                                                         disabled={row.role_name === 'user' || row.role_name === 'admin' ? true : false}
                                                                     >Cập nhật</Button>
-                                                                    <Button color='error' onClick={() => deleteRole(row.role_id)} disabled={row.role_name === 'user' || row.role_name === 'admin' ? true : false}>Xoá</Button>
+                                                                    <Button color='error' onClick={() => setComfirmDelete({ status: true, columnId: row.role_id })} disabled={row.role_name === 'user' || row.role_name === 'admin' ? true : false}>Xoá</Button>
                                                                 </ButtonGroup> :
                                                                 (
                                                                     column.id === 'role_function' ?
@@ -411,5 +415,64 @@ export default function ComponentAdminAccountRole(props) {
             </Snackbar>
         </div>
     );
+}
+
+const ComfirmDeteleModal = (props) => {
+    const [comfirmDeleteModal, setComfirmDeleteModal] = useState(false)
+    const [comfirmId, setColumnId] = useState('')
+
+    useEffect(() => {
+        setComfirmDeleteModal(props.status)
+        setColumnId(props.columnId)
+    }, [])
+
+    const deleteRole = async (columnId) => {
+        try {
+            const deleteRoleRes = await RoleAPI.deleteRole(columnId)
+
+            if (deleteRoleRes.data && deleteRoleRes.data.success) {
+                props.setDeleteSuccess()
+            } else {
+                props.setDeleteFailed()
+            }
+        } catch (error) {
+            props.setDeleteFailed()
+        }
+    }
+
+    return (
+        <div>
+            <BootstrapDialog
+                onClose={() => {
+                    props.setStatus(false)
+                    setComfirmDeleteModal(false)
+                }}
+                aria-labelledby="customized-dialog-title"
+                open={comfirmDeleteModal}
+            >
+                <BootstrapDialogTitle id="customized-dialog-title"
+                    onClose={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                    Xác nhận xoá
+                </BootstrapDialogTitle>
+                <DialogContent dividers>
+                    Bạn có chắc chắn muốn xoá
+                </DialogContent>
+                <DialogActions>
+                    <Button autoFocus onClick={() => deleteRole(comfirmId)}>
+                        Xoá
+                    </Button>
+                    <Button autoFocus onClick={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                        Huỷ
+                    </Button>
+                </DialogActions>
+            </BootstrapDialog>
+        </div>
+    )
 }
 

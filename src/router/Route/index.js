@@ -47,6 +47,7 @@ import AccountPage from '../../page/Client/Profile';
 import HotelPage from "../../page/Client/Hotel";
 import HotelDetail from '../../page/Client/HotelDetail';
 import HotelBookingPage from '../../page/Client/HotelBooking';
+import BookingDetailPage from '../../page/Client/BookingDetail';
 
 export default function MainApp(props) {
     return (
@@ -108,7 +109,15 @@ export default function MainApp(props) {
                     }
                 />
 
-                <Route exact path="/hotel"
+                <Route exact path="/booking-detail/:bookingId"
+                    element={
+                        <ClientLayout {...props} >
+                            <BookingDetailPage {...props} />
+                        </ClientLayout>
+                    }
+                />
+
+                {/* <Route exact path="/hotel"
                     element={
                         <ClientLayout {...props} >
                             <HotelPage {...props} />
@@ -130,7 +139,7 @@ export default function MainApp(props) {
                             <HotelBookingPage {...props} />
                         </ClientLayout>
                     }
-                />
+                /> */}
 
 
                 <Route exact path="/tour/:tourId"
@@ -187,13 +196,13 @@ export default function MainApp(props) {
                     }
                 />
 
-                <Route exact path="/admin/hotel-revenue"
+                {/* <Route exact path="/admin/hotel-revenue"
                     element={
                         <AdminLayout {...props} >
                             <AdminHotelRevenuePrivateRoute />
                         </AdminLayout>
                     }
-                />
+                /> */}
 
                 <Route exact path="/admin/blog"
                     element={
@@ -331,7 +340,7 @@ export default function MainApp(props) {
                     }
                 />
 
-                <Route exact path="/admin/hotel"
+                {/* <Route exact path="/admin/hotel"
                     element={
                         <AdminLayout {...props} >
                             <AdminHotelPrivateRoute />
@@ -345,7 +354,7 @@ export default function MainApp(props) {
                             <AdminListHotelBookingPrivateRoute />
                         </AdminLayout>
                     }
-                />
+                /> */}
 
                 <Route exact path="/admin/hotel-booking/:bookingId"
                     element={

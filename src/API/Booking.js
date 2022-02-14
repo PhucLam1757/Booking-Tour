@@ -49,6 +49,11 @@ const BookingAPI = {
     checkUserCanReview({user_id, tour_id}) {
         const url = `/booking/user-can-review`
         return AxiosClient.post(url, {user_id, tour_id});
+    },
+
+    updateBookingUserInfo(userInfo, userId, bookingId){
+        const url = `/booking/user`
+        return AxiosClient.put(url, {userInfo, userId, bookingId});
     }
 };
 export default BookingAPI;

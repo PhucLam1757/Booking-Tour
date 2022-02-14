@@ -24,7 +24,7 @@ export default function ComponentHomePlace(props) {
 
     useEffect(() => {
         getAllTour()
-    })
+    },[])
     return (
         <div id="featured-hotel" className="fh5co-bg-color">
             <div className="container">

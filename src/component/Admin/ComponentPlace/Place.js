@@ -118,6 +118,7 @@ export default function ComponentAdminPlace(props) {
     const [newPlaceData, setNewPlaceData] = useState({ place_name: '', place_id: 0, country_name: '', country_id: 0 })
     const [addPlaceNoti, setAddPlaceNoti] = useState({ status: false, noti: '', type: '' }) /*display noti in modal when add and update*/
     const [openNotiSnackBar, setOpenNotiSnackBar] = useState({ status: false, noti: '', type: '' })
+    const [comfirmDelete, setComfirmDelete] = useState({ status: false, columnId: '' })
 
     const getAllPlaceData = async () => {
         try {
@@ -179,23 +180,6 @@ export default function ComponentAdminPlace(props) {
         }
     }
 
-    const deletePlace = async (columnId) => {
-        try {
-            const deleteCategoryRes = await PlaceAPI.deletePlace(columnId)
-
-            if (deleteCategoryRes.data && deleteCategoryRes.data.success) {
-                const rowData = [...tableRowData].filter((item) => item.place_id !== columnId)
-                setTableRowData(rowData)
-
-                setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin địa điểm thành công', type: 'success' })
-            } else {
-                setOpenNotiSnackBar({ status: true, noti: deleteCategoryRes.data.error.message, type: 'error' })
-            }
-        } catch (error) {
-            setOpenNotiSnackBar({ status: true, noti: error.message, type: 'error' })
-        }
-    }
-
     const updatePlaceData = async () => {
         try {
             setAddPlaceNoti({ status: false, noti: '', type: '' })
@@ -204,7 +188,7 @@ export default function ComponentAdminPlace(props) {
                 setAddPlaceNoti({ status: true, noti: 'Các trường không được để trống', type: 'error' })
             } else {
                 const updateCategoryRes = await PlaceAPI.updatePlace({ id: newPlaceData.place_id, place_name: newPlaceData.place_name, country_id: newPlaceData.country_id })
-                console.log('updateCategoryRes: ', updateCategoryRes)
+                
                 if (updateCategoryRes.data && updateCategoryRes.data.success) {
                     setAddPlaceNoti({ status: true, noti: 'Cập nhật thông tin thành công', type: 'success' })
                     setTableRowData(updateCategoryRes.data.payload)
@@ -232,6 +216,25 @@ export default function ComponentAdminPlace(props) {
 
     return (
         <div>
+             {comfirmDelete.status ?
+                <ComfirmDeteleModal
+                    status={comfirmDelete.status}
+                    columnId={comfirmDelete.columnId}
+                    setStatus={(status) => setComfirmDelete({ columnId: '', status: status })}
+                    setDeleteSuccess={() => {
+                        const rowData = [...tableRowData].filter((item) => item.place_id !== comfirmDelete.columnId)
+                        setTableRowData(rowData)
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin thành công', type: 'success' })
+                        
+                        setComfirmDelete({ columnId: '', status: false })
+                    }}
+
+                    setDeleteFailed={() => {
+                        setOpenNotiSnackBar({ status: true, noti: 'Xoá thông tin thất bại', type: 'error' })
+                    }}
+                /> : ''
+            }
+
             {openPlaceModal.status &&
                 <div>
                     <BootstrapDialog
@@ -338,7 +341,7 @@ export default function ComponentAdminPlace(props) {
                                                                         setOpenPlaceModal({ status: true, type: 'update' })
                                                                         setNewPlaceData({ place_id: row.place_id, place_name: row.place_name, country_id: row.country_id, country_name: row.country_name })
                                                                     }}>Cập nhật</Button>
-                                                                    <Button color='error' onClick={() => deletePlace(row.place_id)}>Xoá</Button>
+                                                                    <Button color='error' onClick={() => setComfirmDelete({ status: true, columnId: row.place_id })}>Xoá</Button>
                                                                 </ButtonGroup> : value)}
                                                     </TableCell>
                                                 );
@@ -367,5 +370,64 @@ export default function ComponentAdminPlace(props) {
             </Snackbar>
         </div>
     );
+}
+
+const ComfirmDeteleModal = (props) => {
+    const [comfirmDeleteModal, setComfirmDeleteModal] = useState(false)
+    const [comfirmId, setColumnId] = useState('')
+
+    useEffect(() => {
+        setComfirmDeleteModal(props.status)
+        setColumnId(props.columnId)
+    }, [])
+
+    const deletePlace = async (columnId) => {
+        try {
+            const deletePlaceRes = await PlaceAPI.deletePlace(columnId)
+
+            if (deletePlaceRes.data && deletePlaceRes.data.success) {
+                props.setDeleteSuccess()
+            } else {
+                props.setDeleteFailed()
+            }
+        } catch (error) {
+            props.setDeleteFailed()
+        }
+    }
+
+    return (
+        <div>
+            <BootstrapDialog
+                onClose={() => {
+                    props.setStatus(false)
+                    setComfirmDeleteModal(false)
+                }}
+                aria-labelledby="customized-dialog-title"
+                open={comfirmDeleteModal}
+            >
+                <BootstrapDialogTitle id="customized-dialog-title"
+                    onClose={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                    Xác nhận xoá
+                </BootstrapDialogTitle>
+                <DialogContent dividers>
+                    Bạn có chắc chắn muốn xoá
+                </DialogContent>
+                <DialogActions>
+                    <Button autoFocus onClick={() => deletePlace(comfirmId)}>
+                        Xoá
+                    </Button>
+                    <Button autoFocus onClick={() => {
+                        props.setStatus(false)
+                        setComfirmDeleteModal(false)
+                    }}>
+                        Huỷ
+                    </Button>
+                </DialogActions>
+            </BootstrapDialog>
+        </div>
+    )
 }
 

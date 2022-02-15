@@ -146,23 +146,17 @@ export default function BookingDetail(props) {
         try {
             const tourRes = await BookingAPI.getBookingById(Number(params.bookingId))
             if (tourRes.data && tourRes.data.success) {
-                setBookingDetail(tourRes.data.payload[0])
+                const payload = tourRes.data.payload[0]
+                setBookingDetail(payload)
+                setUserInfo({
+                    name: payload.name,
+                    address: payload.address,
+                    email: payload.email,
+                    phone_number: payload.phone,
+                })
             }
         } catch (error) {
             console.log('get tour detail error: ', error)
-        }
-    }
-
-    const getUserData = async () => {
-        try {
-            const userRes = await UserAPI.getUserInfo(userData.ctm_id)
-
-            if (userRes.data && userRes.data.success) {
-                setUserInfo(userRes.data.payload)
-            }
-
-        } catch (error) {
-            console.log('get user data error: ', error)
         }
     }
 
@@ -189,7 +183,6 @@ export default function BookingDetail(props) {
 
     useEffect(() => {
         getBookingDetail()
-        getUserData()
     }, [])
 
     const deleteBooking = () => {
@@ -446,25 +439,17 @@ const ComfirmDeteleModal = (props) => {
             if (bookingDetail.status === 'paymented' || bookingDetail.status === 'complete') {
                 setAlertNoti({ status: true, noti: 'Không thể xoá khi lịch đặt ở trạng thái đã thanh toán hoặc hoàn thành', type: 'error' })
             } else {
-                const currentDateGetTime = new Date().getTime();
-                const departureGetTime = new Date(bookingDetail.departure_day).getTime();
-                const subCurrentDateAndDeparture = departureGetTime - currentDateGetTime
+                const deleteBookingRes = await BookingAPI.deleteBooking(bookingId)
 
-                if (subCurrentDateAndDeparture <= 0) {
-                    setAlertNoti({ status: true, noti: 'Không thể xoá khi ngày hiện tại lớn hơn hoặc bằng ngày đi', type: 'error' })
+                if (deleteBookingRes.data.success) {
+                    setAlertNoti({ status: true, noti: 'Xoá lịch đặt tour thành công', type: 'success' })
+
+                    setTimeout(() => {
+                        navigate('/account')
+                    }, 1000)
+
                 } else {
-                    const deleteBookingRes = await BookingAPI.deleteBooking(bookingId)
-
-                    if (deleteBookingRes.data.success) {
-                        setAlertNoti({ status: true, noti: 'Xoá lịch đặt tour thành công', type: 'success' })
-
-                        setTimeout(() => {
-                            navigate('/account')
-                        }, 1000)
-
-                    } else {
-                        setAlertNoti({ status: true, noti: 'Không thể xoá lịch đặt tour', type: 'error' })
-                    }
+                    setAlertNoti({ status: true, noti: 'Không thể xoá lịch đặt tour', type: 'error' })
                 }
             }
 

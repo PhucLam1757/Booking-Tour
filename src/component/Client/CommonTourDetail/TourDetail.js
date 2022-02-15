@@ -166,7 +166,7 @@ export default function ComponentTourDetail(props) {
                                                 <a class="book-now text-center" ><i class="ti-calendar"></i>Xem ngay</a>
                                             </div>
                                             <div class="desc">
-                                                <h3><a href="#">{relatedTitem.tour_name ? relatedTitem.tour_name : ''}</a></h3>
+                                                <h3><a href={`/tour/${relatedTitem.tour_id}`}>{relatedTitem.tour_name ? relatedTitem.tour_name : ''}</a></h3>
                                             </div>
                                         </div>
                                     </div>

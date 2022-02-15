@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const settings = ['Trang cá nhân', 'Đăng xuất'];
-const pages = [{ key: 'TRANG CHỦ', link: '/' }, { key: 'TOUR', link: '/tour' }, { key: 'DỊCH VỤ', link: '/service' }, { key: 'TIN TỨC', link: '/blog' }, { key: 'LIÊN HỆ', link: '/contact' }];
+const pages = [{ key: 'TOUR', link: '/tour' }, { key: 'DỊCH VỤ', link: '/service' }, { key: 'TIN TỨC', link: '/blog' }, { key: 'LIÊN HỆ', link: '/contact' }];
 
 
 export default function WebHeader(props) {

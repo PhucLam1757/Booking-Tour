@@ -48,6 +48,7 @@ import HotelPage from "../../page/Client/Hotel";
 import HotelDetail from '../../page/Client/HotelDetail';
 import HotelBookingPage from '../../page/Client/HotelBooking';
 import BookingDetailPage from '../../page/Client/BookingDetail';
+import HandbookDetailPage from '../../page/Client/HandbookDetail';
 
 export default function MainApp(props) {
     return (
@@ -97,6 +98,14 @@ export default function MainApp(props) {
                     element={
                         <ClientLayout {...props} >
                             <ServiceDetail />
+                        </ClientLayout>
+                    }
+                />
+
+                <Route exact path="/handbook/:handbookId"
+                    element={
+                        <ClientLayout {...props} >
+                            <HandbookDetailPage />
                         </ClientLayout>
                     }
                 />

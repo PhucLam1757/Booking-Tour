@@ -119,6 +119,10 @@ export default function ComponentTour(props) {
         setValueSearch(searchQuery ? searchQuery : '')
     }, [])
 
+    useEffect(() => {
+        window.scrollTo(0,0)
+    },[])
+
     return (
         <div className='view-tour-page-item'>
             <div className="wrap">

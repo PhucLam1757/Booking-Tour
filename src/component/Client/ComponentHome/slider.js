@@ -40,7 +40,7 @@ export default function ComponentHomeSlider(props) {
                         <div className="col-md-12 col-md-offset-0 col-sm-12 col-sm-offset-0 col-xs-12 col-xs-offset-0 text-center fh5co-table">
                             <div className="fh5co-intro fh5co-table-cell">
                                 <h1 className="text-center" style={{ fontWeight: '800' }}>DU LỊCH CÙNG AATOURIST</h1>
-                                <p style={{ fontWeight: '600' }}>NƠI ĐẶT PHÒNG VÀ KHÁCH SẠN DÀNH RIÊNG CHO BẠN
+                                <p style={{ fontWeight: '600' }}>NƠI ĐẶT TOUR DÀNH RIÊNG CHO BẠN
                                 </p>
                             </div>
                         </div>

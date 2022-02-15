@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from "react";
 import '../../../asset/sass/travel-post-detail.scss'
 import { useParams, useNavigate } from "react-router-dom";
-import ServiceAPI from "../../../API/ServiceAPI";
+import HandbookAPI from "../../../API/HandhookAPI";
 const monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"];
 
 
-export default function ComponentServiceDetail(props) {
-    const [serviceDetail, setServiceDetail] = useState({})
+export default function ComponentHandbookDetail(props) {
+    const [handbookDetail, setHandbookDetail] = useState({})
     const params = useParams()
 
-    const getServiceDetail = async () => {
+    const getHandbookDetail = async () => {
         try {
-            const postRes = await ServiceAPI.getServiceById(params.serviceId)
+            const postRes = await HandbookAPI.getHandbookById(params.handbookId)
 
             if (postRes.data && postRes.data.success) {
                 if (postRes.data.payload.length) {
-                    setServiceDetail(postRes.data.payload[0])
+                    setHandbookDetail(postRes.data.payload[0])
                 }
             }
         } catch (error) {
@@ -25,7 +25,7 @@ export default function ComponentServiceDetail(props) {
     }
 
     useEffect(() => {
-        getServiceDetail()
+        getHandbookDetail()
     }, [params])
 
     useEffect(() => {
@@ -35,17 +35,17 @@ export default function ComponentServiceDetail(props) {
     return (
         <div className="blog-detail-page" style={{marginBottom: '100px'}}>
             <div class="header">
-                <h1 style={{ fontWeight: 900, fontSize: '1.2em', color: 'black' }}>{serviceDetail.service_name ? serviceDetail.service_name : 'Loading...'}</h1>
+                <h1 style={{ fontWeight: 900, fontSize: '1.2em', color: 'black' }}>{handbookDetail.handbook_name ? handbookDetail.handbook_name : 'Loading...'}</h1>
             </div>
 
             <div class="row">
                 <div class="col-sm-12 col-md-8 col-lg-9">
                     <div >
                         <div class="fakeimg" style={{ height: '500px' }}>
-                            <img style={{ width: '100%', height: '100%' }} src={serviceDetail.service_img ? serviceDetail.service_img : ''} />
+                            <img style={{ width: '100%', height: '100%' }} src={handbookDetail.handbook_img ? handbookDetail.handbook_img : ''} />
                         </div>
                         <p style={{ padding: '20px' }}>
-                            {serviceDetail.service_desc ? serviceDetail.service_desc : 'Loading...'}
+                            {handbookDetail.handbook_desc ? handbookDetail.handbook_desc : 'Loading...'}
                         </p>
                     </div>
                 </div>

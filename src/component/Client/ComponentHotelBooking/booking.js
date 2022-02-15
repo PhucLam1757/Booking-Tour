@@ -152,6 +152,10 @@ export default function HotelBooking(props) {
         getBankInfo()
     }, [])
 
+    useEffect(() => {
+        window.scrollTo(0,0)
+    },[])
+
 
     const bookingHotel = async () => {
         try {

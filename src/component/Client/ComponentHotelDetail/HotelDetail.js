@@ -48,6 +48,10 @@ export default function ComponentTourDetail(props) {
         }
     }, [props.hotelDetail])
 
+    useEffect(() => {
+        window.scrollTo(0,0)
+    },[])
+
     return (
         <div>
             <div className="row" style={{ paddingLeft: '50px', paddingRight: '30px', boxSizing: 'border-box', marginBottom: '50px', marginLeft: 0, marginRight: 0 }}>

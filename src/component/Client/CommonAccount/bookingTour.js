@@ -8,7 +8,6 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
 import FavouriteAPI from "../../../API/FavouriteAPI";
-import HotelAPI from "../../../API/HotelAPI";
 import { useNavigate } from 'react-router-dom';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import IconButton from '@mui/material/IconButton';
@@ -43,7 +42,6 @@ function formatDate(date) {
 export default function ListAccoutTour(props) {
     const [userBooking, setUserBooking] = useState([])
     const [listFavourite, setListFavourite] = useState([])
-    const [userListHotelBooking, setUserListHotelBooking] = useState([])
     const navigate = useNavigate()
 
     const customerDataSession = JSON.parse(window.sessionStorage.getItem('user_data'))
@@ -72,20 +70,6 @@ export default function ListAccoutTour(props) {
         }
     }
 
-    const getUserListHotelBooking = async () => {
-        try {
-            const hotelRes = await HotelAPI.getUserBooking(customerDataSession.ctm_id)
-
-            if (hotelRes.data && hotelRes.data.success) {
-                setUserListHotelBooking(hotelRes.data.payload)
-
-            }
-
-        } catch (error) {
-            console.log('get user list hotel booking error: ', error)
-        }
-    }
-
     const removeFavourite = async (tour_id) => {
         try {
             if (customerDataSession) {
@@ -103,7 +87,6 @@ export default function ListAccoutTour(props) {
     useEffect(() => {
         getUserAllBooking()
         getFavouriteTour()
-        getUserListHotelBooking()
     }, [])
 
     const displayStatus = (status) => {
@@ -206,90 +189,6 @@ export default function ListAccoutTour(props) {
                     })}
                 </div>
             </TabPanel>
-
-            {/* <TabPanel>
-                {userListHotelBooking.map((bookingItem) => {
-                    return (
-                        <Box sx={{ marginTop: '80px' }}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12} sm={4}>
-                                    <img src={bookingItem.hotel_image && bookingItem.hotel_image} style={{ width: '100%', height: '100%', maxHeight: '392px' }} />
-                                </Grid>
-                                <Grid item xs={12} sm={8} >
-                                    <Item>
-                                        <Typography variant="h1" component="h2" >
-                                            <b style={{ color: 'cadetblue' }}>{bookingItem.hotel_name && bookingItem.hotel_name}</b>
-                                        </Typography>
-                                        <hr style={{ borderTop: '2px solid gray' }} />
-                                        <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
-                                            <Grid item xs={6} sm={6} >
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Ngày nhận phòng:</Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm={6}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.checkin_date && formatDate(bookingItem.checkin_date)}</b></Typography>
-                                            </Grid>
-                                        </Grid>
-
-                                        <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
-                                            <Grid item xs={6} sm={6}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Ngày trả phòng:</Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm={6}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.checkout_date && formatDate(bookingItem.checkout_date)}</b></Typography>
-                                            </Grid>
-                                        </Grid>
-
-                                        <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
-                                            <Grid item xs={6} sm={6}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Ngày đặt phòng</Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm={6}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b>{bookingItem.created_date && formatDate(bookingItem.created_date)}</b></Typography>
-                                            </Grid>
-                                        </Grid>
-
-                                        <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
-                                            <Grid item xs={6} sm={6}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Tổng số tiền: </Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm={6}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b style={{ color: 'red' }}>{bookingItem.total_price} VNĐ</b></Typography>
-                                            </Grid>
-                                        </Grid>
-
-                                        <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
-                                            <Grid item xs={6} sm={6}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Phương thức thanh toán: </Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm={6}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b >{bookingItem.payment_method}</b></Typography>
-                                            </Grid>
-                                        </Grid>
-
-                                        <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
-                                            <Grid item xs={6} sm={6}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Tổng số người: </Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm={6}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b >{bookingItem.person}</b></Typography>
-                                            </Grid>
-                                        </Grid>
-
-                                        <Grid container spacing={2} sx={{ justifyContent: 'flex-start' }}>
-                                            <Grid item xs={6} sm={6}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}>Trạng thái: </Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm={6}>
-                                                <Typography variant="p" component="p" sx={{ textAlign: 'left', marginBottom: '0.5em !important' }}><b >{displayStatus(bookingItem.status)}</b></Typography>
-                                            </Grid>
-                                        </Grid>
-                                    </Item>
-                                </Grid>
-                            </Grid>
-                        </Box>
-                    )
-                })}
-            </TabPanel> */}
         </Tabs>
     )
 }

@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import '../../../asset/sass/travel-post-detail.scss'
 import { useParams, useNavigate } from "react-router-dom";
 import HandbookAPI from "../../../API/HandhookAPI";
+
 const monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"];
-
 
 export default function ComponentHandbookDetail(props) {
     const [handbookDetail, setHandbookDetail] = useState({})

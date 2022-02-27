@@ -15,8 +15,6 @@ import AdminLayout from "../../layout/AdminLayout";
 import Tour from "../../page/Client/Tour";
 import TourDetail from "../../page/Client/TourDetail";
 import ServiceDetail from "../../page/Client/ServiceDetail";
-import ClientAccountPrivateRoute from '../PrivateRoute/ClientAccount';
-import ClientBookingPrivateRoute from '../PrivateRoute/ClientBooking';
 import AdminDashboardPrivateRoute from '../PrivateRoute/AdminDashboardRouter';
 import AdminAccountRolePrivateRoute from '../PrivateRoute/AdminAccountRole';
 import AdminAccountPrivateRoute from '../PrivateRoute/AdminAccount';
@@ -35,18 +33,9 @@ import AdminHandbookAddPrivateRoute from '../PrivateRoute/AdminHandbookAddnew'
 import AdminBankingPrivateRoute from '../PrivateRoute/AdminBanking'
 import AdminListBookingPrivateRoute from '../PrivateRoute/AdminListBooking'
 import AdminBookingDetailPrivateRoute from '../PrivateRoute/AdminBookingDetail';
-import AdminHotelPrivateRoute from '../PrivateRoute/AdminHotel';
-import AdminAddHotelPrivateRoute from '../PrivateRoute/AdminAddHotel';
-import AdminUpdateHotelPrivateRoute from '../PrivateRoute/AdminUpdateHotel';
-import AdminListHotelBookingPrivateRoute from '../PrivateRoute/AdminListHotelBooking';
-import AdminHotelBookingDetailPrivateRoute from '../PrivateRoute/AdminHotelBookingDetail';
-import AdminHotelRevenuePrivateRoute from '../PrivateRoute/AdminHotelRevenue';
 import AdminWelcomePrivateRoute from '../PrivateRoute/AdminWelcome'
 import BookingPage from "../../page/Client/Booking";
 import AccountPage from '../../page/Client/Profile';
-import HotelPage from "../../page/Client/Hotel";
-import HotelDetail from '../../page/Client/HotelDetail';
-import HotelBookingPage from '../../page/Client/HotelBooking';
 import BookingDetailPage from '../../page/Client/BookingDetail';
 import HandbookDetailPage from '../../page/Client/HandbookDetail';
 
@@ -126,31 +115,6 @@ export default function MainApp(props) {
                     }
                 />
 
-                {/* <Route exact path="/hotel"
-                    element={
-                        <ClientLayout {...props} >
-                            <HotelPage {...props} />
-                        </ClientLayout>
-                    }
-                />
-
-                <Route exact path="/hotel/:hotelId"
-                    element={
-                        <ClientLayout {...props} >
-                            <HotelDetail {...props} />
-                        </ClientLayout>
-                    }
-                />
-
-                <Route exact path="/hotel/:hotelId/booking"
-                    element={
-                        <ClientLayout {...props} >
-                            <HotelBookingPage {...props} />
-                        </ClientLayout>
-                    }
-                /> */}
-
-
                 <Route exact path="/tour/:tourId"
                     element={
                         <ClientLayout {...props} >
@@ -204,14 +168,6 @@ export default function MainApp(props) {
                         </AdminLayout>
                     }
                 />
-
-                {/* <Route exact path="/admin/hotel-revenue"
-                    element={
-                        <AdminLayout {...props} >
-                            <AdminHotelRevenuePrivateRoute />
-                        </AdminLayout>
-                    }
-                /> */}
 
                 <Route exact path="/admin/blog"
                     element={
@@ -348,48 +304,6 @@ export default function MainApp(props) {
                         </AdminLayout>
                     }
                 />
-
-                {/* <Route exact path="/admin/hotel"
-                    element={
-                        <AdminLayout {...props} >
-                            <AdminHotelPrivateRoute />
-                        </AdminLayout>
-                    }
-                />
-
-                <Route exact path="/admin/hotel-booking"
-                    element={
-                        <AdminLayout {...props} >
-                            <AdminListHotelBookingPrivateRoute />
-                        </AdminLayout>
-                    }
-                /> */}
-
-                <Route exact path="/admin/hotel-booking/:bookingId"
-                    element={
-                        <AdminLayout {...props} >
-                            <AdminHotelBookingDetailPrivateRoute />
-                        </AdminLayout>
-                    }
-                />
-
-
-                <Route exact path="/admin/hotel/:hotelId"
-                    element={
-                        <AdminLayout {...props} >
-                            <AdminUpdateHotelPrivateRoute />
-                        </AdminLayout>
-                    }
-                />
-
-                <Route exact path="/admin/hotel/addhotel"
-                    element={
-                        <AdminLayout {...props} >
-                            <AdminAddHotelPrivateRoute />
-                        </AdminLayout>
-                    }
-                />
-
             </Routes>
         </Router>
     );

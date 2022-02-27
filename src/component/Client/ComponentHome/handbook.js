@@ -4,6 +4,9 @@ import HandbookAPI from "../../../API/HandhookAPI";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import {useNavigate} from 'react-router-dom';
 
+const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
+
 export default function ComponentHomeHandbook(props) {
     const [allHandbook, setAllHandbook] = useState([])
     const navigate = useNavigate()
@@ -39,8 +42,8 @@ export default function ComponentHomeHandbook(props) {
                             <div className="col-md-4" key={`home-blog-${handbookIndex}`}>
                                 <div className="blog-grid" style={{ backgroundImage: `url(${handbookItem.handbook_img})` }}>
                                     <div className="date text-center">
-                                        {/* <span>{new Date(handbookItem.updated_at).getDate()}</span>
-                                        <small>{monthNames[new Date(handbookItem.updated_at).getMonth()].substr(0,3)}</small> */}
+                                        <span>{new Date(handbookItem.create_date).getDate()}</span>
+                                        <small>{monthNames[new Date(handbookItem.create_date).getMonth()].substr(0,3)}</small>
                                     </div>
                                 </div>
                                 <div className="desc">

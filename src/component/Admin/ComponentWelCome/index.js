@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import BookingAPI from "../../../API/Booking";
-import HotelAPI from "../../../API/HotelAPI";
 import './style.scss';
 
 function formatDate(date) {
@@ -32,12 +31,10 @@ export default function AdminWelCome(props) {
             const formatLastDate = formatDate(lastDay)
 
             const getTourBooking = await BookingAPI.getBookingByFilterDate({ fromDate: formatFirstDate, toDate: formatLastDate })
-            const getHotelBooking = await HotelAPI.getBookingByFilterDate({ fromDate: formatFirstDate, toDate: formatLastDate })
 
-            if (getTourBooking.data && getTourBooking.data.success && getHotelBooking.data && getHotelBooking.data.success) {
+            if (getTourBooking.data && getTourBooking.data.success) {
 
                 const tourBooking = getTourBooking.data.payload.length ? getTourBooking.data.payload : []
-                const hotelBooking = getHotelBooking.data.payload.length ? getHotelBooking.data.payload : []
 
                 const tourBookingData = {
                     no_payment: 0,
@@ -52,13 +49,7 @@ export default function AdminWelCome(props) {
                     tourBookingData[tourItem.status] += 1
                 })
 
-                hotelBooking.forEach((tourItem) => {
-                    hotelBookingData[tourItem.status] += 1
-                })
-
                 tourBookingData.total = tourBooking.length
-                hotelBookingData.total = hotelBooking.length
-
                 setTourBookingInfo(tourBookingData)
                 setHotelBookingInfo(hotelBookingData)
 
@@ -98,31 +89,6 @@ export default function AdminWelCome(props) {
                 <div>
                     <p>Hoàn thành</p>
                     <p>{tourBookingInfo.complete && tourBookingInfo.complete}</p>
-                </div>
-            </div>
-
-            <h6 style={{fontSize: '1.3em'}}>Thông kê đặt khách sạn trong tháng</h6>
-
-            <div className="booking-info">
-                <div>
-                    <p>Tổng số đơn</p>
-                    <p>{hotelBookingInfo.total && hotelBookingInfo.total}</p>
-                </div>
-                <div>
-                    <p>Chưa thanh toán</p>
-                    <p>{hotelBookingInfo.no_payment && hotelBookingInfo.no_payment}</p>
-                </div>
-                <div>
-                    <p>Đang chờ xác nhận</p>
-                    <p>{hotelBookingInfo.comfirm_payment && hotelBookingInfo.comfirm_payment}</p>
-                </div>
-                <div>
-                    <p>Đã thanh toán</p>
-                    <p>{hotelBookingInfo.paymented && hotelBookingInfo.paymented}</p>
-                </div>
-                <div>
-                    <p>Hoàn thành</p>
-                    <p>{hotelBookingInfo.complete && hotelBookingInfo.complete}</p>
                 </div>
             </div>
         </div>

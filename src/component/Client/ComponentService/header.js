@@ -1,5 +1,6 @@
 import React from "react";
 import WebHeader from "../Common/Header";
+import ServiceBanner from '../../../asset/images/service-image.jpeg';
 
 export default function ComponentServiceHeader(props) {
     return (
@@ -8,7 +9,7 @@ export default function ComponentServiceHeader(props) {
                 <WebHeader />
             </div>
             {/* end:fh5co-header */}
-            <div className="fh5co-parallax" style={{ backgroundImage: 'url(images/slider1.jpg)' }} data-stellar-background-ratio="0.5">
+            <div className="fh5co-parallax" style={{ backgroundImage: `url(${ServiceBanner})`}} data-stellar-background-ratio="0.5">
                 <div className="overlay" />
                 <div className="container">
                     <div className="row">

@@ -266,9 +266,9 @@ export default function ComponentBookingTour(props) {
                             }}
                         >
                             <MenuItem value={'all'}>Tất cả</MenuItem>
-                            <MenuItem value={'no_payment'}>Chưa thanh toán</MenuItem>
+                            <MenuItem value={'no_payment'}>Chưa xác nhận</MenuItem>
                             <MenuItem value={'comfirm_payment'}>Đang chờ xác nhận</MenuItem>
-                            <MenuItem value={'paymented'}>Đã thanh toán</MenuItem>
+                            <MenuItem value={'paymented'}>Đã xác nhận</MenuItem>
                             <MenuItem value={'complete'}>Đã hoàn thành</MenuItem>
                         </Select>
                     </FormControl>

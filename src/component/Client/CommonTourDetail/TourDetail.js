@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import TourAPI from "../../../API/TourAPI";
 import CustomerReview from './Review';
 import { useParams } from "react-router-dom";
+import { Markup } from 'interweave';
 
 export default function ComponentTourDetail(props) {
     const [tourDetail, setTourDetail] = useState({})
@@ -64,14 +65,10 @@ export default function ComponentTourDetail(props) {
                             </TabList>
 
                             <TabPanel>
-                                <p>
-                                    {tourDetail.tour_desc ? tourDetail.tour_desc : ''}
-                                </p>
+                                <Markup content={tourDetail.tour_desc ? tourDetail.tour_desc : ''} />
                             </TabPanel>
                             <TabPanel>
-                                <p>
-                                    {tourDetail.tour_policy ? tourDetail.tour_policy : ''}
-                                </p>
+                                <Markup content={tourDetail.tour_policy ? tourDetail.tour_policy : ''} />
                             </TabPanel>
                             <TabPanel>
                                 <table class="table table-bordered" >
@@ -110,12 +107,12 @@ export default function ComponentTourDetail(props) {
                                 <h3 style={{ color: 'chartreuse' }}><span style={{ fontWeight: 500 }}>GIÁ CHỈ TỪ: </span><span style={{ fontSize: '1.3em', fontWeight: 600 }}>{tourDetail.child_price} VNĐ</span></h3>
                                 <button style={{ backgroundColor: 'white', border: '1px solid white' }}
                                     onClick={() => {
-                                        if (userData){
+                                        if (userData) {
                                             navigate(`/tour/${params.tourId}/booking`)
-                                        }else{
+                                        } else {
                                             navigate(`/login`)
                                         }
-                                        
+
                                     }}
                                 >
                                     ĐẶT TOUR NGAY

@@ -104,7 +104,7 @@ const columns = [
     { id: 'tour_name', label: 'Tên tour', minWidth: 100 },
     { id: 'category_name', label: 'Loại tour', minWidth: 100 },
     { id: 'place_go', label: 'Điểm đi', minWidth: 100 },
-    { id: 'place_destinate', label: 'Điểm đi', minWidth: 100 },
+    { id: 'place_destinate', label: 'Điểm đến', minWidth: 100 },
     { id: 'departure_day', label: 'Ngày khỏi hành', minWidth: 150 },
     { id: 'return_day', label: 'Ngày về', minWidth: 150 },
     { id: 'tour_status', label: 'Trạng thái', minWidth: 100 },

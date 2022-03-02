@@ -92,7 +92,7 @@ export default function ListAccoutTour(props) {
     const displayStatus = (status) => {
         if (status === 'no_payment') {
             return (
-                <Alert badgeContent={4} color="warning" icon={false}>Chưa thanh toán</Alert>
+                <Alert badgeContent={4} color="warning" icon={false}>Chưa xác nhận</Alert>
             )
         } else if (status === 'comfirm_payment') {
             return (
@@ -100,7 +100,7 @@ export default function ListAccoutTour(props) {
             )
         } else if (status === 'paymented') {
             return (
-                <Alert badgeContent={4} color="success" icon={false}>Đã thanh toán</Alert>
+                <Alert badgeContent={4} color="success" icon={false}>Đã xác nhận</Alert>
             )
 
         } else if (status === 'complete') {

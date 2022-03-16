@@ -21,10 +21,10 @@ export default function ComponentHomePlace(props) {
             console.log('get tour error: ', error)
         }
     }
-
     useEffect(() => {
         getAllTour()
     },[])
+
     return (
         <div id="featured-hotel" className="fh5co-bg-color">
             <div className="container">
@@ -44,7 +44,7 @@ export default function ComponentHomePlace(props) {
                         </div>
                         <div className="desc">
                             <h3>{allTour.length && allTour[0].tour_name}</h3>
-                            <p style={{maxHeight: '100px', textOverflow: 'ellipsis', overflow: 'hidden' }}>{allTour.length && allTour[0].tour_desc}</p>
+                            <p style={{maxHeight: '100px', textOverflow: 'ellipsis', overflow: 'hidden' }}>{allTour.length && allTour[0].about}</p>
 
                             {allTour.length &&
                                 <p><a className="btn btn-primary btn-luxe-primary" onClick={() => navigate(`/tour/${allTour[0].tour_id}`)}>ĐẶT NGAY<i className="ti-angle-right" /></a></p>
@@ -60,7 +60,7 @@ export default function ComponentHomePlace(props) {
                             </div>
                             <div className="desc">
                                 <h3>{allTour.length > 1 && allTour[1].tour_name}</h3>
-                                <p style={{maxHeight: '100px', textOverflow: 'ellipsis', overflow: 'hidden' }}>{allTour.length > 1 && allTour[1].tour_desc}</p>
+                                <p style={{maxHeight: '100px', textOverflow: 'ellipsis', overflow: 'hidden' }}>{allTour.length > 1 && allTour[1].about}</p>
                                 <p><a className="btn btn-primary btn-luxe-primary" onClick={() => navigate(`/tour/${allTour[1].tour_id}`)}>Đặt ngay<i className="ti-angle-right" /></a></p>
                             </div>
                         </div>
@@ -72,7 +72,7 @@ export default function ComponentHomePlace(props) {
                             </div>
                             <div className="desc">
                                 <h3>{allTour.length > 2 && allTour[2].tour_name}</h3>
-                                <p style={{maxHeight: '100px', textOverflow: 'ellipsis', overflow: 'hidden' }}>{allTour.length > 2 && allTour[2].tour_desc}</p>
+                                <p style={{maxHeight: '100px', textOverflow: 'ellipsis', overflow: 'hidden' }}>{allTour.length > 2 && allTour[2].about}</p>
                                 <p><a className="btn btn-primary btn-luxe-primary" onClick={() => navigate(`/tour/${allTour[2].tour_id}`)} >Đặt ngay<i className="ti-angle-right" /></a></p>
                             </div>
                         </div>

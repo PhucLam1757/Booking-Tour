@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Slider1 from '../../../asset/images/slider1.jpeg'
-import Slider2 from '../../../asset/images/slider2.jpg'
 import TourCategoryAPI from '../../../API/TourCategoryAPI'
 import { useNavigate } from 'react-router-dom'
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
 
 export default function ComponentHomeSlider(props) {
     const [allCategory, setAllCategory] = useState([])
@@ -18,7 +13,6 @@ export default function ComponentHomeSlider(props) {
     const getAllCategory = async () => {
         try {
             const category = await TourCategoryAPI.getAll()
-
             if (category.data && category.data.success) {
                 setAllCategory(category.data.payload)
             }

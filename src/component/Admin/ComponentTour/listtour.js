@@ -132,7 +132,6 @@ function formatDate(date) {
 
 export default function ComponentAdminTour(props) {
     const [page, setPage] = useState(0);
-    const [allPlace, setAllPlace] = useState([])
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [tableRowData, setTableRowData] = useState([]);
     const [openNotiSnackBar, setOpenNotiSnackBar] = useState({ status: false, noti: '', type: '' })
@@ -152,20 +151,8 @@ export default function ComponentAdminTour(props) {
         }
     }
 
-    const getAllPlaceData = async () => {
-        try {
-            const getPlaceRes = await PlaceAPI.getAll()
-            if (getPlaceRes.data && getPlaceRes.data.success) {
-                setAllPlace(getPlaceRes.data.payload)
-            }
-        } catch (error) {
-            console.log('Get Place Error: ', error)
-        }
-    }
-
     useEffect(() => {
         getAllTour()
-        getAllPlaceData()
     }, [])
 
     const handleChangePage = (event, newPage) => {

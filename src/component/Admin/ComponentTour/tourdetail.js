@@ -17,6 +17,9 @@ import TourCategoryAPI from '../../../API/TourCategoryAPI';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Alert from '@mui/material/Alert';
 import { useNavigate, useParams } from 'react-router-dom';
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import './style.scss';
 
 const RedditTextField = styled((props) => (
     <TextField InputProps={{ disableUnderline: true }} {...props} sx={{ width: '100%' }} />
@@ -53,9 +56,9 @@ function formatDate(date) {
         day = '' + d.getDate(),
         year = d.getFullYear();
 
-    if (month.length < 2) 
+    if (month.length < 2)
         month = '0' + month;
-    if (day.length < 2) 
+    if (day.length < 2)
         day = '0' + day;
 
     return [year, month, day].join('-');
@@ -66,6 +69,8 @@ export default function ComponentTourDetail(props) {
     const [allCategory, setAllCategory] = useState([])
     const [tourData, setTourData] = useState({})
     const [addTourNoti, setAddTourNoti] = useState({ status: false, noti: '', type: '' })
+    const [tourDesc, setTourDesc] = useState('')
+    const [tourPolicy, setTourPolicy] = useState('')
 
     const navigate = useNavigate()
     const params = useParams()
@@ -102,7 +107,6 @@ export default function ComponentTourDetail(props) {
             const tourDetailRes = await TourAPI.getTourById(tourId)
             if (tourDetailRes.data && tourDetailRes.data.success) {
                 const detailPayload = tourDetailRes.data.payload[0]
-
                 const detail = {
                     adult_price: detailPayload.adult_price,
                     tour_name: detailPayload.tour_name,
@@ -117,15 +121,17 @@ export default function ComponentTourDetail(props) {
                     tour_policy: detailPayload.tour_policy,
                     tour_transport: detailPayload.transport,
                     tour_type: Number(detailPayload.category_id),
-                    tour_status: detailPayload.tour_status
+                    tour_status: detailPayload.tour_status,
+                    about: detailPayload.about,
                 }
+                setTourDesc(detailPayload?.tour_desc || '')
+                setTourPolicy(detailPayload?.tour_policy || '')
                 setTourData(detail)
             }
         } catch (error) {
             console.log('get tour detail error: ', error)
         }
     }
-
 
     useEffect(() => {
         getTourDetail()
@@ -136,10 +142,9 @@ export default function ComponentTourDetail(props) {
     const updateTour = async () => {
         try {
             setAddTourNoti({ status: false, noti: '', type: '' })
-
             if (!tourData.adult_price || !tourData.tour_name || !tourData.child_price || !tourData.date_go
-                || !tourData.date_return || !tourData.place_from || !tourData.place_to || !tourData.tour_desc
-                || !tourData.tour_image || !tourData.tour_policy || !tourData.tour_transport || !tourData.tour_type) {
+                || !tourData.date_return || !tourData.place_from || !tourData.place_to || !tourDesc
+                || !tourData.tour_image || !tourPolicy || !tourData.tour_transport || !tourData.tour_type) {
 
                 setAddTourNoti({ status: true, noti: 'Các trường không được để trống', type: 'error' })
             } else {
@@ -162,16 +167,16 @@ export default function ComponentTourDetail(props) {
                     place_from: tourData.place_from,
                     place_to: tourData.place_to,
                     total_date: `${diffDays <= 0 ? diffDays + 1 : diffDays} ngày ${diffDays <= 0 ? '' : diffDays - 1 > 0 ? (diffDays - 1) + ' đêm' : '1 đêm'}`,
-                    tour_desc: tourData.tour_desc,
+                    tour_desc: tourDesc,
                     tour_image: tourData.tour_image,
-                    tour_policy: tourData.tour_policy,
+                    tour_policy: tourPolicy,
                     tour_transport: tourData.tour_transport,
                     tour_type: tourData.tour_type,
-                    tour_status: tourData.tour_status
+                    tour_status: tourData.tour_status,
+                    about: tourData.about,
                 }
 
                 const updateTourRes = await TourAPI.updateTour(tourAllData, params.id)
-                console.log('updateTourRes: ', updateTourRes)
                 if (updateTourRes.data && updateTourRes.data.success) {
                     setAddTourNoti({ status: true, noti: 'Cập nhật thông tin tour thành công', type: 'success' })
 
@@ -182,17 +187,11 @@ export default function ComponentTourDetail(props) {
                 } else {
                     setAddTourNoti({ status: true, noti: 'Không thể cập nhật thông tin tour', type: 'error' })
                 }
-                // }
-
-
             }
         } catch (error) {
             setAddTourNoti({ status: true, noti: 'Không thể thêm thông tin tour', type: 'error' })
         }
     }
-
-    console.log('tourData >>>>>> ', tourData)
-
     return (
         <Grid container spacing={2}>
             <Grid item xs={12} >
@@ -242,37 +241,72 @@ export default function ComponentTourDetail(props) {
                     <Typography variant="p" component="p" sx={{ margin: '10px 0' }}>
                         Mô tả tour:
                     </Typography>
-                    <TextareaAutosize
-                        aria-label="minimum height"
-                        minRows={20}
-                        placeholder="Nhập mô tả cho tour"
-                        style={{ width: '100%' }}
-                        value={tourData.tour_desc}
-                        onChange={(event) => {
-                            setTourData({ ...tourData, tour_desc: event.target.value })
-                        }}
-                    />
+                    <div className='skeEditor-frame'>
+                        <CKEditor
+                            editor={ClassicEditor}
+                            data={tourDesc}
+                            onReady={(editor) => {
+                                console.log("Editor is ready to use!", editor);
+                            }}
+                            onChange={(event, editor) => {
+                                const data = editor.getData();
+                                setTourDesc(data)
+                            }}
+                            config={{
+                                ckfinder: {
+                                    uploadUrl: 'http://localhost:5005/api/tour/upload-tour-image'
+                                }
+                            }}
+                        />
+                    </div>
                 </Box>
 
                 <Box sx={{ margin: '10px 0' }}>
                     <Typography variant="p" component="p" sx={{ margin: '10px 0' }}>
                         Chính sách:
                     </Typography>
-                    <TextareaAutosize
-                        aria-label="minimum height"
-                        minRows={20}
-                        placeholder="Nhập chính sách cho tour"
-                        style={{ width: '100%' }}
-                        value={tourData.tour_policy}
-                        onChange={(event) => {
-                            setTourData({ ...tourData, tour_policy: event.target.value })
-                        }}
-                    />
+                    <div className='skeEditor-frame'>
+                        <CKEditor
+                            editor={ClassicEditor}
+                            data={tourPolicy}
+                            onReady={(editor) => {
+                                console.log("Editor is ready to use!", editor);
+                            }}
+                            onChange={(event, editor) => {
+                                const data = editor.getData();
+                                setTourPolicy(data)
+                            }}
+                            config={{
+                                ckfinder: {
+                                    uploadUrl: 'http://localhost:5005/api/tour/upload-tour-image'
+                                }
+                            }}
+                        />
+                    </div>
                 </Box>
 
             </Grid>
 
             <Grid item xs={12} md={6}>
+                <Box sx={{ margin: "10px 0" }}>
+                    <Typography variant="p" component="p" sx={{ margin: "10px 0" }}>
+                        Giới thiệu:
+                    </Typography>
+                    <TextareaAutosize
+                        aria-label="minimum height"
+                        minRows={10}
+                        placeholder="Giới thiệu tour (Thông tin sẽ hiện thị ở trang chủ)"
+                        style={{ width: "100%", marginTop: "10px" }}
+                        value={tourData.about}
+                        onChange={(event) =>
+                            setTourData({
+                                ...tourData,
+                                about: event.target.value,
+                            })
+                        }
+                    />
+                </Box>
+
                 <Box sx={{ margin: '10px 0' }}>
                     <Typography variant="p" component="p" sx={{ margin: '10px 0' }} >
                         Hình ảnh:

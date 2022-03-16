@@ -22,7 +22,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import PropTypes from 'prop-types';
 import PostAPI from '../../../API/PostAPI';
 import TextareaAutosize from '@mui/material/TextareaAutosize';
